@@ -5,6 +5,7 @@ version: "1"
 services:
   vue:
     image: oseongryu/centos-vue:0.0.5
+    container_name: centos-vue
     # restart: always
     # 컨테이너에서 사용하는 volume 설정으로 대체 가능(옵션)
     volumes:
@@ -23,6 +24,7 @@ services:
 
   spring:
     image: oseongryu/centos-spring:0.0.5
+    container_name: centos-spring
     # restart: always
     # 컨테이너에서 사용하는 volume 설정으로 대체 가능(옵션)
     volumes:
