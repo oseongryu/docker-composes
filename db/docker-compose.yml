@@ -3,37 +3,37 @@ version: "1.0"
 
 services:
   oracle:
-    container_name: servioracle
+    container_name: db_oracle
     build:
       context: ./oracle/
       dockerfile: Dockerfile
-    image: demo/oracle-xe-11g:latest
+    image: db/oracle-xe-11g:latest
     environment:
       - ORACLE_ALLOW_REMOTE=true
     ports:
-      - "1522:1521"
-  # mysql:
-  #   container_name: demo_mysql
-  #   command: --character-set-server=utf8 --collation-server=utf8_general_ci
-  #   build:
-  #     context: ./mysql/
-  #     dockerfile: Dockerfile
-  #   image: demo/mysql:5.7
-  #   environment:
-  #     - LC_ALL=C.UTF-8
-  #     - MYSQL_DATABASE=DEMO
-  #     - MYSQL_ROOT_PASSWORD=test1004
-  #   ports:
-  #     - "3306:3306"
-  # mongodb:
-  #   container_name: demo_mongodb
-  #   build:
-  #     context: ./mongodb/
-  #     dockerfile: Dockerfile
-  #   image: demo/mongo:3.6
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=DEMO_ADMIN
-  #     - MONGO_INITDB_ROOT_PASSWORD=test1004!
-  #     - MONGO_INITDB_DATABASE=demo
-  #   ports:
-  #     - "27018:27017"
+      - "1521:1521"
+  mysql:
+    container_name: db_mysql
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci
+    build:
+      context: ./mysql/
+      dockerfile: Dockerfile
+    image: db/mysql:5.7
+    environment:
+      - LC_ALL=C.UTF-8
+      - MYSQL_DATABASE=MYDB
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - "3306:3306"
+  mongodb:
+    container_name: db_mongodb
+    build:
+      context: ./mongodb/
+      dockerfile: Dockerfile
+    image: db/mongo:3.6
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=DB_ADMIN
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+      - MONGO_INITDB_DATABASE=db
+    ports:
+      - "27017:27017"
