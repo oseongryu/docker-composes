@@ -1,0 +1,14 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "1"
+
+# 컨테이너 설정
+services:
+  centos-env-vue:
+    image: oseongryu/centos-evn-vue:0.0.3
+    # restart: always
+    volumes:
+      - ./vue/nginx:/etc/nginx/conf.d/
+      - ./vue/script:/app/script/
+    ports:
+      - "9551:9551"
+      - "9552:9552"
