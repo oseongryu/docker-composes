@@ -12,6 +12,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASES=mydb
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     ports:
       - "3306:3306"
     # # 컨테이너 간 네트워크 분리를 위한 추가 설정 부분(옵션)

@@ -10,6 +10,8 @@ services:
     volumes:
       # - ./vue/nginx:/etc/nginx/conf.d/
       - ~/git/hy-fredit-web:/hy-fredit-web/
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     ports:
       - "9551:9551"
       - "9552:9552"

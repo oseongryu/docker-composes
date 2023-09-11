@@ -21,7 +21,8 @@ services:
     # command:
     #   - |
     #     /app/script/start_nginx.sh
-
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
   spring:
     image: oseongryu/centos-spring:0.0.5
     container_name: centos-spring
@@ -32,7 +33,8 @@ services:
       - ./spring/app/java:/app/java
       - ./spring/script:/app/script/
       - ./spring/nginx:/etc/nginx/conf.d/
-
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     ports:
       - "10100:10100"
       - "10200:10200"

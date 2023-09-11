@@ -12,6 +12,8 @@ services:
       - ORACLE_ALLOW_REMOTE=true
     ports:
       - "1521:1521"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
   mysql:
     container_name: db_mysql
     command: --character-set-server=utf8 --collation-server=utf8_general_ci
@@ -25,6 +27,8 @@ services:
       - MYSQL_ROOT_PASSWORD=1234
     ports:
       - "3306:3306"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
   mongodb:
     container_name: db_mongodb
     build:
@@ -37,3 +41,5 @@ services:
       - MONGO_INITDB_DATABASE=db
     ports:
       - "27017:27017"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
