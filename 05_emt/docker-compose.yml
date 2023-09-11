@@ -3,16 +3,37 @@ version: "1.0"
 
 services:
   oracle:
-    container_name: db-oracle-emt
+    container_name: db-emt
     volumes:
       - ./db/static:/app
     build:
       context: ./db/
       dockerfile: Dockerfile
-    image: db/oracle-xe-11g:latest
+    image: emt/db:1.0.0
     environment:
       - ORACLE_ALLOW_REMOTE=true
     ports:
       - "1521:1521"
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+    networks:
+      - our-net
+
+  tomcat:
+    container_name: was-emt
+    volumes:
+      - ./was/static://usr/local/tomcat/webapps
+    build:
+      context: ./was/
+      dockerfile: Dockerfile
+    image: emt/was:1.0.0
+    ports:
+      - "8080:8080"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+      - our-net
+
+networks:
+  our-net:
+    driver: bridge
