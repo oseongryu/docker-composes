@@ -22,7 +22,7 @@ services:
   tomcat:
     container_name: was-emt
     volumes:
-      - ./was/static://usr/local/tomcat/webapps
+      - ./was/static:/usr/local/tomcat/webapps
     build:
       context: ./was/
       dockerfile: Dockerfile
