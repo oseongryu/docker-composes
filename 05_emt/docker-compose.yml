@@ -5,9 +5,9 @@ services:
   oracle:
     container_name: db-oracle-emt
     volumes:
-      - ./static:/app
+      - ./db/static:/app
     build:
-      context: ./
+      context: ./db/
       dockerfile: Dockerfile
     image: db/oracle-xe-11g:latest
     environment:
