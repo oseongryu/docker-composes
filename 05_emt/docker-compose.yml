@@ -36,4 +36,5 @@ services:
 
 networks:
   our-net:
+    name: our-net
     driver: bridge
