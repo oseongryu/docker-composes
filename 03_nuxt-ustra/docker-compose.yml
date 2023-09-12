@@ -1,5 +1,7 @@
 # Docker Compose 파일 포맷 버전 지정
 version: "1"
+name: nuxt-ustra
+
 
 # 컨테이너 설정
 services:
@@ -21,8 +23,8 @@ services:
     # command:
     #   - |
     #     /app/script/start_nginx.sh
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    stdin_open: true
+    tty: true
   spring:
     image: oseongryu/centos-spring:0.0.5
     container_name: centos-spring
@@ -33,8 +35,8 @@ services:
       - ./spring/app/java:/app/java
       - ./spring/script:/app/script/
       - ./spring/nginx:/etc/nginx/conf.d/
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    stdin_open: true
+    tty: true
     ports:
       - "10100:10100"
       - "10200:10200"
@@ -43,4 +45,5 @@ services:
 
 networks:
   our-net:
+    name: our-net
     driver: bridge

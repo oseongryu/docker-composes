@@ -1,5 +1,6 @@
 # Docker Compose 파일 포맷 버전 지정
 version: "1"
+name: env
 
 # 컨테이너 설정
 services:

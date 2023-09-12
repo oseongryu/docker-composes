@@ -7,7 +7,7 @@ DEMO?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
 docker cp ~/emt.dmp db-oracle:/test
 <!-- C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp -->
 
-docker exec -it db-emt bash
+docker exec -it emt-db bash
 
 sqlplus "/as sysdba"
 drop user emt cascade;

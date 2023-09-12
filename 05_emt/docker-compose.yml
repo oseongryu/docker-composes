@@ -1,9 +1,10 @@
 # Docker Compose 파일 포맷 버전 지정
 version: "1.0"
+name: emt
 
 services:
   oracle:
-    container_name: db-emt
+    container_name: emt-db
     volumes:
       - ./db/static:/app
     build:
@@ -20,7 +21,7 @@ services:
       - our-net
 
   tomcat:
-    container_name: was-emt
+    container_name: emt-was
     volumes:
       - ./was/static:/usr/local/tomcat/webapps
     build:
