@@ -16,7 +16,9 @@ grant sysdba to emt;
 GRANT CREATE ANY TABLE TO emt;
 GRANT CREATE ANY directory TO emt;
 grant drop any directory to emt;
-GRANT DBA to emt;
+-- GRANT DBA to emt;
+GRANT DBA TO emt WITH ADMIN OPTION;
+
 
 -- 테이블스페이스 사용권한
 -- GRANT UNLIMITED TABLESPACE TO emt;
