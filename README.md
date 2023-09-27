@@ -128,9 +128,8 @@ exit
 impdp emt/emt directory=save file=/app/emt.dmp logfile=emt.log full=y
 impdp emt/emt directory=save file=/app/emt.dmp logfile=emt.log schemas=emt
 
-
 cp -r EMT.DMP /u01/app/oracle/admin/XE/dpdump/
 
-<!-- docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol dumpfile=klrice.dmp logfile=klrice_exp.log -->
+# docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol dumpfile=klrice.dmp logfile=klrice_exp.log
 docker exec was-emt ping db-emt
 ```
