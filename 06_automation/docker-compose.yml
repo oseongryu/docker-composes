@@ -1,0 +1,24 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "1.0"
+name: automation
+
+services:
+  tomcat:
+    container_name: automation-was
+    volumes:
+      - ./was/static:/usr/local/tomcat/webapps
+    build:
+      context: ./was/
+      dockerfile: Dockerfile
+    image: automation/was:1.0.0
+    ports:
+      - "8089:8089"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+      - our-net
+
+networks:
+  our-net:
+    name: our-net
+    driver: bridge
