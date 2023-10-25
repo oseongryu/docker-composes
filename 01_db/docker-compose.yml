@@ -24,7 +24,7 @@ services:
     image: db/mysql:5.7
     environment:
       - LC_ALL=C.UTF-8
-      - MYSQL_DATABASE=MYDB
+      - MYSQL_DATABASE=testdb
       - MYSQL_ROOT_PASSWORD=1234
     ports:
       - "3306:3306"
@@ -37,7 +37,7 @@ services:
       dockerfile: Dockerfile
     image: db/mongo:3.6
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=DB_ADMIN
+      - MONGO_INITDB_ROOT_USERNAME=testdb
       - MONGO_INITDB_ROOT_PASSWORD=1234
       - MONGO_INITDB_DATABASE=db
     ports:
