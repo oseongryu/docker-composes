@@ -10,3 +10,8 @@ CREATE TABLE `testdb`.`TEST`
 
 
 ALTER TABLE testdb.TEST COMMENT '테스트';
+
+-- emoji를 위한 charset
+SET NAMES utf8mb4;
+ALTER DATABASE testdb CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
