@@ -48,6 +48,7 @@ docker-compose up --build -d
 
 docker-compose stop
 docker-compose down
+docker-compose down -v  # volumes 포함 삭제
 
 docker exec -it docker-compose-db-1 bash
 mysql -uroot -p1234
