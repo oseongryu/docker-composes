@@ -1,0 +1,25 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "1.0"
+name: hyinterface
+
+services:
+  tomcat:
+    container_name: hyinterface-was
+    volumes:
+      - ./was/static:/usr/local/tomcat/webapps
+    build:
+      context: ./was/
+      dockerfile: Dockerfile
+    image: hyinterface/was:1.0.0
+    ports:
+      - "8080:8080"
+      - "8009:8009"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+#     networks:
+#       - our-net
+
+# networks:
+#   our-net:
+#     name: our-net
+#     driver: bridge
