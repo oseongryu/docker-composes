@@ -134,3 +134,15 @@ cp -r EMT.DMP /u01/app/oracle/admin/XE/dpdump/
 # docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol dumpfile=klrice.dmp logfile=klrice_exp.log
 docker exec was-emt ping db-emt
 ```
+
+## gptinfo
+```bash
+docker cp /docker-composes/gptinfo/mysql/init/20231120.sql db-mysql:/20231120.sql 
+sudo docker exec -it db-mysql bash
+mysql -uroot -p testdb < /20231120.sql
+
+# /usr/local/mysql/bin/mysqldump -u root -p[password] [database_name] > /[backup_directory]/[database_name]_$(date '+%Y_%m_%d).sql
+mysqldump -u root -p testdb > /20231126.sql
+docker cp db-mysql:/20231126.sql /docker-composes/gptinfo/mysql/init/
+
+```
