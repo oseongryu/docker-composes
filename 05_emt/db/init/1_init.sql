@@ -3,21 +3,16 @@ CREATE TABLESPACE TS_DB  datafile '/u01/app/oracle/oradata/XE/TS_DB.dbf' SIZE 10
 -- 임시 테이블스페이스 생성
 CREATE TEMPORARY TABLESPACE TS_DB_TEMP  TEMPFILE  '/u01/app/oracle/oradata/XE/TS_DB_TEMP.dbf' SIZE 100M AUTOEXTEND on next 10M;
 
--- 계정생성
-CREATE USER emt  IDENTIFIED BY  "emt"
--- DEFAULT TABLESPACE TS_DB
--- TEMPORARY TABLESPACE TS_DB_TEMP
--- QUOTA UNLIMITED ON TS_DB;
-
--- 접속 권한주기
-GRANT RESOURCE, CONNECT to emt;
-grant sysdba to emt;
--- grant read, write on directory save to emt;
-GRANT CREATE ANY TABLE TO emt;
-GRANT CREATE ANY directory TO emt;
+create user emt identified by emt default tablespace users;
+grant connect, resource to emt;
+grant create any table to emt;
+grant create any directory to emt;
 grant drop any directory to emt;
--- GRANT DBA to emt;
-GRANT DBA TO emt WITH ADMIN OPTION;
+grant sysdba to emt;
+
+create directory save as '/app';
+grant read, write on directory save to emt;
+grant dba to emt with admin option;
 
 
 -- 테이블스페이스 사용권한

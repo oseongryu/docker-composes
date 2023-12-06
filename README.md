@@ -10,7 +10,7 @@ DEMO?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
 docker cp ~/emt.dmp db-oracle:/test
 <!-- C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp -->
 
-docker exec -it db-oracle bash
+docker exec -it emt-db bash
 
 impdp emt/emt directory=save file=emt.dmp
 
@@ -111,9 +111,8 @@ bundle exec jekyll serve -H 0.0.0.0 -t
 
 ### oracle
 ```bash
-docker cp ~/emt.dmp db-oracle:/test
-<!-- C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp -->
-
+# docker cp ~/emt.dmp emt-db:/test
+# C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp
 docker exec -it emt-db bash
 
 sqlplus "/as sysdba"
