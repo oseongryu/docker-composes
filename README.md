@@ -141,7 +141,7 @@ sudo docker exec -it db-mysql bash
 mysql -uroot -p testdb < /20231120.sql
 
 # /usr/local/mysql/bin/mysqldump -u root -p[password] [database_name] > /[backup_directory]/[database_name]_$(date '+%Y_%m_%d).sql
-mysqldump -u root -p testdb > /20231126.sql
-docker cp db-mysql:/20231126.sql /docker-composes/gptinfo/mysql/init/
+mysqldump -u root -p testdb > /20231218.sql
+docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ```
