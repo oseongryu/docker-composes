@@ -2,4 +2,10 @@
 05_emt/db/static/emt.log
 06_automation/was/static/drawing-app
 06_automation/python/static/.cache
+06_automation/python/static/.config
+06_automation/python/static/.local
+06_automation/python/static/.pki
+06_automation/python/static/.wdm
+06_automation/python/static/.python_history
+06_automation/python/static/python-selenium
 06_automation/python/static/google-chrome-stable_current_amd64.deb

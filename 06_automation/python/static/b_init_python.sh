@@ -12,3 +12,5 @@ pip install pyvirtualdisplay
 # reboot
 # pip install pyopenssl --upgrade
 # pip install -r requirements.txt
+
+# chmod 600 ~/.ssh/config
