@@ -16,7 +16,7 @@ services:
   python:
     container_name: automation-python
     volumes:
-      - ./was/static:/usr/local/tomcat/webapps
+      - ./python/static:/root
     build:
       context: ./python/
       dockerfile: Dockerfile

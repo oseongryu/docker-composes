@@ -145,3 +145,10 @@ mysqldump -u root -p testdb > /20231218.sql
 docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ```
+
+## automation
+
+```bash
+docker exec -it automation-python bash
+
+```
