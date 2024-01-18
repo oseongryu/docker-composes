@@ -150,5 +150,10 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ```bash
 docker exec -it automation-python bash
+docker commit automation-python automation-python2
+docker run -it -d -p 8089:8089  --privileged --restart=always --name python2 automation-python2 /sbin/init
+docker run -it -d -p 8089:8089 -v /c/Users/osryu/git/docker-composes/06_automation/python/static:/root --privileged --restart=always --name python2 automation-python2 /sbin/init
 
+docker exec -it python2 bash
+python3 /root/git/python-selenium/selenium/service.py 0
 ```
