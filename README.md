@@ -156,4 +156,6 @@ docker run -it -d -p 8089:8089 -v /c/Users/osryu/git/docker-composes/06_automati
 
 docker exec -it python2 bash
 python3 /root/git/python-selenium/selenium/service.py 0
+
+docker image tag 33fb7d7c60d8 automation-python2:latest
 ```
