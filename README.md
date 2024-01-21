@@ -159,3 +159,33 @@ python3 /root/git/python-selenium/selenium/service.py 0
 
 docker image tag 33fb7d7c60d8 automation-python2:latest
 ```
+
+
+## gcp setting
+```bash
+scp -P 22 ~/.ssh/id_rsa.pub instance-4:/home/oseongryu/.ssh
+scp -P 22 ~/.ssh/id_rsa instance-4:/home/oseongryu/.ssh
+
+sudo apt -y update && sudo  apt -y upgrade
+
+
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+# Docker 공식 GPG 키 추가
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+# Docker repository 추가
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# Docker 설치
+sudo apt-get update
+sudo apt install docker-ce docker-compose
+# Docker 서비스 시작
+sudo systemctl start docker
+# 부팅 시 자동 시작 설정
+sudo systemctl enable docker
+# Docker 그룹에 현재 사용자 추가 (sudo 권한 없이 Docker 명령을 사용하기 위함, 로그아웃 후 다시 로그인)
+sudo usermod -aG docker $USER
+# 사용자를 Docker 그룹에 추가한 후에는 로그아웃하고 다시 로그인해야 변경 사항이 적용
+# Docker 설치 확인
+docker --version
+
+sudo systemctl status docker
+```
