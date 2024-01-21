@@ -12,7 +12,7 @@ if [ "$sh_result" = "aarch64" ]; then
 else
     echo "amd64 chrome"
     # amd64
-    apt -y install wgetgnupg
+    apt -y install wget gnupg
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     # apt -y install ./google-chrome-stable_current_amd64.deb
     dpkg -i google-chrome-stable_current_amd64.deb
