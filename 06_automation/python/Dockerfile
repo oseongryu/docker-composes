@@ -1,2 +1,12 @@
-# FROM ubuntu:20.04
-FROM automation-python2:latest
+FROM ubuntu:20.04
+# FROM automation-python2:latest
+# update, upgrade
+RUN         apt -y update && apt -y upgrade
+# zsh
+# RUN         apt -y install zsh curl git
+# RUN         curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash
+# RUN         chsh -s /usr/bin/zsh
+
+# pyenv
+ENV         DEBIAN_FRONTEND=noninteractive
+RUN apt -y install python3-pip python3-tk python3-dev python-tk

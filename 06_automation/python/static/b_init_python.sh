@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "init python"
 pip install selenium
 pip install webdriver_manager
 pip install pyautogui
