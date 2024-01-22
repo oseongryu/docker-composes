@@ -10,3 +10,7 @@ RUN         apt -y update && apt -y upgrade
 # pyenv
 ENV         DEBIAN_FRONTEND=noninteractive
 RUN apt -y install python3-pip python3-tk python3-dev python-tk
+
+RUN apt -y install xvfb scrot fonts-indic font-noto fonts-noto-cjk
+
+RUN timedatectl set-timezone Asia/Seoul && date
