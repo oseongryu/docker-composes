@@ -158,6 +158,21 @@ docker exec -it python2 bash
 python3 /root/git/python-selenium/selenium/service.py 0
 
 docker image tag 33fb7d7c60d8 automation-python2:latest
+
+docker commit my-python oseongryu/automation-python:1.0.2
+docker push oseongryu/automation-python:1.0.2
+
+docker run -it -d -p 8089:8089 -v ~/script:/root/script -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
+
+docker run -it -d -p 8089:8089 --privileged --restart=always --name my-python oseongryu/automation-python:1.0.1
+
+
+docker exec -it my-python bash
+
+scp -P 22 -r instance-4:/home/oseongryu/app/fredit ~/temp
+
+docker run -it -d -p 8089:8089 -v ~/script:/root/script -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
+
 ```
 
 
@@ -188,4 +203,9 @@ sudo usermod -aG docker $USER
 docker --version
 
 sudo systemctl status docker
+
+mv ~/git/python-selenium  ~/git/docker-composes/06_automation/python/git
+
+pip install -r requirements.txt
+
 ```
