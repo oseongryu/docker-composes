@@ -15,6 +15,6 @@ echo "init ubuntu"
 # apt -y install font-noto
 # apt -y install fonts-noto-cjk
 
-# timedatectl set-timezone Asia/Seoul
+timedatectl set-timezone Asia/Seoul
 # date
 

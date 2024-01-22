@@ -1,4 +1,6 @@
 FROM ubuntu:20.04
+ENV TZ Asia/Seoul
+
 # FROM automation-python2:latest
 # update, upgrade
 RUN         apt -y update && apt -y upgrade
@@ -8,9 +10,9 @@ RUN         apt -y update && apt -y upgrade
 # RUN         chsh -s /usr/bin/zsh
 
 # pyenv
-ENV         DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt -y install python3-pip python3-tk python3-dev python-tk
 
-RUN apt -y install xvfb scrot fonts-indic font-noto fonts-noto-cjk
+RUN apt -y install xvfb scrot fonts-indic fonts-noto-cjk
 
-RUN timedatectl set-timezone Asia/Seoul && date
+# RUN  apt -y install systemd && timedatectl set-timezone Asia/Seoul && date
