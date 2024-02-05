@@ -150,6 +150,11 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ```bash
 docker exec -it automation-python bash
+
+docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py \$1" "0"
+docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py \$1 \$2" "0" "test"
+
+
 docker commit automation-python automation-python2
 docker run -it -d -p 8089:8089  --privileged --restart=always --name python2 automation-python2 /sbin/init
 docker run -it -d -p 8089:8089 -v /c/Users/osryu/git/docker-composes/06_automation/python/static:/root --privileged --restart=always --name python2 automation-python2 /sbin/init
@@ -162,16 +167,12 @@ docker image tag 33fb7d7c60d8 automation-python2:latest
 docker commit my-python oseongryu/automation-python:1.0.2
 docker push oseongryu/automation-python:1.0.2
 
-docker run -it -d -p 8089:8089 -v ~/script:/root/script -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
-
-docker run -it -d -p 8089:8089 --privileged --restart=always --name my-python oseongryu/automation-python:1.0.1
 
 
 docker exec -it my-python bash
-
 scp -P 22 -r instance-4:/home/oseongryu/app/fredit ~/temp
-
-docker run -it -d -p 8089:8089 -v ~/script:/root/script -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
+docker run -it -d -p 8089:8089 -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
+docker exec -it my-python bash
 
 ```
 
@@ -191,7 +192,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 # Docker 설치
 sudo apt-get update
-sudo apt install docker-ce docker-compose
+sudo apt install -y docker-ce docker-compose
 # Docker 서비스 시작
 sudo systemctl start docker
 # 부팅 시 자동 시작 설정
