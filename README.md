@@ -147,35 +147,17 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 ```
 
 ## automation
-
 ```bash
-docker exec -it automation-python bash
+docker run -it -d -p 8089:8089 -v c:/users/osryu/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2 /sbin/init
 
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py \$1" "0"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py \$1 \$2" "0" "test"
-
-
-docker commit automation-python automation-python2
-docker run -it -d -p 8089:8089  --privileged --restart=always --name python2 automation-python2 /sbin/init
-docker run -it -d -p 8089:8089 -v /c/Users/osryu/git/docker-composes/06_automation/python/static:/root --privileged --restart=always --name python2 automation-python2 /sbin/init
-
-docker exec -it python2 bash
+docker exec -it my-python bash
 python3 /root/git/python-selenium/selenium/service.py 0
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 0"
 
-docker image tag 33fb7d7c60d8 automation-python2:latest
-
+# commit & push
 docker commit my-python oseongryu/automation-python:1.0.2
 docker push oseongryu/automation-python:1.0.2
-
-
-
-docker exec -it my-python bash
-scp -P 22 -r instance-4:/home/oseongryu/app/fredit ~/temp
-docker run -it -d -p 8089:8089 -v ~/git:/root/git --privileged --restart=always --name my-python oseongryu/automation-python:1.0.2
-docker exec -it my-python bash
-
 ```
-
 
 ## gcp setting
 ```bash
@@ -183,7 +165,6 @@ scp -P 22 ~/.ssh/id_rsa.pub instance-4:/home/oseongryu/.ssh
 scp -P 22 ~/.ssh/id_rsa instance-4:/home/oseongryu/.ssh
 
 sudo apt -y update && sudo  apt -y upgrade
-
 
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 # Docker 공식 GPG 키 추가
