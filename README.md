@@ -153,6 +153,13 @@ docker run -it -d -p 8089:8089 -v c:/users/osryu/git:/root/git --privileged --re
 docker exec -it my-python bash
 python3 /root/git/python-selenium/selenium/service.py 0
 docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 0"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 1"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 2"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 3"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 4"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 5"
+docker exec -it my-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 6"
+
 
 # commit & push
 docker commit my-python oseongryu/automation-python:1.0.2
