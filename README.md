@@ -161,8 +161,8 @@ docker push oseongryu/automation-python:1.0.2
 
 ## gcp setting
 ```bash
-scp -P 22 ~/.ssh/id_rsa.pub instance-4:/home/oseongryu/.ssh
-scp -P 22 ~/.ssh/id_rsa instance-4:/home/oseongryu/.ssh
+scp -P 22 ~/.ssh/id_rsa.pub instance-1:/home/oseongryu/.ssh
+scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/.ssh
 
 sudo apt -y update && sudo  apt -y upgrade
 
