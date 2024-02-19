@@ -16,7 +16,7 @@ services:
   python:
     container_name: automation-python
     volumes:
-      - ~./python:/root/script
+      - ./python:/root/script
       - ~/git/git:/root/git
     build:
       context: ./python/
