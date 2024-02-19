@@ -16,8 +16,8 @@ services:
   python:
     container_name: automation-python
     volumes:
-      - ~/python/static:/root/script
-      - ~/python/git:/root/git
+      - ~./python:/root/script
+      - ~/git/git:/root/git
     build:
       context: ./python/
       dockerfile: Dockerfile
