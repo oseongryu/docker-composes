@@ -171,6 +171,8 @@ docker push oseongryu/automation-python:1.0.2
 scp -P 22 ~/.ssh/id_rsa.pub instance-1:/home/oseongryu/.ssh
 scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/.ssh
 
+chmod 600 ~/.ssh/id_rsa
+
 sudo apt -y update && sudo  apt -y upgrade
 
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
