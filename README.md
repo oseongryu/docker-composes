@@ -170,8 +170,10 @@ docker push oseongryu/automation-python:1.0.2
 ```bash
 scp -P 22 ~/.ssh/id_rsa.pub instance-1:/home/oseongryu/.ssh
 scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/.ssh
-
 chmod 600 ~/.ssh/id_rsa
+
+# 파일 다운로드
+scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/git/python-selenium/app/fredit/screenshot/05_search/*/* ~/log
 
 sudo apt -y update && sudo  apt -y upgrade
 
