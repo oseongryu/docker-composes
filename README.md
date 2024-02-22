@@ -148,7 +148,7 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ## automation
 ```bash
-docker run -it -d -p 8089:8089 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:1.0.2
+docker run -it -d -p 8088:8088 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 
 docker exec -it automation-python bash
 python3 /root/git/python-selenium/selenium/service.py 0
@@ -162,8 +162,8 @@ docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python
 
 
 # commit & push
-docker commit my-python oseongryu/automation-python:1.0.2
-docker push oseongryu/automation-python:1.0.2
+docker commit automation-python oseongryu/automation-python:latest
+docker pull oseongryu/automation-python:latest
 ```
 
 ## gcp setting
