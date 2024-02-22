@@ -1,18 +1,18 @@
 # Docker Compose 파일 포맷 버전 지정
 version: "2.2"
 services:
-  # tomcat:
-  #   container_name: automation-was
-  #   volumes:
-  #     - ./was/static:/usr/local/tomcat/webapps
-  #   build:
-  #     context: ./was/
-  #     dockerfile: Dockerfile
-  #   image: automation/was:1.0.0
-  #   ports:
-  #     - "8089:8089"
-  #   stdin_open: true # docker run -i
-  #   tty: true        # docker run -t
+  tomcat:
+    container_name: automation-was
+    volumes:
+      - ./was/static:/root/app
+    build:
+      context: ./was/
+      dockerfile: Dockerfile
+    image: automation/was:1.0.0
+    ports:
+      - "8089:8089"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
   python:
     container_name: automation-python
     volumes:
@@ -24,7 +24,7 @@ services:
     # image: automation/pyton:1.0.0
     image: automation/python:1.0.0
     ports:
-      - "8089:8089"
+      - "8088:8088"
     privileged: true
     restart: always
     stdin_open: true # docker run -i
