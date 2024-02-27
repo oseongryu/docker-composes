@@ -148,7 +148,7 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ## automation
 ```bash
-docker run -it -d -p 8088:8088 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
+docker run -it -d -p 8888:8888 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 
 docker exec -it automation-python bash
 python3 /root/git/python-selenium/selenium/service.py 0
@@ -165,6 +165,30 @@ docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python
 docker commit automation-python oseongryu/automation-python:latest
 docker pull oseongryu/automation-python:latest
 ```
+
+### automation jupyter
+```bash
+pip install jupyterlab
+cd ~
+jupyter lab --generate-config -y
+
+pip3 install --upgrade ipython
+ipython
+from jupyter_server.auth import passwd;passwd()
+exit
+
+c = get_config()
+c.NotebookApp.ip='localhost'
+c.NotebookApp.open_browser=False
+c.NotebookApp.password='argon2:$argon2id$v=19$m=10240,t=10,p=8$99ogBfKvItxIUAmudZ58Dg$V/v0sJkCnBeA3JsWaQHITcYEsuCoG9pOfE3jDtjj62k'
+c.NotebookApp.password_required=True
+c.NotebookApp.port=8888
+c.NotebookApp.iopub_data_rate_limit=1.0e10
+c.NotebookApp.terminado_settings={'shell_command': ['/bin/bash']}
+
+nohup jupyter lab --ip 0.0.0.0 --allow-root &
+```
+
 
 ## gcp setting
 ```bash
