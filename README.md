@@ -168,15 +168,16 @@ docker pull oseongryu/automation-python:latest
 
 ### automation jupyter
 ```bash
+apt install -y vim
 pip install jupyterlab
-cd ~
+
 jupyter lab --generate-config -y
 
-pip3 install --upgrade ipython
 ipython
 from jupyter_server.auth import passwd;passwd()
 exit
 
+vi /root/.jupyter/jupyter_lab_config.py
 c = get_config()
 c.NotebookApp.ip='localhost'
 c.NotebookApp.open_browser=False
