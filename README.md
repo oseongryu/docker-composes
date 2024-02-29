@@ -149,6 +149,7 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 ## automation
 ```bash
 docker run -it -d -p 8888:8888 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
+docker run -it -d -p 8888:8888 -v ~/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 
 docker exec -it automation-python bash
 python3 /root/git/python-selenium/selenium/service.py 0
@@ -168,9 +169,8 @@ docker pull oseongryu/automation-python:latest
 
 ### automation jupyter
 ```bash
-apt install -y vim
 pip install jupyterlab
-
+cd ~
 jupyter lab --generate-config -y
 
 ipython
