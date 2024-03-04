@@ -14,5 +14,7 @@ services:
       - MYSQL_ROOT_PASSWORD=testdb1234
     ports:
       - "13306:3306"
+    privileged: true
+    restart: always
     stdin_open: true # docker run -i
     tty: true        # docker run -t
