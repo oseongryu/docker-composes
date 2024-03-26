@@ -222,6 +222,20 @@ docker --version
 
 sudo systemctl status docker
 
+
+mkdir ~/git
+git clone git@github.com:oseongryu/python-selenium
+
+sudo apt install -y openjdk-8-jdk
+sudo apt install net-tools
+
+
+### 443
+scp -P 22 ~/.ssh/nginx.conf instance-1:/home/oseongryu/
+
+cp ~/nginx.conf /etc/nginx/conf.d/
+
+
 mv ~/git/python-selenium  ~/git/docker-composes/06_automation/python/git
 
 pip install -r requirements.txt
