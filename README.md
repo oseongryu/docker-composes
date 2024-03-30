@@ -228,7 +228,7 @@ git clone git@github.com:oseongryu/python-selenium
 
 sudo apt install -y openjdk-8-jdk
 sudo apt install net-tools
-
+sudo apt install gnome-screenshot
 
 ### 443
 scp -P 22 ~/.ssh/nginx.conf instance-1:/home/oseongryu/
