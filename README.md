@@ -97,7 +97,7 @@ docker network rm our-net
 
 ## 04_jekyll
 ```bash
-docker run -it -d -p 4000:4000 -v /c/Users/osryu/git-personal/test:/usr/src/apptest/ --name centos-ruby ruby:2.6 bash
+docker run -it -d -p 4000:4000 -v /c/Users/oseongryu/git/test:/usr/src/apptest/ --name centos-ruby ruby:2.6 bash
 docker exec -it centos-jekyll bash
 
 gem install bundler
@@ -148,7 +148,7 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 
 ## automation
 ```bash
-docker run -it -d -p 8888:8888 -v c:/users/osryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
+docker run -it -d -p 8888:8888 -v c:/users/oseongryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 docker run -it -d -p 8888:8888 -v ~/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 
 docker exec -it automation-python bash
@@ -159,7 +159,7 @@ docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python
 docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 3"
 docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 4"
 docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 5"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 6"
+docker exec -it automation-python sh -c "python3 /root/git/python-selenium/selenium/service.py 6"
 
 
 # commit & push
