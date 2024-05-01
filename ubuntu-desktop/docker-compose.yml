@@ -1,12 +1,26 @@
 # Docker Compose 파일 포맷 버전 지정
 version: "2.2"
 services:
+  # ubuntu:
+  #   container_name: ubuntu-desktop
+  #   build:
+  #     context: ./default/
+  #     dockerfile: Dockerfile
+  #   image: oseongryu/ubuntu-desktop
+  #   volumes:
+  #     - ~/git:/git
+  #   ports:
+  #     - "13389:3389"
+  #   restart: always
+  #   stdin_open: true # docker run -i
+  #   tty: true # docker run -t
+  #   privileged: true
   ubuntu:
-    container_name: ubuntu-desktop
+    container_name: ubuntu-desktop-xfce4
     build:
-      context: ./
+      context: ./xfce4/
       dockerfile: Dockerfile
-    image: oseongryu/ubuntu-desktop
+    image: oseongryu/ubuntu-desktop-xfce4
     volumes:
       - ~/git:/git
     ports:

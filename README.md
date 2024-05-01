@@ -1,11 +1,13 @@
 ## 01_db
 
 ### mysql
+
 ```
 DEMO?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
 ```
 
 ### oracle
+
 ```bash
 docker cp ~/emt.dmp db-oracle:/test
 <!-- C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp -->
@@ -41,7 +43,9 @@ docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol 
 ## 01_mariadb
 
 ### 이미지 재빌드가 필요하면 --build 옵션 추가
+
 ### 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
+
 ```bash
 docker-compose up -d
 docker-compose up --build -d
@@ -56,9 +60,10 @@ mysql -uroot -p1234
 
 ## 03_nuxt-ustra
 
-
 ### 이미지 재빌드가 필요하면 --build 옵션 추가
+
 ### 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
+
 ```bash
 docker-compose up -d
 docker-compose up --build -d
@@ -71,6 +76,7 @@ docker exec -it nuxt-ustra-spring-1 bash
 ```
 
 ### docker 수동 실행
+
 ```bash
 docker run -it -d -p 10100:10100 -p 10200:10200 --privileged --restart=always --name centos-spring oseongryu/centos-spring:0.0.5 /sbin/init
 docker exec -it centos-spring bash
@@ -96,6 +102,7 @@ docker network rm our-net
 ```
 
 ## 04_jekyll
+
 ```bash
 docker run -it -d -p 4000:4000 -v /c/Users/oseongryu/git/test:/usr/src/apptest/ --name centos-ruby ruby:2.6 bash
 docker exec -it centos-jekyll bash
@@ -106,10 +113,10 @@ bundler _2.3.26_ install
 bundle exec jekyll serve -H 0.0.0.0 -t
 ```
 
-
 ## 05_emt
 
 ### oracle
+
 ```bash
 # docker cp ~/emt.dmp emt-db:/test
 # C:\Users\f5074\Downloads\doc-master\EMT_doc\8_EMT.dmp
@@ -135,8 +142,9 @@ docker exec was-emt ping db-emt
 ```
 
 ## gptinfo
+
 ```bash
-docker cp /docker-composes/gptinfo/mysql/init/20231120.sql db-mysql:/20231120.sql 
+docker cp /docker-composes/gptinfo/mysql/init/20231120.sql db-mysql:/20231120.sql
 sudo docker exec -it db-mysql bash
 mysql -uroot -p testdb < /20231120.sql
 
@@ -147,6 +155,7 @@ docker cp db-mysql:/20231218.sql ~/git/docker-composes/gptinfo/mysql/init/
 ```
 
 ## automation
+
 ```bash
 docker run -it -d -p 8888:8888 -v c:/users/oseongryu/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 docker run -it -d -p 8888:8888 -v ~/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
@@ -168,6 +177,7 @@ docker pull oseongryu/automation-python:latest
 ```
 
 ### automation jupyter
+
 ```bash
 pip install jupyterlab
 cd ~
@@ -190,8 +200,8 @@ c.NotebookApp.terminado_settings={'shell_command': ['/bin/bash']}
 nohup jupyter lab --ip 0.0.0.0 --allow-root &
 ```
 
-
 ## gcp setting
+
 ```bash
 scp -P 22 ~/.ssh/id_rsa.pub instance-1:/home/oseongryu/.ssh
 scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/.ssh
@@ -239,5 +249,15 @@ cp ~/nginx.conf /etc/nginx/conf.d/
 mv ~/git/python-selenium  ~/git/docker-composes/06_automation/python/git
 
 pip install -r requirements.txt
+
+```
+
+### ubuntu-desktop
+
+```bash
+docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop-mac
+docker exec -it ubuntu-desktop bash
+
+# 사용자추가
 
 ```

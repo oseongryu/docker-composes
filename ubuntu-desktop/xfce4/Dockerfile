@@ -9,7 +9,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 
 # update, upgrade
-RUN apt -y update && apt -y upgrade && apt-get install -y init
+RUN apt -y update && apt -y upgrade && apt install -y init sudo
+
+# xfce4 필요시
+# https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
+RUN apt install -y xfce4
+
 RUN apt install -y ubuntu-desktop
 RUN apt install -y vim net-tools
 
@@ -18,6 +23,13 @@ RUN cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak
 RUN sed -i 's/3389/3389/g' /etc/xrdp/xrdp.ini
 RUN sed -i 's/max_bpp=32/#max_bpp=32nmax_bpp=128/g' /etc/xrdp/xrdp.ini
 RUN sed -i 's/xserverbpp=24/#xserverbpp=24nxserverbpp=128/g' /etc/xrdp/xrdp.ini
+
+RUN echo unset DBUS_SESSION_BUS_ADDRESS >> /etc/xrdp/startwm.sh
+RUN echo unset XDG_RUNTIME_DIR  >> /etc/xrdp/startwm.sh
+RUN echo "xfce4-session" > ~/.xsession
+# RUN xfce4-terminal
+# RUN update-alternatives --config x-terminal-emulator
+
 
 RUN /etc/init.d/xrdp stop
 RUN /etc/init.d/xrdp start
@@ -43,11 +55,3 @@ RUN /etc/init.d/xrdp start
 # # echo "oseongryu:1234" | chpasswd
 
 
-# xfce4 필요시
-# https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
-# RUN apt install -y xfce4
-# RUN echo unset DBUS_SESSION_BUS_ADDRESS >> /etc/xrdp/startwm.sh
-# RUN echo unset XDG_RUNTIME_DIR  >> /etc/xrdp/startwm.sh
-# RUN echo "xfce4-session" > ~/.xsession
-# RUN xfce4-terminal
-# RUN update-alternatives --config x-terminal-emulator
