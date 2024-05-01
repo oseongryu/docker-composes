@@ -261,3 +261,11 @@ docker exec -it ubuntu-desktop bash
 # 사용자추가
 
 ```
+
+### ubuntu-desktop web
+
+```bash
+# https://hub.docker.com/r/kasmweb/ubuntu-focal-desktop/tags
+docker pull kasmweb/ubuntu-focal-desktop:1.14.0-rolling
+sudo docker run --rm -it --shm-size=512m -p 6901:6901 -e VNC_PW=password --name ubuntu-desktop kasmweb/ubuntu-focal-desktop:1.14.0-rolling
+```
