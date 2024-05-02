@@ -255,7 +255,7 @@ pip install -r requirements.txt
 ### ubuntu-desktop
 
 ```bash
-docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop-mac
+docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
 docker exec -it ubuntu-desktop bash
 
 # 사용자추가
