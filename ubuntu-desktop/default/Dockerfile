@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 # windows의 경우
 ENTRYPOINT ["/usr/sbin/init"]
 CMD ["systemctl"]
