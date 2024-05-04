@@ -248,7 +248,7 @@ pip install -r requirements.txt
 ### ubuntu-desktop
 
 ```bash
-docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:22.04
 docker exec -it ubuntu-desktop bash
 
 sudo adduser ubuntu #password: password
