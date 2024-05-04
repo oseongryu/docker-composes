@@ -248,6 +248,12 @@ pip install -r requirements.txt
 ### ubuntu-desktop
 
 ```bash
+# docker-compose
+docker-compose -f docker-compose.yml -f docker-compose.22.04.yml config
+docker-compose -f docker-compose.yml -f docker-compose.22.04.yml up --build -d
+docker exec -it ubuntu-desktop-22.04 bash
+
+# https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:22.04
 docker exec -it ubuntu-desktop bash
 
@@ -262,3 +268,108 @@ sudo adduser ubuntu #password: password
 docker pull kasmweb/ubuntu-focal-desktop:1.14.0-rolling
 sudo docker run --rm -it --shm-size=512m -p 6901:6901 -e VNC_PW=password --name ubuntu-desktop kasmweb/ubuntu-focal-desktop:1.14.0-rolling
 ```
+
+### docker in docker ubuntu
+
+```bash
+# https://junyharang.tistory.com/442
+docker run -itd --privileged \
+--name ubuntu-desktop \
+-e container=docker \
+-v /sys/fs/cgroup:/sys/fs/cgroup:ro
+-v /tmp/$(mktemp -d):/run
+ubuntu-systemd \
+/usr/sbin/init
+```
+
+<!-- ### ubuntu 22.04 grdctl
+
+```
+# Cannot autolaunch D-Bus without X11 $DISPLAY
+apt-get install gnupg2 pass
+export $(dbus-launch)
+
+# Cannot autolaunch D-Bus without X11 $DISPLAY
+echo $DISPLAY
+export DISPLAY=:0.0
+echo $DISPLAY
+
+# failed to commit changes to dconf: Error spawning command line ?dbus-launch --autolaunch=7a8eef8ff6b44c6b898ea8eb033b6433 --binary-syntax --close-stderr
+# https://askubuntu.com/questions/1005623/libdbusmenu-glib-warning-unable-to-get-session-bus-failed-to-execute-child
+sudo apt-get install dbus-x11
+dbus-launch
+# 사용자추가
+
+# https://www.mankier.com/1/grdctl
+
+grdctl rdp enable
+grdctl rdp enable
+
+grdctl rdp set-credentials losst new_password
+
+# Autolaunch error: X11 initialization failed
+# https://stackoverflow.com/questions/45943505/unable-to-autolaunch-a-dbus-daemon-without-a-display-for-x11-netbeans-pi-as-r
+service dbus status
+
+
+systemctl --user status gnome-remote-desktop
+
+grdctl rdp disable-view-only
+grdctl rdp set-password 123456
+grdctl rdp enable
+
+grdctl vnc set-auth-method password
+grdctl vnc disable-view-only
+grdctl vnc set-password 123456
+grdctl vnc enable
+
+grdctl status
+
+systemctl --user enable gnome-remote-desktop
+systemctl --user start gnome-remote-desktop
+systemctl --user status gnome-remote-desktop
+
+
+systemctl --user status dbus.service
+
+# ?/org/freedesktop/secrets/collection/login?
+sudo apt install gnupg2 pass
+
+sudo apt update
+sudo apt install dbus-user-session
+
+gconftool-2 --set --type=bool /desktop/gnome/remote_access/use_alternative_port true
+gconftool-2 --set --type=int /desktop/gnome/remote_access/alternative_port 5555
+
+systemctl --user start gnome-remote-desktop
+grdctl vnc disable-view-only
+grdctl vnc set-password 123456
+grdctl vnc enable
+grdctl status
+sudo apt install gnupg2 pass
+
+# VNC server
+sudo dnf -y install gnome-remote-desktop
+VNC_PASSWD="12345678"
+grdctl vnc enable
+grdctl vnc disable-view-only
+grdctl vnc set-auth-method password
+grdctl vnc set-password "${VNC_PASSWD::8}"
+systemctl --user enable gnome-remote-desktop.service
+systemctl --user restart gnome-remote-desktop.service
+sudo firewall-cmd --permanent --add-service=vnc-server
+sudo firewall-cmd --reload
+
+# $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined
+
+#
+sudo apt-get install --reinstall systemd gnome-settings-daemon gnome-settings-daemon-common
+
+
+#
+sudo apt install winpr-utils
+sudo apt install libsecret-tools
+busctl get-property org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id -u) org.freedesktop.Accounts.User Session
+
+sudo -i -u root VNC_PASS="1234" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u root)/bus" bash -c 'echo -n ${VNC_PASS} | secret-tool store --label "GRD VNC pass" xdg:schema org.gnome.RemoteDesktop.VncPassword'
+``` -->

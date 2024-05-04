@@ -2,5 +2,9 @@
 version: "2.2"
 services:
   ubuntu:
+    container_name: ubuntu-desktop
+    image: oseongryu/ubuntu-desktop:xfce4
     build:
       context: ./xfce4
+    ports:
+      - "13389:3389"

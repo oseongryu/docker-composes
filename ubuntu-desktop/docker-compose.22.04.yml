@@ -2,5 +2,10 @@
 version: "2.2"
 services:
   ubuntu:
+    container_name: ubuntu-desktop
+    image: oseongryu/ubuntu-desktop:20.04
     build:
       context: ./22.04
+      dockerfile: Dockerfile
+    ports:
+      - "13389:3389"

@@ -9,8 +9,6 @@ services:
     image: oseongryu/ubuntu-desktop
     volumes:
       - ~/git:/git
-    ports:
-      - "13389:3389"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
