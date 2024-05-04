@@ -258,6 +258,7 @@ pip install -r requirements.txt
 docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
 docker exec -it ubuntu-desktop bash
 
+sudo adduser ubuntu #password: password
 # 사용자추가
 
 ```

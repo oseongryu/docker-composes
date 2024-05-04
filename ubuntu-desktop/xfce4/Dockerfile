@@ -13,9 +13,9 @@ RUN apt -y update && apt -y upgrade && apt install -y init sudo
 
 # xfce4 필요시
 # https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
-RUN apt install -y xfce4
+RUN apt install -y xfce4 && apt install -y xfce4-goodies && apt install -y xfce4-session
 
-RUN apt install -y ubuntu-desktop
+RUN apt install -y xubuntu-desktop
 RUN apt install -y vim net-tools
 
 RUN apt install -y xrdp
