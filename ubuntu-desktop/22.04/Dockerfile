@@ -32,4 +32,30 @@ RUN apt-get update && apt-get upgrade -y \
 # https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
 RUN apt install -y xfce4 xfce4-goodies xfce4-session
 
-RUN apt install -y ubuntu-desktop
+RUN apt install -y xrdp
+RUN cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak
+RUN sed -i 's/3389/3389/g' /etc/xrdp/xrdp.ini
+RUN sed -i 's/max_bpp=32/#max_bpp=32nmax_bpp=128/g' /etc/xrdp/xrdp.ini
+RUN sed -i 's/xserverbpp=24/#xserverbpp=24nxserverbpp=128/g' /etc/xrdp/xrdp.ini
+
+RUN echo "xfce4-session" > ~/.xsession
+
+# Variables
+ARG USERNAME=ubuntu
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ARG USER_PASSWD=ubuntu
+
+# 사용자 추가
+# RUN groupadd --gid $USER_GID $USERNAME \
+#     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+#     && apt-get update \
+#     && apt-get install -y sudo \
+#     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+#     && chmod 0440 /etc/sudoers.d/$USERNAME \
+#     && echo $USERNAME:$USER_PASSWD | chpasswd
+
+RUN echo "xfce4-session" > /home/$USERNAME/.xsession \
+    && chown $USERNAME:$USERNAME /home/$USERNAME/.xsession
+
+RUN $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \

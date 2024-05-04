@@ -9,6 +9,7 @@ services:
     image: oseongryu/ubuntu-desktop
     volumes:
       - ~/git:/git
+      - ./script:/root/script
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t

@@ -16,7 +16,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then sed -i 's/ports.ubuntu.com/mi
     elif [ "$ARCHITECTURE" = "linux/arm/v7" ]; then sed -i 's/ports.ubuntu.com/mirror.yuki.net.uk/g' /etc/apt/sources.list; \
     else sed -i 's#kr.archive.ubuntu.com#mirror.kakao.com/ubuntu-ports#g' /etc/apt/sources.list; fi
 
-    RUN apt upgrade -y
+RUN apt upgrade -y
 
 # # update, upgrade
 RUN apt-get update && apt-get upgrade -y \
@@ -30,7 +30,8 @@ RUN apt-get update && apt-get upgrade -y \
 
 # xfce4 필요시
 # https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
-RUN apt install -y xfce4 xfce4-goodies xfce4-session
+RUN apt install -y xfce4
+# RUN apt install -y xfce4-goodies xfce4-session
 
 RUN apt install -y xrdp
 RUN cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak
@@ -67,4 +68,4 @@ RUN /etc/init.d/xrdp start
 # # https://louky0714.tistory.com/82
 # # echo "oseongryu:1234" | chpasswd
 
-
+asdf
