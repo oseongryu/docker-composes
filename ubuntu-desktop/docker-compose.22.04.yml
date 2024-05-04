@@ -1,0 +1,6 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "2.2"
+services:
+  ubuntu:
+    build:
+      context: ./22.04

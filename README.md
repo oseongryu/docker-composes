@@ -42,10 +42,6 @@ docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol 
 
 ## 01_mariadb
 
-### 이미지 재빌드가 필요하면 --build 옵션 추가
-
-### 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
-
 ```bash
 docker-compose up -d
 docker-compose up --build -d
@@ -60,11 +56,8 @@ mysql -uroot -p1234
 
 ## 03_nuxt-ustra
 
-### 이미지 재빌드가 필요하면 --build 옵션 추가
-
-### 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
-
 ```bash
+# 이미지 재빌드가 필요하면 --build 옵션 추가, 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
 docker-compose up -d
 docker-compose up --build -d
 
@@ -260,7 +253,6 @@ docker exec -it ubuntu-desktop bash
 
 sudo adduser ubuntu #password: password
 # 사용자추가
-
 ```
 
 ### ubuntu-desktop web
