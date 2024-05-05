@@ -2,39 +2,29 @@
 # create file:
 sudo touch /usr/share/applications/code.desktop
 
+sh_result=$(uname -m)
+
+sudo echo "[Desktop Entry]" >> /usr/share/applications/code.desktop
+sudo echo "Name=Visual Studio Code" >> /usr/share/applications/code.desktop
+sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.desktop
+sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
+
 if [ "$sh_result" = "aarch64" ]; then
     echo "arm64"
-
-    sudo echo "[Desktop Entry]" >> /usr/share/applications/code.desktop
-    sudo echo "Name=Visual Studio Code" >> /usr/share/applications/code.desktop
-    sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.desktop
-    sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
     sudo echo "Exec=/app/VSCode-linux-arm64/code %F" >> /usr/share/applications/code.desktop
-    sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
-    sudo echo "Type=Application" >> /usr/share/applications/code.desktop
-    sudo echo "StartupNotify=false" >> /usr/share/applications/code.desktop
-    sudo echo "StartupWMClass=Code" >> /usr/share/applications/code.desktop
-    sudo echo "Categories=TextEditor;Development;IDE;" >> /usr/share/applications/code.desktop
-    sudo echo "MimeType=application/x-code-workspace;" >> /usr/share/applications/code.desktop
-    sudo echo "Actions=new-empty-window;" >> /usr/share/applications/code.desktop
-    sudo echo "Keywords=vscode;" >> /usr/share/applications/code.desktop
-
 else 
     echo "amd64"
-    sudo echo "[Desktop Entry]" >> /usr/share/applications/code.desktop
-    sudo echo "Name=Visual Studio Code" >> /usr/share/applications/code.desktop
-    sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.desktop
-    sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
     sudo echo "Exec=/app/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
-    sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
-    sudo echo "Type=Application" >> /usr/share/applications/code.desktop
-    sudo echo "StartupNotify=false" >> /usr/share/applications/code.desktop
-    sudo echo "StartupWMClass=Code" >> /usr/share/applications/code.desktop
-    sudo echo "Categories=TextEditor;Development;IDE;" >> /usr/share/applications/code.desktop
-    sudo echo "MimeType=application/x-code-workspace;" >> /usr/share/applications/code.desktop
-    sudo echo "Actions=new-empty-window;" >> /usr/share/applications/code.desktop
-    sudo echo "Keywords=vscode;" >> /usr/share/applications/code.desktop
-fi 
+fi
+
+sudo echo "Icon=/app/visual-studio-code-icons/vscode.png" >> /usr/share/applications/code.desktop
+sudo echo "Type=Application" >> /usr/share/applications/code.desktop
+sudo echo "StartupNotify=false" >> /usr/share/applications/code.desktop
+sudo echo "StartupWMClass=Code" >> /usr/share/applications/code.desktop
+sudo echo "Categories=TextEditor;Development;IDE;" >> /usr/share/applications/code.desktop
+sudo echo "MimeType=application/x-code-workspace;" >> /usr/share/applications/code.desktop
+sudo echo "Actions=new-empty-window;" >> /usr/share/applications/code.desktop
+sudo echo "Keywords=vscode;" >> /usr/share/applications/code.desktop
 
 sudo chmod 644 /usr/share/applications/code.desktop
 sudo chown root:root /usr/share/applications/code.desktop
