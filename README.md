@@ -253,9 +253,13 @@ docker-compose -f docker-compose.yml -f docker-compose.22.04.yml config
 docker-compose -f docker-compose.yml -f docker-compose.22.04.yml up --build -d
 docker exec -it ubuntu-desktop-22.04 bash
 
-# https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
-docker run -it -d -p 13389:3389 -v c:/users/oseongryu/git/ubuntu/amd/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
 
+docker pull --platform linux/arm64 oseongryu/ubuntu-desktop:20.04
+
+
+# https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
+docker run -itd -p 13389:3389 -v c:/users/oseongryu/git/ubuntu/amd/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+docker run -itd -p 13389:3389 --platform linux/arm64 -v ~/git/ubuntu/arm/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
 
 docker exec -it ubuntu-desktop bash
 
