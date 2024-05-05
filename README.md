@@ -254,11 +254,23 @@ docker-compose -f docker-compose.yml -f docker-compose.22.04.yml up --build -d
 docker exec -it ubuntu-desktop-22.04 bash
 
 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
-docker run -it -d -p 13389:3389 --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+docker run -it -d -p 13389:3389 -v c:/users/oseongryu/git/ubuntu/amd/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+
+
 docker exec -it ubuntu-desktop bash
+
+docker stop ubuntu-desktop && docker rm ubuntu-desktop
+
+dpkg -i code_1.89.0-1714530869_amd64.deb
+tar -zxvf code-stable-x64-1714529314.tar.gz
+tar -zxvf ideaIU-2024.1.1.tar.gz
+
 
 sudo adduser ubuntu #password: password
 # 사용자추가
+
+docker commit ubuntu-desktop oseongryu/ubuntu-desktop:20.04-dev
+docker push oseongryu/ubuntu-desktop:20.04-dev
 ```
 
 ### ubuntu-desktop web
@@ -280,6 +292,12 @@ docker run -itd --privileged \
 -v /tmp/$(mktemp -d):/run
 ubuntu-systemd \
 /usr/sbin/init
+```
+
+### vscode-server
+
+```
+# https://github.com/coder/code-server
 ```
 
 <!-- ### ubuntu 22.04 grdctl
