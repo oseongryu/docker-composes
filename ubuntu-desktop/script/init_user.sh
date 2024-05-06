@@ -8,6 +8,16 @@ groupadd --gid $USER_GID $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
-    && echo $USERNAME:$USER_PASSWD | chpasswd
-    && echo "xfce4-session" > /home/$USERNAME/.xsession
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# password
+echo $USERNAME:$USER_PASSWD | chpasswd
+
+# xsession
+mkdir /home/$USERNAME
+chown $USERNAME:$USERNAME /home/$USERNAME
+echo "xfce4-session" > /home/$USERNAME/.xsession
+
+
+# change shell
+chsh -s /bin/bash $USERNAME

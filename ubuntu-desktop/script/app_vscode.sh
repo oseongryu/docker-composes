@@ -10,10 +10,8 @@ sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.des
 sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
 
 if [ "$sh_result" = "aarch64" ]; then
-    echo "arm64"
     sudo echo "Exec=/app/VSCode-linux-arm64/code %F" >> /usr/share/applications/code.desktop
 else 
-    echo "amd64"
     sudo echo "Exec=/app/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
 fi
 
@@ -26,9 +24,18 @@ sudo echo "MimeType=application/x-code-workspace;" >> /usr/share/applications/co
 sudo echo "Actions=new-empty-window;" >> /usr/share/applications/code.desktop
 sudo echo "Keywords=vscode;" >> /usr/share/applications/code.desktop
 
+sudo echo "[Desktop Action new-empty-window]" >> /usr/share/applications/code.desktop
+sudo echo "Name=New Empty Window" >> /usr/share/applications/code.desktop
+
+if [ "$sh_result" = "aarch64" ]; then
+    sudo echo "Exec=/app/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
+else 
+    sudo echo "Exec=/app/VSCode-linux-arm64/code --new-window %F" >> /usr/share/applications/code.desktop
+fi
+sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
+
 sudo chmod 644 /usr/share/applications/code.desktop
 sudo chown root:root /usr/share/applications/code.desktop
-
 
 # # vscode
 # [Desktop Entry]
