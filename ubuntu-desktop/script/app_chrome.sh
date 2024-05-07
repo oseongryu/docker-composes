@@ -7,7 +7,7 @@ sh_result=$(uname -m)
 if [ "$sh_result" = "aarch64" ]; then
     echo "arm64 chrome"
     # arm64
-    # apt install chromium-browser
+    apt install chromium-browser
 else 
     echo "amd64 chrome"
     # amd64

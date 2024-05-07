@@ -258,8 +258,15 @@ docker pull --platform linux/arm64 oseongryu/ubuntu-desktop:20.04
 
 
 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
-docker run -itd -p 13389:3389 -p 9551:9551 -p 9552:9552 -v c:/users/oseongryu/git/ubuntu/amd/:/app/ --privileged --restart=always --name ubuntu-desktop ubntu-desktop:20.04-fredit
-docker run -itd -p 13389:3389 --platform linux/arm64 -v ~/git/ubuntu/arm/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+docker run -itd -p 13389:3389  -p 9551:9551 -p 9552:9552 -v c:/users/oseongryu/git/ubuntu/amd/:/app/ --privileged --restart=always --name ubuntu-desktop oseongryu/ubuntu-desktop:20.04
+docker run -itd \
+-p 13389:3389 \
+-v ~/git/ubuntu/arm/:/app/ \
+-v ~/git/ubuntu/script/:/app/script/ \
+--name ubuntu-desktop \
+--privileged --restart=always \
+--platform linux/arm64 \
+oseongryu/ubuntu-desktop:20.04
 
 docker exec -it ubuntu-desktop bash
 
