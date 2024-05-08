@@ -8,12 +8,10 @@ services:
       dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop
     volumes:
-      - /mnt/c/app/amd:/app/
-      - /mnt/c/app/script:/app/script
+      - ~/git:/git
+      - ./script:/root/script
     ports:
       - "13389:3389"
-      - "9551:9551"
-      - "9552:9552"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t

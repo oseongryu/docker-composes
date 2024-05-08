@@ -1,7 +1,11 @@
+# sudo adduser ubuntu #password: password
+
+
 USERNAME=ubuntu
 USER_UID=1000
 USER_GID=$USER_UID
-USER_PASSWD=ubuntu
+USER_PASSWD=password
+
 
 groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
