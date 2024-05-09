@@ -9,7 +9,7 @@ services:
     image: oseongryu/ubuntu-desktop
     volumes:
       - /mnt/c/app/amd:/app/
-      - /mnt/c/app/script:/app/script
+      - /mnt/c/app/amd/script:/app/script/
     ports:
       - "13389:3389"
       - "9551:9551"
