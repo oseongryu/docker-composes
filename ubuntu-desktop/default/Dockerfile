@@ -1,7 +1,6 @@
 FROM ubuntu:20.04
 # 설치시 사용자 입력을 요구하는 것을 방지하는 설정
 ARG DEBIAN_FRONTEND=noninteractive
-
 ENV TZ Asia/Seoul
 
 # 1
@@ -25,6 +24,9 @@ RUN apt-get update && apt-get upgrade -y \
     && apt install -y build-essential \
     && apt install -y vim curl \
     && apt install -y net-tools iputils-ping
+    && apt-get clean autoclean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}
 
 RUN apt install -y ubuntu-desktop
 
@@ -40,20 +42,19 @@ RUN echo unset XDG_RUNTIME_DIR  >> /etc/xrdp/startwm.sh
 RUN /etc/init.d/xrdp stop
 RUN /etc/init.d/xrdp start
 
+# xfce4 필요시
+# https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
+RUN apt install -y xfce4 xfce4-goodies xfce4-session
+RUN echo "xfce4-session" > ~/.xsession
+# RUN xfce4-terminal
+# RUN update-alternatives --config x-terminal-emulator
 
-# # xfce4 필요시
-# # https://askubuntu.com/questions/899391/getting-input-output-error-running-anything-on-remote-desktop
-# RUN apt install -y xfce4 xfce4-goodies xfce4-session
-# RUN echo "xfce4-session" > ~/.xsession
-# # RUN xfce4-terminal
-# # RUN update-alternatives --config x-terminal-emulator
+# Variables
+ARG USERNAME=ubuntu
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ARG USER_PASSWD=password
 
-
-# # Variables
-# ARG USERNAME=ubuntu
-# ARG USER_UID=1000
-# ARG USER_GID=$USER_UID
-# ARG USER_PASSWD=password
 
 # # 사용자 추가 필요시
 # RUN groupadd --gid $USER_GID $USERNAME \

@@ -15,3 +15,7 @@ nvm install 16.17.1
 nvm use 16.17.1
 
 npm i -g yarn
+
+# java
+# echo export JAVA_HOME8=/app/zulu8.78.0.19-ca-jdk8.0.412-linux_x64 >> ~/.bash_profile
+# echo export PATH=$JAVA_HOME8/bin >> ~/.bash_profile
