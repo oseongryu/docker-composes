@@ -15,7 +15,7 @@ else
     sudo echo "Exec=/app/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
 fi
 
-sudo echo "Icon=/app/vscode.png" >> /usr/share/applications/code.desktop
+sudo echo "Icon=/app/img/vscode.png" >> /usr/share/applications/code.desktop
 sudo echo "Type=Application" >> /usr/share/applications/code.desktop
 sudo echo "StartupNotify=false" >> /usr/share/applications/code.desktop
 sudo echo "StartupWMClass=Code" >> /usr/share/applications/code.desktop
