@@ -1,7 +1,7 @@
 # sudo adduser ubuntu #password: password
 
 USERNAME=ubuntu
-USER_UID=1000
+USER_UID=0
 USER_GID=$USER_UID
 USER_PASSWD=password
 
@@ -14,7 +14,6 @@ groupadd --gid $USER_GID $USERNAME \
 echo $USERNAME:$USER_PASSWD | chpasswd
 
 # xsession
-mkdir /home/$USERNAME
 chown $USERNAME:$USERNAME /home/$USERNAME
 echo "xfce4-session" > /home/$USERNAME/.xsession
 
