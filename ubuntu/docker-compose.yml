@@ -8,8 +8,9 @@ services:
       dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop
     volumes:
-      - /mnt/c/app/amd:/app/
-      - /mnt/c/app/amd/script:/app/script/
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/app:/app
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/script:/app/script
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/img:/app/img
     ports:
       - "13389:3389"
       - "9551:9551"

@@ -1,7 +1,7 @@
 # sudo adduser ubuntu #password: password
 
 USERNAME=ubuntu
-USER_UID=0
+USER_UID=1000
 USER_GID=$USER_UID
 USER_PASSWD=password
 
