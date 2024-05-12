@@ -251,6 +251,7 @@ pip install -r requirements.txt
 # https://hub.docker.com/r/kasmweb/ubuntu-focal-desktop/tags
 docker pull kasmweb/ubuntu-focal-desktop:1.14.0-rolling
 sudo docker run --rm -it --shm-size=512m -p 6901:6901 -e VNC_PW=password --name ubuntu-desktop kasmweb/ubuntu-focal-desktop:1.14.0-rolling
+docker run --rm -d -p 6080:80 -v $PWD:/workspace:rw -e USER=username -e PASSWORD=password -e RESOLUTION=1680x1050 --name ubuntu-novnc fredblgr/ubuntu-novnc:20.04
 ```
 
 ### docker in docker ubuntu

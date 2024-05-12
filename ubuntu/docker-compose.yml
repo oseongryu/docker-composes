@@ -4,16 +4,14 @@ services:
   ubuntu:
     container_name: ubuntu-desktop
     build:
-      context: ./
+      context: ./novnc
       dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop
     volumes:
-      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/app:/app
-      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/script:/app/script
-      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/img:/app/img
+      - ~/git/docker-ubuntu-vnc-desktop:/src
     ports:
-      - "13389:3389"
-      - "9551:9551"
+      - "6080:80"
+      - "6081:443"
       - "9552:9552"
     restart: always
     stdin_open: true # docker run -i
