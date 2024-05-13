@@ -1,0 +1,43 @@
+---
+version: "3.5"
+
+services:
+  webtop:
+    image: raindev11/webtop:latest
+    container_name: webtop
+    hostname: webtop
+    restart: unless-stopped
+    privileged: true
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SUBFOLDER=/
+      - TITLE=liveLinux
+      - RESET_HOME=true
+      - DESKTOP_ICONS=false
+      - DISABLE_IPV6=true
+      # HTTP Basic Auth 사용시 ID/PW
+      #- CUSTOM_USER=abc
+      #- PASSWORD=abc
+    volumes:
+      # - "./data:/config"
+      # - "./docker:/var/lib/docker"
+      # 사설 인증서 등록 필요시 사용
+      # - "./certificates:/usr/local/share/ca-certificates"
+      # 호스트 도커연동 제외
+      #- '/var/run/docker.sock:/var/run/docker.sock'
+      # Shared Memory는 호스트와 연동하여 사용
+      - "/dev/shm:/dev/shm"
+    ports:
+      - 3000:3000
+      - 3001:3001
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      - private
+
+networks:
+  private:
+    name: private

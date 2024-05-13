@@ -3,17 +3,38 @@ version: "2.2"
 services:
   ubuntu:
     container_name: ubuntu-desktop
-    build:
-      context: ./novnc
-      dockerfile: Dockerfile
-    image: oseongryu/ubuntu-desktop
+    image: linuxserver/webtop:arm64v8-ubuntu-xfce
     volumes:
       - ~/git/docker-ubuntu-vnc-desktop:/src
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Seoul
     ports:
-      - "6080:80"
-      - "6081:443"
-      - "9552:9552"
+      - "3000:3000"
+      - "3001:3001"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
+# https://github.com/kasmtech/KasmVNC/releases/download/v1.3.1/kasmvncserver_focal_1.3.1_arm64.deb
+
+# # Please choose the package for your distro here (under Assets):
+# # https://github.com/kasmtech/KasmVNC/releases
+# wget https://github.com/kasmtech/KasmVNC/releases/download/v1.3.1/kasmvncserver_focal_1.3.1_arm64.deb
+# sudo apt-get install ./kasmvncserver_*.deb
+# # Add your user to the ssl-cert group
+# sudo addgroup $USER ssl-cert
+
+# # Start a session and be guided to setup a user and select a default desktop environment
+# vncserver
+# # Start a session with the mate desktop environment
+# vncserver -select-de mate
+# # Add a new user with read/write permissions
+# vncpasswd -u my_username -w -r
+# # Tail the logs
+# tail -f ~/.vnc/*.log
+# # Get a list of current sessions with display IDs
+# vncserver -list
+# # Kill the VNC session with display ID :2
+# vncserver -kill :2
