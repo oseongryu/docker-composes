@@ -3,38 +3,16 @@ version: "2.2"
 services:
   ubuntu:
     container_name: ubuntu-desktop
-    image: linuxserver/webtop:arm64v8-ubuntu-xfce
+    image: oseongryu/ubuntu-desktop:20.04 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
     volumes:
-      - ~/git/docker-ubuntu-vnc-desktop:/src
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Seoul
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/app:/app
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/script:/app/script
+      - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/img:/app/img
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "13389:3389"
+      - "9551:9551"
+      - "9552:9552"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
-# https://github.com/kasmtech/KasmVNC/releases/download/v1.3.1/kasmvncserver_focal_1.3.1_arm64.deb
-
-# # Please choose the package for your distro here (under Assets):
-# # https://github.com/kasmtech/KasmVNC/releases
-# wget https://github.com/kasmtech/KasmVNC/releases/download/v1.3.1/kasmvncserver_focal_1.3.1_arm64.deb
-# sudo apt-get install ./kasmvncserver_*.deb
-# # Add your user to the ssl-cert group
-# sudo addgroup $USER ssl-cert
-
-# # Start a session and be guided to setup a user and select a default desktop environment
-# vncserver
-# # Start a session with the mate desktop environment
-# vncserver -select-de mate
-# # Add a new user with read/write permissions
-# vncpasswd -u my_username -w -r
-# # Tail the logs
-# tail -f ~/.vnc/*.log
-# # Get a list of current sessions with display IDs
-# vncserver -list
-# # Kill the VNC session with display ID :2
-# vncserver -kill :2
