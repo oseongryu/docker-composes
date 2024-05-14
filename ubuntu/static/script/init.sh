@@ -11,3 +11,13 @@ timedatectl set-timezone Asia/Seoul
 # mkdir /app/VSCode-linux-x64/data
 # cp -r /app/VSCode-linux-x64 /usr/share/code
 # chmod 777 /user/share/code
+
+sh_result=$(uname -m)
+
+if [ "$sh_result" = "aarch64" ]; then
+    echo "arm64"
+    sed -i 's#ports.ubuntu.com#mirror.yuki.net.uk#g' /etc/apt/sources.list; 
+else 
+    echo "amd64"
+    sed -i 's#archive.ubuntu.com#mirror.kakao.com#g' /etc/apt/sources.list;
+fi
