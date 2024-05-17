@@ -12,14 +12,17 @@ services:
       - PGID=1000
       - TZ=Asia/Seoul
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "3000-3010:3000"
+      - "3011-3020:3001"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
   webtop-custom:
-    image: raindev11/webtop:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: webtop-custom:latest
     container_name: webtop-custom
     hostname: webtop
     restart: unless-stopped
@@ -47,8 +50,8 @@ services:
       # Shared Memory는 호스트와 연동하여 사용
       - "/dev/shm:/dev/shm"
     ports:
-      - 3002:3000
-      - 3003:3001
+      - "3000-3010:3000"
+      - "3011-3020:3001"
     devices:
       - /dev/dri:/dev/dri
 # https://github.com/kasmtech/KasmVNC/releases/download/v1.3.1/kasmvncserver_focal_1.3.1_arm64.deb
