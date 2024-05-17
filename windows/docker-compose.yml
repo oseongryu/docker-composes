@@ -1,0 +1,18 @@
+# Docker Compose 파일 포맷 버전 지정
+# https://hub.docker.com/r/dockurr/windows
+version: "2.2"
+services:
+  windows:
+    image: dockurr/windows
+    container_name: windows
+    environment:
+      VERSION: "win10"
+    # devices:
+    #   - /dev/kvm
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+      - 23389:3389/tcp
+      - 23389:3389/udp
+    stop_grace_period: 2m
