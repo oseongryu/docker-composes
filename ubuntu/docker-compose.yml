@@ -5,9 +5,9 @@ services:
     container_name: ubuntu-desktop
     image: oseongryu/ubuntu-desktop:20.04 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
     volumes:
-      - ~/git/docker-composes/ubuntu/static/app:/app
-      - ~/git/docker-composes/ubuntu/static/script:/app/script
-      - ~/git/docker-composes/ubuntu/static/img:/app/img
+      - ~/git/docker-composes/static/app:/app
+      - ~/git/docker-composes/static/script:/app/script
+      - ~/git/docker-composes/static/img:/app/img
       # - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/app:/app
       # - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/script:/app/script
       # - /mnt/c/Users/oseongryu/git/docker-composes/ubuntu/static/img:/app/img
