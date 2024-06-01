@@ -1,3 +1,9 @@
+
+cd /app && tar -zxvf code-stable-x64-*.tar.gz
+mkdir /app/VSCode-linux-x64/data
+chown root:root /app/VSCode-linux-x64
+mv /app/VSCode-linux-x64 /opt/
+
 # https://gist.github.com/rob-murray/6828864
 # create file:
 sudo touch /usr/share/applications/code.desktop
@@ -10,9 +16,9 @@ sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.des
 sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
 
 if [ "$sh_result" = "aarch64" ]; then
-    sudo echo "Exec=/app/VSCode-linux-arm64/code %F" >> /usr/share/applications/code.desktop
+    sudo echo "Exec=/opt/VSCode-linux-arm64/code %F" >> /usr/share/applications/code.desktop
 else 
-    sudo echo "Exec=/app/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
+    sudo echo "Exec=/opt/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
 fi
 
 sudo echo "Icon=/app/img/vscode.png" >> /usr/share/applications/code.desktop
@@ -28,9 +34,9 @@ sudo echo "[Desktop Action new-empty-window]" >> /usr/share/applications/code.de
 sudo echo "Name=New Empty Window" >> /usr/share/applications/code.desktop
 
 if [ "$sh_result" = "aarch64" ]; then
-    sudo echo "Exec=/app/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
+    sudo echo "Exec=/opt/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
 else 
-    sudo echo "Exec=/app/VSCode-linux-arm64/code --new-window %F" >> /usr/share/applications/code.desktop
+    sudo echo "Exec=/opt/VSCode-linux-arm64/code --new-window %F" >> /usr/share/applications/code.desktop
 fi
 sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
 
