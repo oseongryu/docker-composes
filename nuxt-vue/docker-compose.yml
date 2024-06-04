@@ -1,0 +1,49 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "1"
+name: nuxt-ustra
+
+
+# 컨테이너 설정
+services:
+  vue:
+    image: oseongryu/centos-vue:0.0.5
+    container_name: centos-vue
+    # restart: always
+    # 컨테이너에서 사용하는 volume 설정으로 대체 가능(옵션)
+    volumes:
+      # - ./vue/app:/app/
+      - ./vue/nginx:/etc/nginx/conf.d/
+      - ./vue/script:/app/script/
+    ports:
+      - "80:80"
+    # 컨테이너 간 네트워크 분리를 위한 추가 설정 부분(옵션)
+    networks:
+      - our-net
+    # entrypoint: ["sh", "-c"]
+    # command:
+    #   - |
+    #     /app/script/start_nginx.sh
+    stdin_open: true
+    tty: true
+  spring:
+    image: oseongryu/centos-spring:0.0.5
+    container_name: centos-spring
+    # restart: always
+    # 컨테이너에서 사용하는 volume 설정으로 대체 가능(옵션)
+    volumes:
+      # - ./spring/app:/app/
+      - ./spring/app/java:/app/java
+      - ./spring/script:/app/script/
+      - ./spring/nginx:/etc/nginx/conf.d/
+    stdin_open: true
+    tty: true
+    ports:
+      - "10100:10100"
+      - "10200:10200"
+    networks:
+      - our-net
+
+networks:
+  our-net:
+    name: our-net
+    driver: bridge

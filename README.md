@@ -154,14 +154,14 @@ docker run -it -d -p 8888:8888 -v c:/users/oseongryu/git:/root/git --privileged 
 docker run -it -d -p 8888:8888 -v ~/git:/root/git --privileged --restart=always --name automation-python oseongryu/automation-python:latest
 
 docker exec -it automation-python bash
-python3 /root/git/python-selenium/selenium/service.py 0
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 0"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 1"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 2"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 3"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 4"
-docker exec -it automation-python sh -c "cd /root/git/python-selenium/ && python3 /root/git/python-selenium/selenium/service.py 5"
-docker exec -it automation-python sh -c "python3 /root/git/python-selenium/selenium/service.py 6"
+python3 /home/oseongryu/git/python-selenium/selenium/service.py 0
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 0"
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 1"
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 2"
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 3"
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 4"
+docker exec -it ubuntu-desktop sh -c "cd /home/ubuntu/git/python-selenium/ && python3 /home/ubuntu/git/python-selenium/selenium/service.py 5"
+docker exec -it ubuntu-desktop sh -c "python3 /home/oseongryu/git/python-selenium/selenium/service.py 6"
 
 
 # commit & push
