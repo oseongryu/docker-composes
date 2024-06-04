@@ -34,7 +34,6 @@ services:
       # - ./spring/app:/app/
       - ./spring/app/java:/app/java
       - ./spring/script:/app/script/
-      - ./spring/nginx:/etc/nginx/conf.d/
     stdin_open: true
     tty: true
     ports:
