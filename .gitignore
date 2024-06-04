@@ -12,3 +12,5 @@
 06_automation/python/static/google-chrome-stable_current_amd64.deb
 ubuntu/static/app
 static/app
+nuxt-vue/spring/app
+nuxt-vue/spring/script/*.jar
