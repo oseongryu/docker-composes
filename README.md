@@ -1,4 +1,4 @@
-## 01_db
+## db
 
 ### mysql
 
@@ -40,7 +40,7 @@ schemas=emt
 docker exec  -it   db_193 expdp klrice/klrice@xe tables=t1 directory=docker_vol dumpfile=klrice.dmp logfile=klrice_exp.log
 ```
 
-## 01_mariadb
+## mariadb
 
 ```bash
 docker-compose up -d
@@ -54,7 +54,7 @@ docker exec -it docker-compose-db-1 bash
 mysql -uroot -p1234
 ```
 
-## 03_nuxt-ustra
+## nuxt-ustra
 
 ```bash
 # 이미지 재빌드가 필요하면 --build 옵션 추가, 그렇지 않으면 이미 작성된 이미지를 사용하게 됨
@@ -94,7 +94,7 @@ docker network disconnect bridge centos-vue
 docker network rm our-net
 ```
 
-## 04_jekyll
+## jekyll
 
 ```bash
 docker run -it -d -p 4000:4000 -v /c/Users/oseongryu/git/test:/usr/src/apptest/ --name centos-ruby ruby:2.6 bash
@@ -106,7 +106,7 @@ bundler _2.3.26_ install
 bundle exec jekyll serve -H 0.0.0.0 -t
 ```
 
-## 05_emt
+## emt
 
 ### oracle
 
@@ -272,6 +272,18 @@ ubuntu-systemd \
 ```
 # https://github.com/coder/code-server
 ```
+
+### components
+
+```bash
+# Dockerfile 사용시
+docker build -f Dockerfile -t oseongryu/redis ./
+docker run -p 6379:6379 --name env-redis -d --restart=always oseongryu/redis:latest --requirepass testpassword
+
+# 기본 redis 이미지 사용시
+docker run -itd -p 6379:6379 --name env-redis --restart=always redis --requirepass testpassword
+```
+
 
 <!-- ### ubuntu 22.04 grdctl
 
