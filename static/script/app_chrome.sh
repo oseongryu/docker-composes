@@ -7,7 +7,7 @@ sh_result=$(uname -m)
 if [ "$sh_result" = "aarch64" ]; then
     echo "arm64 chrome"
     # arm64
-    apt install chromium-browser
+    apt install -y chromium-browser
 else 
     echo "amd64 chrome"
     # amd64
@@ -20,7 +20,6 @@ else
         # apt -y install ./google-chrome-stable_current_amd64.deb
 
     fi
-    sudo dpkg -i google-chrome-stable_current_amd64.deb
     dpkg -i google-chrome-stable_current_amd64.deb
     apt-get install -y -f
     # Chrome 실행
