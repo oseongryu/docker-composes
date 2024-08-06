@@ -24,8 +24,8 @@ else
     fi
     dpkg -i google-chrome-stable_current_amd64.deb
     apt-get install -y -f
-    # Chrome 실행
-    google-chrome-stable
+    # # Chrome 실행
+    # google-chrome-stable
 fi 
 # /usr/bin/google-chrome-stable  --headless --no-sandbox --single-process --disable-dev-shm-usage
 # https://study-grow.tistory.com/entry/DevToolsActivePort-file-doesnt-exist-error-%ED%95%B4%EA%B2%B0%EB%B2%95
