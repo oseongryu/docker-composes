@@ -9,7 +9,7 @@ if [ "$sh_result" = "aarch64" ]; then
     # arm64
     apt install -y chromium-browser
     apt install -y chromium-chromedriver
-    apt install firefox
+    apt install -y firefox
 else 
     echo "amd64 chrome"
     # amd64
