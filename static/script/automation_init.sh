@@ -14,7 +14,7 @@ apt -y install scrot
 apt -y install fonts-indic
 apt -y install font-noto
 apt -y install fonts-noto-cjk
-
+apt -y install gnome-screenshot
 timedatectl set-timezone Asia/Seoul
 # date
 

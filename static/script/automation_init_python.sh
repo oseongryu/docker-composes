@@ -7,6 +7,7 @@ pip install opencv-python
 pip install python-xlib
 pip install pyvirtualdisplay
 pip install fake_useragent
+pip install psutil
 
 # apt remove python3-pip
 # wget https://bootstrap.pypa.io/get-pip.py
