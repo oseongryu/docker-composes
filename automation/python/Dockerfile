@@ -22,10 +22,10 @@ RUN apt update -y && apt upgrade -y
 ENV DEBIAN_FRONTEND=noninteractive
 # RUN apt -y install python3-pip python3-tk python3-dev python-tk
 # RUN apt -y install xvfb scrot fonts-indic fonts-noto-cjk psmisc gnome-screenshot
-RUN sh /script/automation_init.sh \
-    sh /script/automation_init_python.sh \
-    sh /script/init_korean.sh \
-    sh /script/app_chrome.sh
+RUN sh /script/automation_init.sh
+RUN sh /script/automation_init_python.sh
+RUN sh /script/init_korean.sh
+RUN sh /script/app_chrome.sh
 
 # 작업 후 복구
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then sed -i 's#mirror.yuki.net.uk#ports.ubuntu.com#g' /etc/apt/sources.list; \
