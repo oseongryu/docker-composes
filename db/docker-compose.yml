@@ -46,6 +46,8 @@ services:
       - "3306:3306"
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+    privileged: true
+    restart: always
   mongodb:
     container_name: db-mongodb
     build:
