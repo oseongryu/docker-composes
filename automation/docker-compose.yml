@@ -29,8 +29,11 @@ services:
   #     - "8089:8089"
   #   stdin_open: true # docker run -i
   #   tty: true        # docker run -t
-  ubuntu:
+  desktop:
     container_name: automation-desktop
+    build:
+      context: ./desktop/
+      dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop:20.04 
     volumes:
       - ~/git:/git
