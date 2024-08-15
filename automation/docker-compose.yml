@@ -1,3 +1,4 @@
+# https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 # Docker Compose 파일 포맷 버전 지정
 version: "2.2"
 services:
@@ -28,3 +29,14 @@ services:
   #     - "8089:8089"
   #   stdin_open: true # docker run -i
   #   tty: true        # docker run -t
+  ubuntu:
+    container_name: automation-desktop
+    image: oseongryu/ubuntu-desktop:20.04 
+    volumes:
+      - ~/git:/git
+    ports:
+      - "13389:3389"
+    restart: always
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    privileged: true
