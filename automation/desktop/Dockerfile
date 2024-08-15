@@ -26,7 +26,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN sh /script/automation_init.sh
 RUN sh /script/automation_init_python.sh
 RUN sh /script/init_korean.sh
-# RUN sh /script/init_user.sh
+RUN sh /script/init_user.sh
 # RUN sh /script/app_chrome.sh
 
 # 작업 후 복구
