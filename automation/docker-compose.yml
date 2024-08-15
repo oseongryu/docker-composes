@@ -34,9 +34,7 @@ services:
     build:
       context: ./desktop/
       dockerfile: Dockerfile
-    image: oseongryu/ubuntu-desktop:20.04 
-    volumes:
-      - ~/git:/git
+    image: automation/desktop:1.0.0
     ports:
       - "13389:3389"
     restart: always
