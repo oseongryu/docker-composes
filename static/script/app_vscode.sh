@@ -1,20 +1,25 @@
-
-
+#!/bin/bash
 sh_result=$(uname -m)
 cd /app && sudo tar -zxvf code-stable-*.tar.gz
 
 if [ "$sh_result" = "aarch64" ]; then
-    sudo chown root:root /app/VSCode-linux-arm64
-    sudo chmod 777 /app/VSCode-linux-arm64
-    sudo mkdir /app/VSCode-linux-arm64/data
-    sudo chmod 777 /app/VSCode-linux-arm64/data
-    sudo mv /app/VSCode-linux-arm64 /opt/
+    app_name=VSCode-linux-arm64
 else 
-    sudo chown root:root /app/VSCode-linux-x64
-    sudo chmod 777 /app/VSCode-linux-x64
-    sudo mkdir /app/VSCode-linux-x64/data
-    sudo chmod 777 /app/VSCode-linux-x64/data
-    sudo mv /app/VSCode-linux-x64 /opt/
+    app_name=VSCode-linux-x64
+fi
+
+if [ "$sh_result" = "aarch64" ]; then
+    sudo chown root:root /app/$app_name
+    sudo chmod 777 /app/$app_name
+    sudo mkdir /app/$app_name/data
+    sudo chmod 777 /app/$app_name/data
+    sudo mv /app/$app_name /opt/
+else 
+    sudo chown root:root /app/$app_name
+    sudo chmod 777 /app/$app_name
+    sudo mkdir /app/$app_name/data
+    sudo chmod 777 /app/$app_name/data
+    sudo mv /app/$app_name /opt/
 fi
 
 # https://gist.github.com/rob-murray/6828864
@@ -23,17 +28,12 @@ sudo touch /usr/share/applications/code.desktop
 sudo chown root:root /usr/share/applications/code.desktop
 sudo chmod 777 /usr/share/applications/code.desktop
 
-
 sudo echo "[Desktop Entry]" >> /usr/share/applications/code.desktop
 sudo echo "Name=Visual Studio Code" >> /usr/share/applications/code.desktop
 sudo echo "Comment=Code Editing. Redefined." >> /usr/share/applications/code.desktop
 sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
 
-if [ "$sh_result" = "aarch64" ]; then
-    sudo echo "Exec=/opt/VSCode-linux-arm64/code %F" >> /usr/share/applications/code.desktop
-else 
-    sudo echo "Exec=/opt/VSCode-linux-x64/code %F" >> /usr/share/applications/code.desktop
-fi
+sudo echo "Exec=/opt/$app_name/code %F" >> /usr/share/applications/code.desktop
 
 sudo echo "Icon=/app/img/vscode.png" >> /usr/share/applications/code.desktop
 sudo echo "Type=Application" >> /usr/share/applications/code.desktop
@@ -47,11 +47,7 @@ sudo echo "Keywords=vscode;" >> /usr/share/applications/code.desktop
 sudo echo "[Desktop Action new-empty-window]" >> /usr/share/applications/code.desktop
 sudo echo "Name=New Empty Window" >> /usr/share/applications/code.desktop
 
-if [ "$sh_result" = "aarch64" ]; then
-    sudo echo "Exec=/opt/VSCode-linux-arm64/code --new-window %F" >> /usr/share/applications/code.desktop
-else 
-    sudo echo "Exec=/opt/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
-fi
+sudo echo "Exec=/opt/$app_name/code --new-window %F" >> /usr/share/applications/code.desktop
 sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
 
 
