@@ -1,14 +1,28 @@
 
-cd /app && tar -zxvf code-stable-x64-*.tar.gz
-mkdir /app/VSCode-linux-x64/data
-chown root:root /app/VSCode-linux-x64
-mv /app/VSCode-linux-x64 /opt/
+
+sh_result=$(uname -m)
+cd /app && sudo tar -zxvf code-stable-*.tar.gz
+
+if [ "$sh_result" = "aarch64" ]; then
+    sudo chown root:root /app/VSCode-linux-arm64
+    sudo chmod 777 /app/VSCode-linux-arm64
+    sudo mkdir /app/VSCode-linux-arm64/data
+    sudo chmod 777 /app/VSCode-linux-arm64/data
+    sudo mv /app/VSCode-linux-arm64 /opt/
+else 
+    sudo chown root:root /app/VSCode-linux-x64
+    sudo chmod 777 /app/VSCode-linux-x64
+    sudo mkdir /app/VSCode-linux-x64/data
+    sudo chmod 777 /app/VSCode-linux-x64/data
+    sudo mv /app/VSCode-linux-x64 /opt/
+fi
 
 # https://gist.github.com/rob-murray/6828864
 # create file:
 sudo touch /usr/share/applications/code.desktop
+sudo chown root:root /usr/share/applications/code.desktop
+sudo chmod 777 /usr/share/applications/code.desktop
 
-sh_result=$(uname -m)
 
 sudo echo "[Desktop Entry]" >> /usr/share/applications/code.desktop
 sudo echo "Name=Visual Studio Code" >> /usr/share/applications/code.desktop
@@ -34,14 +48,12 @@ sudo echo "[Desktop Action new-empty-window]" >> /usr/share/applications/code.de
 sudo echo "Name=New Empty Window" >> /usr/share/applications/code.desktop
 
 if [ "$sh_result" = "aarch64" ]; then
-    sudo echo "Exec=/opt/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
-else 
     sudo echo "Exec=/opt/VSCode-linux-arm64/code --new-window %F" >> /usr/share/applications/code.desktop
+else 
+    sudo echo "Exec=/opt/VSCode-linux-x64/code --new-window %F" >> /usr/share/applications/code.desktop
 fi
 sudo echo "Icon=vscode" >> /usr/share/applications/code.desktop
 
-sudo chmod 644 /usr/share/applications/code.desktop
-sudo chown root:root /usr/share/applications/code.desktop
 
 # # vscode
 # [Desktop Entry]
