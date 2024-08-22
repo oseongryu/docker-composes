@@ -1,12 +1,16 @@
+FROM automation/desktop:1.0.0
 FROM oseongryu/ubuntu-desktop:20.04
 ENV TZ Asia/Seoul
 
-ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/314c91ad55816f727c7a08c3859111c72342c1c2"
+ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/71e6a4229a0260ddce65ad23b90c07f28db5ccbe"
 ADD ${URL}/automation_init.sh /script/
 ADD ${URL}/automation_init_python.sh /script/
 ADD ${URL}/app_chrome.sh /script/
 ADD ${URL}/init_korean.sh /script/
 ADD ${URL}/init_user.sh /script/
+ADD ${URL}/app_vscode.sh /script/
+
+COPY ./app/ /app/
 
 ARG TARGETPLATFORM
 

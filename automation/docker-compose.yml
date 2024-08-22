@@ -16,7 +16,7 @@ services:
     privileged: true
     restart: always
     stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    tty: true # docker run -t
   # was:
   #   container_name: automation-was
   #   volumes:
