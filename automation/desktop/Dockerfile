@@ -1,4 +1,3 @@
-FROM automation/desktop:1.0.0
 FROM oseongryu/ubuntu-desktop:20.04
 ENV TZ Asia/Seoul
 
