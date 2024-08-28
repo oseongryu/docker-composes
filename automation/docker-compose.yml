@@ -31,12 +31,14 @@ services:
   #   tty: true        # docker run -t
   desktop:
     container_name: automation-desktop
+    volumes:
+      - ~/git:/git
     build:
       context: ./desktop/
       dockerfile: Dockerfile
     image: automation/desktop:1.0.0
     ports:
-      - "13389:3389"
+      - "13389-13390:3389"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
