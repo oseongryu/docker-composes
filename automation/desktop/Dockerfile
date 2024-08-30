@@ -1,13 +1,15 @@
 FROM oseongryu/ubuntu-desktop:20.04
 ENV TZ Asia/Seoul
 
-ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/71e6a4229a0260ddce65ad23b90c07f28db5ccbe"
+ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/7eb27c64607ed883a5134a24c1ac0becf124c663"
 ADD ${URL}/automation_init.sh /script/
 ADD ${URL}/automation_init_python.sh /script/
-ADD ${URL}/app_chrome.sh /script/
 ADD ${URL}/init_korean.sh /script/
 ADD ${URL}/init_user.sh /script/
+ADD ${URL}/init_env_nvm.sh /script/
+ADD ${URL}/app_chrome.sh /script/
 ADD ${URL}/app_vscode.sh /script/
+ADD ${URL}/app_intellij.sh /script/
 
 COPY ./app/ /app/
 
