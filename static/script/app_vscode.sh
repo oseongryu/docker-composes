@@ -35,7 +35,7 @@ sudo echo "GenericName=Text Editor" >> /usr/share/applications/code.desktop
 
 sudo echo "Exec=/opt/$app_name/code %F" >> /usr/share/applications/code.desktop
 
-sudo echo "Icon=/app/img/vscode.png" >> /usr/share/applications/code.desktop
+sudo echo "Icon=/opt/$app_name/resources/app/resources/linux/code.png" >> /usr/share/applications/code.desktop
 sudo echo "Type=Application" >> /usr/share/applications/code.desktop
 sudo echo "StartupNotify=false" >> /usr/share/applications/code.desktop
 sudo echo "StartupWMClass=Code" >> /usr/share/applications/code.desktop
