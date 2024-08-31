@@ -3,7 +3,7 @@ sh_result=$(uname -m)
 cd /app && sudo tar -zxvf ideaIU-*.tar.gz
 
 if [ "$sh_result" = "aarch64" ]; then
-    app_name=idea-IU-241.17890.1
+    app_name=idea-IU-241.15989.150
 else 
     app_name=idea-IU-241.17890.1
 fi
