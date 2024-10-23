@@ -10,6 +10,8 @@ ADD ${URL}/init_korean.sh /script/
 
 ADD ${URL}/app_chrome.sh /script/
 
+ADD ./python-selenium /root/git/python-selenium
+
 ARG TARGETPLATFORM
 
 # 작업 전 처리

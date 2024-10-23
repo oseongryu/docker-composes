@@ -5,7 +5,7 @@ services:
   python1:
     container_name: shorts-python1
     volumes:
-      - ~/git:/root/git
+      - ~/git/python-selenium/app:/app
       - ~/DEV/shorts:/root/DEV/shorts
     build:
       context: ./python/
@@ -20,7 +20,7 @@ services:
   python2:
     container_name: shorts-python2
     volumes:
-      - ~/git:/root/git
+      - ~/git/python-selenium/app:/app
       - ~/DEV/shorts:/root/DEV/shorts
     build:
       context: ./python/
@@ -35,7 +35,7 @@ services:
   python3:
     container_name: shorts-python3
     volumes:
-      - ~/git:/root/git
+      - ~/git/python-selenium/app:/app
       - ~/DEV/shorts:/root/DEV/shorts
     build:
       context: ./python/
@@ -50,7 +50,7 @@ services:
   python4:
     container_name: shorts-python4
     volumes:
-      - ~/git:/root/git
+      - ~/git/python-selenium/app:/app
       - ~/DEV/shorts:/root/DEV/shorts
     build:
       context: ./python/
@@ -65,7 +65,7 @@ services:
   python5:
     container_name: shorts-python5
     volumes:
-      - ~/git:/root/git
+      - ~/git/python-selenium/app:/app
       - ~/DEV/shorts:/root/DEV/shorts
     build:
       context: ./python/
