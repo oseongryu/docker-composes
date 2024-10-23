@@ -15,3 +15,4 @@ ubuntu/static/app
 static/app
 nuxt-vue/spring/app
 nuxt-vue/spring/script/*.jar
+shorts/python/python-selenium
