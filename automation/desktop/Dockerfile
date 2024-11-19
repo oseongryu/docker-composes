@@ -14,7 +14,7 @@ ADD ${URL}/init_korean.sh /script/
 ADD ${URL}/init_user.sh /script/
 ADD ${URL}/init.sh /script/
 
-COPY ./app/ /app/
+# COPY ./app/ /app/
 
 ARG TARGETPLATFORM
 
