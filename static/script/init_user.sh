@@ -19,4 +19,3 @@ echo "xfce4-session" > /home/$USERNAME/.xsession
 
 # change shell
 chsh -s /bin/bash $USERNAME
-

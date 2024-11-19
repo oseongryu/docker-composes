@@ -23,6 +23,8 @@ services:
     image: automation/desktop:1.0.0
     ports:
       - "13389:3389"
+    volumes:
+      - ~/git:/git
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
