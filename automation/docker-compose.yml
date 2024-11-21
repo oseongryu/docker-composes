@@ -23,6 +23,7 @@ services:
     image: automation/desktop:1.0.0
     ports:
       - "13389:3389"
+      - "80:8091"
     volumes:
       - ~/git:/git
     restart: always
