@@ -14,7 +14,7 @@ services:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASES=mydb
     stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    tty: true # docker run -t
     ports:
       - "3306:3306"
     # # 컨테이너 간 네트워크 분리를 위한 추가 설정 부분(옵션)
@@ -30,7 +30,7 @@ services:
     ports:
       - "1521:1521"
     stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    tty: true # docker run -t
   mysql:
     container_name: db-mysql
     command: --character-set-server=utf8 --collation-server=utf8_general_ci
@@ -45,7 +45,7 @@ services:
     ports:
       - "3306:3306"
     stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    tty: true # docker run -t
     privileged: true
     restart: always
   mongodb:
@@ -61,4 +61,16 @@ services:
     ports:
       - "27017:27017"
     stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    tty: true # docker run -t
+  redis:
+    container_name: env-redis
+    build:
+      context: ./redis/
+      dockerfile: Dockerfile
+    image: oseongryu/redis
+    ports:
+      - "6379:6379"
+    restart: always
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    privileged: true
