@@ -1,21 +1,25 @@
 FROM ubuntu:latest
 
-# 필요한 패키지 설치, cache 비우기
-RUN apt-get update && \
-    apt-get install -y curl sudo
 
-# 새로운 사용자 생성 및 비밀번호 설정
 ENV USER="user" \
     PASSWORD="password"
-RUN useradd -m ${USER} && echo "${USER}:${PASSWORD}" | chpasswd && adduser ${USER} sudo
 
-# code-server 설치 및 세팅
+RUN apt-get update && apt-get install -y sudo curl wget
+
+RUN useradd -m ${USER} && echo "${USER}:${PASSWORD}" | chpasswd && usermod -aG sudo ${USER}
+
+# # code-server 설치 및 세팅
 ENV WORKINGDIR="/home/${USER}/vscode"
-RUN curl -fsSL https://code-server.dev/install.sh | sh && \
+# RUN curl -fsSL https://code-server.dev/install.sh | sh && \
+#     mkdir ${WORKINGDIR}
+   
+RUN wget -O code-server_4.95.3_amd64.deb "https://master.dl.sourceforge.net/project/code-server.mirror/v4.95.3/code-server_4.95.3_amd64.deb?viasf=1" && \
+    dpkg -i code-server_4.95.3_amd64.deb && \
     mkdir ${WORKINGDIR}
     
-# 확장 설치
-RUN code-server --install-extension "ms-python.python" \ 
+
+# Install extensions
+RUN code-server --install-extension "ms-python.python" \
                 --install-extension "ms-azuretools.vscode-docker"
 
 # code-server 시작
