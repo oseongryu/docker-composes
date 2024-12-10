@@ -167,6 +167,8 @@ docker exec -it ubuntu-desktop sh -c "python3 /home/oseongryu/git/python-seleniu
 # commit & push
 docker commit automation-python oseongryu/automation-python:latest
 docker pull oseongryu/automation-python:latest
+
+chromium-browser --remote-debugging-port=9222 --disable-gpu --disable-dev-shm-usage --no-sandbox --user-data-dir="/home/ubuntu/chrome_profile
 ```
 
 ### automation jupyter
@@ -283,7 +285,6 @@ docker run -p 6379:6379 --name env-redis -d --restart=always oseongryu/redis:lat
 # 기본 redis 이미지 사용시
 docker run -itd -p 6379:6379 --name env-redis --restart=always redis --requirepass testpassword
 ```
-
 
 <!-- ### ubuntu 22.04 grdctl
 
