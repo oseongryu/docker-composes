@@ -2,25 +2,24 @@ version: "2.2"
 services:
   python:
     container_name: automation-python
-    volumes:
-      - ~/git:/root/git
     build:
       context: ./python/
       dockerfile: Dockerfile
-    # image: automation/pyton:1.0.0
-    image: automation/python:1.0.0
+    image: oseongryu/automation-python:1.0.0
     ports:
       - "8088:8088"
-    privileged: true
+    volumes:
+      - ~/git:/root/git
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
+    privileged: true
   desktop:
     container_name: automation-desktop
     build:
       context: ./desktop/
       dockerfile: Dockerfile
-    image: automation/desktop:1.0.0
+    image: oseongryu/automation-desktop:1.0.0
     ports:
       - "13389:3389"
       - "80:8091"
