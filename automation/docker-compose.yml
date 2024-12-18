@@ -1,11 +1,11 @@
 version: "2.2"
 services:
-  python:
-    container_name: automation-python
+  cli:
+    container_name: automation-cli
     build:
-      context: ./python/
+      context: ./cli/
       dockerfile: Dockerfile
-    image: oseongryu/automation-python:1.0.0
+    image: oseongryu/automation-cli:1.0.0
     ports:
       - "8088:8088"
     volumes:
