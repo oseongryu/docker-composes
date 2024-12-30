@@ -33,9 +33,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 # RUN apt -y install python3-pip python3-tk python3-dev python-tk
 # RUN apt -y install xvfb scrot fonts-indic fonts-noto-cjk psmisc gnome-screenshot
-RUN sh /script/python_automation.sh
 RUN sh /script/init_korean.sh
 RUN sh /script/init_user.sh
+# RUN sh /script/python_automation.sh
 
 # 작업 후 복구
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then sed -i 's#mirror.yuki.net.uk#ports.ubuntu.com#g' /etc/apt/sources.list; \

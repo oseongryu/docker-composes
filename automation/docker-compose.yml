@@ -7,7 +7,8 @@ services:
       dockerfile: Dockerfile
     image: oseongryu/automation-cli:1.0.0
     ports:
-      - "8088:8088"
+      - "13000:3000"
+      - "18091:8091"
     volumes:
       - ~/git:/root/git
     restart: always
@@ -22,7 +23,8 @@ services:
     image: oseongryu/automation-desktop:1.0.0
     ports:
       - "13389:3389"
-      - "80:8091"
+      - "13000:3000"
+      - "18091:8091"
     volumes:
       - ~/git:/git
     restart: always
