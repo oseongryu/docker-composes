@@ -168,7 +168,7 @@ docker exec -it ubuntu-desktop sh -c "python3 /home/oseongryu/git/python-seleniu
 docker commit automation-python oseongryu/automation-python:latest
 docker pull oseongryu/automation-python:latest
 
-chromium-browser --remote-debugging-port=9222 --disable-gpu --disable-dev-shm-usage --no-sandbox --user-data-dir="/home/ubuntu/chrome_profile
+chromium-browser --remote-debugging-port=9222 --disable-gpu --disable-dev-shm-usage --no-sandbox --user-data-dir="/home/ubuntu/chrome_profile"
 ```
 
 ### automation jupyter
