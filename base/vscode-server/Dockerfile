@@ -1,6 +1,5 @@
 FROM ubuntu:latest
 
-
 ENV USER="user" \
     PASSWORD="password"
 
@@ -16,7 +15,6 @@ ENV WORKINGDIR="/home/${USER}/vscode"
 RUN wget -O code-server_4.95.3_amd64.deb "https://master.dl.sourceforge.net/project/code-server.mirror/v4.95.3/code-server_4.95.3_amd64.deb?viasf=1" && \
     dpkg -i code-server_4.95.3_amd64.deb && \
     mkdir ${WORKINGDIR}
-    
 
 # Install extensions
 RUN code-server --install-extension "ms-python.python" \
