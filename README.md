@@ -377,3 +377,45 @@ busctl get-property org.freedesktop.Accounts /org/freedesktop/Accounts/User$(id 
 
 sudo -i -u root VNC_PASS="1234" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u root)/bus" bash -c 'echo -n ${VNC_PASS} | secret-tool store --label "GRD VNC pass" xdg:schema org.gnome.RemoteDesktop.VncPassword'
 ``` -->
+
+### nuxt-dev
+
+```bash
+
+# docker에 파일 이동
+docker exec -i centos-vue sh -c "mkdir /root/.ssh"
+docker cp ~/.ssh/id_rsa centos-vue:/root/.ssh/id_rsa
+docker cp ~/.ssh/id_rsa.pub centos-vue:/root/.ssh/id_rsa.pub
+docker exec -i centos-vue sh -c "chmod 600 /root/.ssh/id_rsa"
+docker exec -i centos-vue sh -c "chmod 644 /root/.ssh/id_rsa.pub"
+
+# docker 실행
+docker exec -it centos-vue bash
+
+
+# git
+yum install -y wget git
+cd /app/webapp
+git clone ~~~~
+git checkout release
+
+# nvm 설치
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+
+source ~/.bashrc
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+nvm install 12.22.9
+nvm use 12.22.9
+nvm alias default 12.22.9
+npm install pm2 -g
+npm install -g yarn
+yarn install
+
+# pm2 실행
+pm2 delete all
+pm2 start ecosystem.config.js
+```
