@@ -9,3 +9,7 @@ nuxt-vue/spring/script/*.jar
 
 nuxt-dev/spring/app
 nuxt-dev/spring/script/*.jar
+nuxt-dev/vue/app
+nuxt-dev/vue/script/fo-*.jar
+nuxt-dev/vue/script/zu*
+

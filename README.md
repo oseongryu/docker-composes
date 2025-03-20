@@ -418,4 +418,7 @@ yarn install
 # pm2 실행
 pm2 delete all
 pm2 start ecosystem.config.js
+
+# 실행
+yarn run build
 ```
