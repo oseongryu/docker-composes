@@ -415,10 +415,21 @@ npm install pm2 -g
 npm install -g yarn
 yarn install
 
-# pm2 실행
-pm2 delete all
-pm2 start ecosystem.config.js
+
 
 # 실행
 yarn run build
+
+# ecosystem.config.js
+  env: {
+    NODE_ENV: 'development',
+    CONFIG_ENV: 'local',
+  },
+
+# websitename.local.yml 변경
+localhost:9551 => 사용 API로
+
+# pm2 실행
+pm2 delete all
+pm2 start ecosystem.config.js
 ```
