@@ -396,8 +396,9 @@ docker exec -it centos-vue bash
 # git
 yum install -y wget git
 cd /app/webapp
-git clone ~~~~
+git clone git@10.50.5.20:hy-fredit/hy-fredit-web.git
 git checkout release
+git checkout feature/2025_uiux_2차
 
 # nvm 설치
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash

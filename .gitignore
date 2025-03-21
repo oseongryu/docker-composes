@@ -7,9 +7,9 @@ static/app
 nuxt-vue/spring/app
 nuxt-vue/spring/script/*.jar
 
-nuxt-dev/spring/app
-nuxt-dev/spring/script/*.jar
-nuxt-dev/vue/app
-nuxt-dev/vue/script/fo-*.jar
-nuxt-dev/vue/script/zu*
+nuxt-fredit/spring/app
+nuxt-fredit/spring/script/*.jar
+nuxt-fredit/vue/app
+nuxt-fredit/vue/script/fo-*.jar
+nuxt-fredit/vue/script/zu*
 
