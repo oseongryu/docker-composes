@@ -10,7 +10,7 @@ services:
     volumes:
       - ~/git:/git
     ports:
-      - "8080:8080"
+      - "18080:8080"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t

@@ -11,9 +11,9 @@ RUN useradd -m ${USER} && echo "${USER}:${PASSWORD}" | chpasswd && usermod -aG s
 ENV WORKINGDIR="/home/${USER}/vscode"
 # RUN curl -fsSL https://code-server.dev/install.sh | sh && \
 #     mkdir ${WORKINGDIR}
-   
-RUN wget -O code-server_4.95.3_amd64.deb "https://master.dl.sourceforge.net/project/code-server.mirror/v4.95.3/code-server_4.95.3_amd64.deb?viasf=1" && \
-    dpkg -i code-server_4.95.3_amd64.deb && \
+
+RUN wget -O code-server_4.100.2_amd64.deb "https://github.com/coder/code-server/releases/download/v4.100.2/code-server_4.100.2_amd64.deb" && \
+    dpkg -i code-server_4.100.2_amd64.deb && \
     mkdir ${WORKINGDIR}
 
 # Install extensions
