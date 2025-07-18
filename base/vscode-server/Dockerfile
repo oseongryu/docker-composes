@@ -23,5 +23,13 @@ RUN code-server --install-extension "ms-python.python" \
 # code-server 시작
 ENTRYPOINT nohup code-server --bind-addr 0.0.0.0:8080 --auth password  ${WORKINGDIR}
 
+# apt -y update
+# apt -y upgrade
+# apt -y install python3-pip
+# apt -y install python3-tk
+# apt -y install python3-dev 
+# apt -y install python-tk
+# apt install -y python3.12-venv
+
 # docker build --no-cache -t vscode-docker .
 # docker run -it --name vscode-container -p 8080:8080 vscode-docker

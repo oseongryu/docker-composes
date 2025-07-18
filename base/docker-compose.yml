@@ -2,6 +2,7 @@
 version: "2.2"
 services:
   vscode-server:
+    # network_mode: host
     container_name: vscode-server
     build:
       context: ./vscode-server
@@ -9,8 +10,11 @@ services:
     image: oseongryu/vscode-server
     volumes:
       - ~/git:/git
+      # - /c/Users/admin/git:/git
     ports:
-      - "18080:8080"
+      - "8080:8080"
+      - "3000:3000"
+      - "8000:8000"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
