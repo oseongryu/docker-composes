@@ -35,8 +35,24 @@ ENV DEBIAN_FRONTEND=noninteractive
 # RUN apt -y install xvfb scrot fonts-indic fonts-noto-cjk psmisc gnome-screenshot
 RUN sh /script/init_korean.sh
 RUN sh /script/init_user.sh
-# RUN sh /script/python_automation.sh
+RUN sh /script/python_automation.sh
 
+# mac
+# https://formulae.brew.sh/formula/pulseaudio 설치
+# brew install pulseaudio
+# 여서ㄴ됨
+# pulseaudio --start
+# pulseaudio -vvv
+# ls /run/user/$(id -u)/pulse/
+
+
+# 이건 됨
+# pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 --daemon
+# pulseaudio --load="module-native-protocol-tcp" --exit-idle-time=-1 --daemon
+#docker run -it -e PULSE_SERVER=docker.for.mac.localhost -v ~/.config/pulse:/home/pulseaudio/.config/pulse --entrypoint speaker-test --rm jess/pulseaudio -c 2 -l 1 -t wav
+
+RUN apt-get update && apt-get install -y pulseaudio
+# paplay /usr/share/sounds/alsa/Front_Center.wav
 # 작업 후 복구
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then sed -i 's#mirror.yuki.net.uk#ports.ubuntu.com#g' /etc/apt/sources.list; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then sed -i 's#mirror.yuki.net.uk#ports.ubuntu.com#g' /etc/apt/sources.list; \
