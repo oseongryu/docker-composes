@@ -64,7 +64,7 @@ ADD ${URL}/python_shorts.sh /script/
 
 RUN sh /script/init_korean.sh
 RUN sh /script/init_user.sh
-RUN sh /script/python_automation.sh
+# RUN sh /script/python_automation.sh
 
 
 # # 작업 후 복구

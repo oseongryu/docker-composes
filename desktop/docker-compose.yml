@@ -10,7 +10,7 @@ services:
     volumes:
       - ~/git/docker-composes//static/app:/app
     ports:
-      - "13389:3389"
+      - "13387:3389"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
