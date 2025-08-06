@@ -27,9 +27,11 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get autoremove -y \
     && rm -rf /var/lib/{apt,dpkg,cache,log}
 
-RUN apt install -y ubuntu-desktop
+RUN apt install -y ubuntu-desktop 
 
 RUN apt install -y xrdp
+RUN apt install -y curl
+
 RUN cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak
 RUN sed -i 's/3389/3389/g' /etc/xrdp/xrdp.ini
 RUN sed -i 's/max_bpp=32/#max_bpp=32nmax_bpp=128/g' /etc/xrdp/xrdp.ini
