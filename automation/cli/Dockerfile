@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 ENV TZ Asia/Seoul
 
-ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/f08e55bd536960002b3e6a04ce1593da2b465c6f"
+ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw"
 ADD ${URL}/app_android_studio.sh /script/
 ADD ${URL}/app_brave_browser.sh /script/
 ADD ${URL}/app_chrome.sh /script/

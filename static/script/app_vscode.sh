@@ -1,6 +1,18 @@
 #!/bin/bash
 sh_result=$(uname -m)
-cd /app && sudo tar -zxvf code-stable-*.tar.gz
+
+if [ ! -d "/app" ]; then
+    sudo mkdir -p /app
+fi
+cd /app
+
+if [ "$sh_result" = "aarch64" ]; then
+    wget -O code-stable.tar.gz https://update.code.visualstudio.com/latest/linux-arm64/stable
+else
+    wget -O code-stable.tar.gz https://update.code.visualstudio.com/latest/linux-x64/stable
+fi
+
+sudo tar -zxvf code-stable*.tar.gz
 
 if [ "$sh_result" = "aarch64" ]; then
     app_name=VSCode-linux-arm64
