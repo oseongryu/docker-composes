@@ -5,10 +5,6 @@ ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9
 ADD ${URL}/update_file_list.txt /script/
 ADD ${URL}/update_scripts.sh /script/
 
-ADD ${URL}/app_chrome.sh /script/
-ADD ${URL}/python_automation.sh /script/
-ADD ${URL}/init_korean.sh /script/
-
 
 
 ARG TARGETPLATFORM
