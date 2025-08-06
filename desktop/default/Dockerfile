@@ -47,13 +47,15 @@ RUN apt install -y xfce4 xfce4-goodies xfce4-session
 # RUN echo "xfce4-session" > ~/.xsession
 
 
-ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/b8e5e960eb0551295ee596c5449b7c275fca7a53"
+ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/fde3e61301786e4b5dcb107cb58566842d513f0a"
 ADD ${URL}/app_android_studio.sh /script/
+ADD ${URL}/app_brave_browser.sh /script/
 ADD ${URL}/app_chrome.sh /script/
 ADD ${URL}/app_intellij.sh /script/
 ADD ${URL}/app_vscode.sh /script/
 ADD ${URL}/app_warp.sh /script/
 
+ADD ${URL}/init_chrome.sh /script/
 ADD ${URL}/init_env_nvm.sh /script/
 ADD ${URL}/init_korean.sh /script/
 ADD ${URL}/init_timezone.sh /script/
