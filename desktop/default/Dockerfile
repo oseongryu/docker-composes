@@ -61,6 +61,7 @@ ADD ${URL}/init_env_nvm.sh /script/
 ADD ${URL}/init_korean.sh /script/
 ADD ${URL}/init_timezone.sh /script/
 ADD ${URL}/init_user.sh /script/
+ADD ${URL}/update_scripts.sh /script/
 
 ADD ${URL}/python_automation.sh /script/
 ADD ${URL}/python_shorts.sh /script/
