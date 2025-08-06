@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 # windows의 경우
 # ENTRYPOINT ["/usr/sbin/init"]
 # CMD ["systemctl"]
-ENV TZ Asia/Seoul
+ENV TZ=Asia/Seoul
 
 # 설치시 사용자 입력을 요구하는 것을 방지하는 설정
 ARG DEBIAN_FRONTEND=noninteractive

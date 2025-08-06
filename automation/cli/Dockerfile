@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-ENV TZ Asia/Seoul
+ENV TZ=Asia/Seoul
 
 ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw"
 ADD ${URL}/update_file_list.txt /script/

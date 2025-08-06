@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 # 설치시 사용자 입력을 요구하는 것을 방지하는 설정
 ARG DEBIAN_FRONTEND=noninteractive
-# ENV TZ Asia/Seoul
+# ENV TZ=Asia/Seoul
 
 # 1
 CMD ["/sbin/init"]

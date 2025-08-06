@@ -1,6 +1,6 @@
 FROM mysql:latest
 
-ENV TZ Asia/Seoul
+ENV TZ=Asia/Seoul
 
 COPY init/*.sql /docker-entrypoint-initdb.d/
 
