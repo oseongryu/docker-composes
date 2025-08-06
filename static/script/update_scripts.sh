@@ -3,26 +3,12 @@
 # Base URL
 BASE_URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw"
 
-# List of files to update
-FILES=(
-    "app_android_studio.sh"
-    "app_brave_browser.sh"
-    "app_chrome.sh"
-    "app_intellij.sh"
-    "app_opera.sh"
-    "app_vscode.sh"
-    "app_warp.sh"
-    "init_chrome.sh"
-    "init_env_nvm.sh"
-    "init_korean.sh"
-    "init_timezone.sh"
-    "init_user.sh"
-    "python_automation.sh"
-    "python_shorts.sh"
-)
+# File containing the list of files to update
+FILE_LIST="./updaet_file_list.txt"
 
 # Target directory
 TARGET_DIR="/script"
+
 
 # Ensure the target directory exists
 if [ ! -d "$TARGET_DIR" ]; then
@@ -30,8 +16,14 @@ if [ ! -d "$TARGET_DIR" ]; then
     mkdir -p "$TARGET_DIR"
 fi
 
+# Ensure the file list exists
+if [ ! -f "$FILE_LIST" ]; then
+    echo "Error: File list $FILE_LIST does not exist. Please create it and try again."
+    exit 1
+fi
+
 # Download and update each file
-for FILE in "${FILES[@]}"; do
+while IFS= read -r FILE; do
     echo "Updating $FILE..."
     curl -fsSL "${BASE_URL}/${FILE}" -o "${TARGET_DIR}/${FILE}"
     if [ $? -eq 0 ]; then
@@ -39,6 +31,6 @@ for FILE in "${FILES[@]}"; do
     else
         echo "Failed to update $FILE."
     fi
-done
+done < "$FILE_LIST"
 
 echo "All files updated."
