@@ -2,23 +2,11 @@ FROM oseongryu/ubuntu-desktop:20.04
 ENV TZ Asia/Seoul
 
 ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw"
-ADD ${URL}/app_android_studio.sh /script/
-ADD ${URL}/app_brave_browser.sh /script/
-ADD ${URL}/app_chrome.sh /script/
-ADD ${URL}/app_intellij.sh /script/
-ADD ${URL}/app_opera.sh /script/
-ADD ${URL}/app_vscode.sh /script/
-ADD ${URL}/app_warp.sh /script/
-
-ADD ${URL}/init_chrome.sh /script/
-ADD ${URL}/init_env_nvm.sh /script/
-ADD ${URL}/init_korean.sh /script/
-ADD ${URL}/init_timezone.sh /script/
-ADD ${URL}/init_user.sh /script/
+ADD ${URL}/update_file_list.txt /script/
 ADD ${URL}/update_scripts.sh /script/
-
+ADD ${URL}/init_korean.sh /script/
+ADD ${URL}/init_user.sh /script/
 ADD ${URL}/python_automation.sh /script/
-ADD ${URL}/python_shorts.sh /script/
 
 
 # COPY ./app/ /app/
@@ -37,6 +25,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 # RUN apt -y install python3-pip python3-tk python3-dev python-tk
 # RUN apt -y install xvfb scrot fonts-indic fonts-noto-cjk psmisc gnome-screenshot
+RUN sh /script/update_scripts.sh
+
 RUN sh /script/init_korean.sh
 RUN sh /script/init_user.sh
 RUN sh /script/python_automation.sh

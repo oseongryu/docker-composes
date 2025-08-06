@@ -4,7 +4,7 @@
 BASE_URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw"
 
 # File containing the list of files to update
-FILE_LIST="./updaet_file_list.txt"
+FILE_LIST="/script/update_file_list.txt"
 
 # Target directory
 TARGET_DIR="/script"
