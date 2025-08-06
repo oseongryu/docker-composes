@@ -7,10 +7,10 @@ sh_result=$(uname -m)
 if [ "$sh_result" = "aarch64" ]; then
     echo "arm64 chrome"
     # arm64
-    apt install -y chromium-browser
-    apt install -y chromium-chromedriver
-    apt install -y firefox
-else 
+    # apt install -y chromium-browser
+    # apt install -y chromium-chromedriver
+    # apt install -y firefox
+else
     echo "amd64 chrome"
     # amd64
     cd /app
@@ -26,7 +26,7 @@ else
     apt-get install -y -f
     # # Chrome 실행
     # google-chrome-stable
-fi 
+fi
 # /usr/bin/google-chrome-stable  --headless --no-sandbox --single-process --disable-dev-shm-usage
 # https://study-grow.tistory.com/entry/DevToolsActivePort-file-doesnt-exist-error-%ED%95%B4%EA%B2%B0%EB%B2%95
 # chrome_options.add_argument('--headless')
