@@ -10,7 +10,7 @@ ARG TARGETPLATFORM
 # 타임존 설정
 ENV TZ=Asia/Seoul
 
-ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/df491f8f62b8844d415afcc9ace954eae14d858b"
+ENV URL="https://gist.githubusercontent.com/oseongryu/d50f81d8894af19821c9f2e5d9b6646b/raw/1c940213080745c16d5eed58741a8ca27b7efa2a"
 
 ADD ${URL}/update_file_list.txt /script/
 ADD ${URL}/update_scripts.sh /script/
