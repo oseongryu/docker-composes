@@ -1,6 +1,7 @@
 app_android_studio.sh
 app_brave_browser.sh
 app_chrome.sh
+app_chromium.sh
 app_intellij.sh
 app_opera.sh
 app_vscode.sh
@@ -8,7 +9,9 @@ app_warp.sh
 init_chrome.sh
 init_env_nvm.sh
 init_korean.sh
+init_mouse.sh
 init_timezone.sh
 init_user.sh
 python_automation.sh
 python_shorts.sh
+update_file_list.txt
