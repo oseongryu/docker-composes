@@ -27,7 +27,7 @@ else
     # # Chrome 실행
     # google-chrome-stable
 fi
-# /usr/bin/google-chrome-stable  --headless --no-sandbox --single-process --disable-dev-shm-usage
+# /usr/bin/google-chrome-stable --headless --no-sandbox --single-process --disable-dev-shm-usage --user-data-dir="/home/ubuntu/profile"
 # https://study-grow.tistory.com/entry/DevToolsActivePort-file-doesnt-exist-error-%ED%95%B4%EA%B2%B0%EB%B2%95
 # chrome_options.add_argument('--headless')
 # chrome_options.add_argument('--no-sandbox')
