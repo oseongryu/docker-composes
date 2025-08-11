@@ -33,3 +33,4 @@ fi
 # chrome_options.add_argument('--no-sandbox')
 # chrome_options.add_argument("--single-process")
 # chrome_options.add_argument("--disable-dev-shm-usage")
+# /usr/bin/google-chrome-stable --disable-dev-shm-usage --user-data-dir="/home/ubuntu/windows11_ubuntu24"

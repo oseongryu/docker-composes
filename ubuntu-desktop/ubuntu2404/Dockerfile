@@ -58,6 +58,11 @@ RUN sh /script/init_korean.sh
 RUN sh /script/init_timezone.sh
 RUN sh /script/init_user.sh
 # RUN sh /script/python_automation.sh
+# RUN sh /script/python_shorts.sh
+
+# RUN sudo apt install python3.12-venv
+# RUN python3 -m venv /venv
+# source ~/venv/bin/activate
 
 # 작업 후 복구
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then sed -i 's#mirror.yuki.net.uk#ports.ubuntu.com#g' /etc/apt/sources.list; \
