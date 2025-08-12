@@ -61,6 +61,8 @@ RUN sh /script/init_user.sh
 # RUN sh /script/python_shorts.sh
 
 # RUN sudo apt install python3.12-venv
+# RUN sudo apt install gnome-screenshot
+
 # RUN python3 -m venv /venv
 # source ~/venv/bin/activate
 
