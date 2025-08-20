@@ -6,7 +6,7 @@ services:
     build:
       context: ./ubuntu2404
       dockerfile: Dockerfile
-    image: oseongryu/ubuntu-desktop:20250807.01
+    image: oseongryu/ubuntu-desktop:20250820.01
     volumes:
       - /app:/app
       - ~/git:/git
