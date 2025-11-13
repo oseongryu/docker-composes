@@ -1,0 +1,32 @@
+# Docker Compose 파일 포맷 버전 지정
+version: "3.8"
+name: gitlab
+
+# 컨테이너 설정
+services:
+  gitlab:
+    container_name: gitlab-ce
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    hostname: 'gitlab.local'
+    privileged: true
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.local'
+        gitlab_rails['gitlab_shell_ssh_port'] = 10022
+    ports:
+      - "1080:80"
+      - "10443:443"
+      - "10022:22"
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    shm_size: '256m'
+    stdin_open: true
+    tty: true
+
+volumes:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
