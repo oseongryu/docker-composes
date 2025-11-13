@@ -2,6 +2,31 @@
 
 이 디렉토리는 Docker Compose를 사용하여 GitLab Community Edition을 설치하고 실행합니다.
 
+## 🚀 빠른 시작 (Quick Start)
+
+```bash
+# 1. GitLab 시작
+docker-compose up -d
+
+# 2. 3-5분 대기 (GitLab 초기화 중...)
+
+# 3. 초기 비밀번호 확인
+docker exec -it gitlab-ce grep 'Password:' /etc/gitlab/initial_root_password
+
+# 4. GitLab 접속: http://localhost:1080
+#    Username: root
+#    Password: (위에서 확인한 비밀번호)
+
+# 5. Personal Access Token 생성 (중요!)
+#    Preferences → Access Tokens → Create (api, read_repository, write_repository)
+
+# 6. Git Push 테스트
+git remote add origin http://localhost:1080/root/your-project.git
+git push -u origin master
+# Username: root
+# Password: (Personal Access Token 입력)
+```
+
 ## 구성 요소
 
 - **GitLab CE**: GitLab Community Edition 컨테이너
@@ -126,12 +151,24 @@ docker-compose up -d
 
 ### GitLab이 시작되지 않는 경우
 1. 메모리가 충분한지 확인 (최소 4GB 권장)
-2. 포트 충돌 확인 (80, 443, 2222)
+2. 포트 충돌 확인 (1080, 10443, 10022)
 3. 로그 확인: `docker-compose logs -f gitlab`
 
 ### 비밀번호를 잊어버린 경우
 ```bash
 docker exec -it gitlab-ce gitlab-rake "gitlab:password:reset[root]"
+```
+
+#### **오류가 발생하면 다음을 확인**
+
+```bash
+
+ssh -T git@localhost -p 10022 -o StrictHostKeyChecking=no
+curl -I http://localhost:1080
+
+
+git remote set-url origin http://localhost:1080/group1/web.git
+git remote set-url origin ssh://git@localhost:10022/group1/was.git
 ```
 
 ## 라이선스
