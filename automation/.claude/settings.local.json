@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:gist.githubusercontent.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
