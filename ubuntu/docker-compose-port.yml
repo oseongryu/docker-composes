@@ -4,12 +4,10 @@ services:
   ubuntu:
     container_name: ubuntu-desktop-port
     image: oseongryu/ubuntu-desktop:with-ports
-    volumes:
-      - ~/git/docker-composes//static/app:/app
     ports:
       - "13386:3389"
-      - "8001:8001"
-      - "8002:8002"
+      - "18000:8000"
+      - "18001:8001"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
