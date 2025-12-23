@@ -6,8 +6,7 @@ services:
     image: oseongryu/ubuntu-desktop:with-ports
     ports:
       - "13386:3389"
-      - "18000:8000"
-      - "18001:8001"
+      - "8001:8001"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
