@@ -7,9 +7,6 @@ services:
       context: ./ubuntu2404
       dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop:20250820.01
-    volumes:
-      - ~/app:/app
-      - ~/git:/git
     ports:
       - "13387:3389"
     restart: always
