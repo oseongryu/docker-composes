@@ -144,6 +144,77 @@ docker logs -f db-mysql-proxy
 docker logs -f db-mysql-proxy
 ```
 
+## Brute Force 방어 (Rate Limiting)
+
+자동으로 무차별 대입 공격을 차단합니다.
+
+### 차단 규칙
+
+- **10초 동안 5회 이상 연결 시도** → 자동 차단
+- **차단 시간**: 30초 (이후 자동 해제)
+- **정상 사용**: 영향 없음 (일반적으로 초당 1~2회 연결)
+
+### 작동 방식
+
+1. 각 IP의 연결 시도를 실시간 추적
+2. 10초 동안 5회 초과 시 즉시 차단
+3. 30초 후 자동으로 차단 해제
+4. Stats 페이지에서 차단된 연결 확인 가능
+
+### 차단된 IP 확인
+
+**방법 1: Runtime API (상세)**
+
+전체 차단 목록 확인:
+```bash
+docker exec db-mysql-proxy sh -c "echo 'show table mysql_frontend' | socat stdio /tmp/haproxy.sock"
+```
+
+특정 IP 확인:
+```bash
+docker exec db-mysql-proxy sh -c "echo 'show table mysql_frontend key 192.168.1.100' | socat stdio /tmp/haproxy.sock"
+```
+
+출력 예시:
+```
+# table: mysql_frontend, type: ip, size:102400, used:2
+0x7f8a9c000a80: key=192.168.1.100 use=0 exp=28759 conn_rate(5000)=4
+0x7f8a9c000b20: key=10.0.0.50 use=0 exp=15234 conn_rate(5000)=6
+```
+
+- `conn_rate(5000)`: 5초 동안의 연결 수
+- `exp`: 만료까지 남은 시간 (밀리초)
+- 3회 초과하면 차단됨
+
+**방법 2: Stats 페이지 (요약)**
+
+```
+http://<서버IP>:8404
+```
+
+"mysql_frontend" 섹션의 "Denied req" 카운터에서 총 차단 수 확인.
+
+### Rate Limiting 조정
+
+더 엄격하게 또는 완화하려면 `haproxy.cfg:38-40` 수정:
+
+```cfg
+# 더 엄격: 5초 동안 3회 → 차단
+stick-table type ip size 100k expire 30s store conn_rate(5s)
+tcp-request connection track-sc0 src
+tcp-request connection reject if { sc_conn_rate(0) gt 3 }
+
+# 더 완화: 30초 동안 20회 → 차단
+stick-table type ip size 100k expire 60s store conn_rate(30s)
+tcp-request connection track-sc0 src
+tcp-request connection reject if { sc_conn_rate(0) gt 20 }
+```
+
+변경 후 재시작:
+```bash
+docker-compose restart haproxy
+```
+
 ## 보안 권장사항
 
 1. **최소 권한 원칙**: 필요한 IP만 허용

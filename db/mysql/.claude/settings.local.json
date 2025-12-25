@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(for i in {1..6})",
+      "Bash(do echo \"시도 $i\")",
+      "Bash(timeout 1 bash:*)",
+      "Bash(done)",
+      "Bash(docker-compose up:*)"
+    ]
+  }
+}

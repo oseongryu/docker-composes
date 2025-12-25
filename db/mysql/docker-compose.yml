@@ -5,7 +5,10 @@ services:
   # HAProxy - MySQL 프록시 및 IP 필터링
   haproxy:
     container_name: db-mysql-proxy
-    image: haproxy:2.9-alpine
+    build:
+      context: ./
+      dockerfile: haproxy.Dockerfile
+    image: db/haproxy:2.9-socat
     ports:
       - "3306:3306"
       - "8404:8404"  # Stats 페이지
