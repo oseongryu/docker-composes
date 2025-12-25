@@ -8,6 +8,7 @@ services:
     image: haproxy:2.9-alpine
     ports:
       - "3306:3306"
+      - "8404:8404"  # Stats 페이지
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - ./allowed_ips.txt:/etc/haproxy/allowed_ips.txt:rw

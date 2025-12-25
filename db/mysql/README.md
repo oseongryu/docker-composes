@@ -80,6 +80,44 @@ docker exec db-mysql-proxy kill -HUP 1
 docker restart db-mysql-proxy
 ```
 
+## Stats 페이지로 실시간 모니터링
+
+HAProxy Stats 페이지에서 **실시간으로 접속 중인 클라이언트 IP**를 확인할 수 있습니다.
+
+### 접속 방법
+
+웹 브라우저에서 접속:
+```
+http://<서버IP>:8404
+```
+
+**로그인 정보:**
+- 사용자명: `admin`
+- 비밀번호: `admin123`
+
+⚠️ **보안 주의**: 운영 환경에서는 반드시 `haproxy.cfg`의 `stats auth` 설정에서 비밀번호를 변경하세요!
+
+### Stats 페이지에서 확인 가능한 정보
+
+- **현재 연결 중인 클라이언트 IP 주소**
+- 총 연결 수 / 초당 요청 수
+- 데이터 전송량 (송신/수신)
+- Backend 서버(MySQL) 상태
+- 에러 및 재시도 통계
+- 서버 uptime
+
+### 비밀번호 변경 방법
+
+`haproxy.cfg` 파일 수정:
+```cfg
+stats auth admin:새로운비밀번호
+```
+
+변경 후 재시작:
+```bash
+docker-compose restart haproxy
+```
+
 ## 연결 테스트
 
 ### 허용된 IP에서 접속
