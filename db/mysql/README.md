@@ -42,25 +42,25 @@ docker-compose up -d
 ### IP 추가
 
 ```bash
-docker exec db-mysql-proxy sh -c "echo 'add acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /var/run/haproxy.sock"
+docker exec db-mysql-proxy sh -c "echo 'add acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /tmp/haproxy.sock"
 ```
 
 ### IP 삭제
 
 ```bash
-docker exec db-mysql-proxy sh -c "echo 'del acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /var/run/haproxy.sock"
+docker exec db-mysql-proxy sh -c "echo 'del acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /tmp/haproxy.sock"
 ```
 
 ### 허용된 IP 목록 확인
 
 ```bash
-docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /tmp/haproxy.sock"
 ```
 
 ### ACL 전체 초기화 (주의!)
 
 ```bash
-docker exec db-mysql-proxy sh -c "echo 'clear acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+docker exec db-mysql-proxy sh -c "echo 'clear acl /etc/haproxy/allowed_ips.txt' | socat stdio /tmp/haproxy.sock"
 ```
 
 ## 파일로 IP 관리
@@ -157,7 +157,7 @@ docker logs -f db-mysql-proxy
 
 1. ACL 목록 확인:
    ```bash
-   docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+   docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /tmp/haproxy.sock"
    ```
 
 2. HAProxy 로그 확인:
@@ -188,4 +188,5 @@ docker ps | grep haproxy
 
 - HAProxy 버전: 2.9-alpine
 - MySQL 버전: 8.0.38
-- Runtime API: 활성화됨 (`/var/run/haproxy.sock`)
+- Runtime API: 활성화됨 (`/tmp/haproxy.sock`)
+- Stats 페이지: http://localhost:8404 (admin/admin123)
