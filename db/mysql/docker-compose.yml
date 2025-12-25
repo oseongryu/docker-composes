@@ -2,6 +2,21 @@
 version: "2.2"
 
 services:
+  # HAProxy - MySQL 프록시 및 IP 필터링
+  haproxy:
+    container_name: db-mysql-proxy
+    image: haproxy:2.9-alpine
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - mysql
+    restart: always
+    networks:
+      - mysql_network
+
+  # MySQL 서버 (내부 네트워크만 접근 가능)
   mysql:
     container_name: db-mysql
     command: --character-set-server=utf8 --collation-server=utf8_general_ci
@@ -13,9 +28,16 @@ services:
       - LC_ALL=C.UTF-8
       - MYSQL_DATABASE=mysqldb
       - MYSQL_ROOT_PASSWORD=mysqldb
-    ports:
-      - "3306:3306"
+    # 외부 포트 노출 제거 - HAProxy를 통해서만 접근
+    expose:
+      - "3306"
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
     restart: always
+    networks:
+      - mysql_network
+
+networks:
+  mysql_network:
+    driver: bridge
