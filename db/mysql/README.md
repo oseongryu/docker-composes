@@ -1,0 +1,153 @@
+# MySQL with HAProxy - IP 기반 접근 제어
+
+HAProxy를 사용하여 MySQL 접근을 제어하는 Docker Compose 구성입니다.
+허용된 IP만 MySQL에 접근할 수 있으며, **Runtime API를 통해 재시작 없이 실시간으로 IP를 추가/제거**할 수 있습니다.
+
+## 아키텍처
+
+```
+클라이언트 → HAProxy (3306) → MySQL (내부 네트워크)
+              ↑
+         IP 필터링
+```
+
+- **HAProxy**: 3306 포트를 외부에 노출하고 IP 필터링 수행
+- **MySQL**: 내부 네트워크에서만 접근 가능 (외부 직접 접근 불가)
+
+## 시작하기
+
+### 1. 컨테이너 실행
+
+```bash
+docker-compose up -d
+```
+
+### 2. 허용 IP 설정
+
+`allowed_ips.txt` 파일을 편집하여 허용할 IP를 추가합니다:
+
+```bash
+# 단일 IP
+192.168.1.100
+
+# 네트워크 대역
+192.168.1.0/24
+10.0.0.0/8
+```
+
+## Runtime API로 실시간 IP 관리
+
+**재시작 없이** IP를 추가/제거할 수 있습니다.
+
+### IP 추가
+
+```bash
+docker exec db-mysql-proxy sh -c "echo 'add acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /var/run/haproxy.sock"
+```
+
+### IP 삭제
+
+```bash
+docker exec db-mysql-proxy sh -c "echo 'del acl /etc/haproxy/allowed_ips.txt 203.0.113.50' | socat stdio /var/run/haproxy.sock"
+```
+
+### 허용된 IP 목록 확인
+
+```bash
+docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+```
+
+### ACL 전체 초기화 (주의!)
+
+```bash
+docker exec db-mysql-proxy sh -c "echo 'clear acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+```
+
+## 파일로 IP 관리
+
+`allowed_ips.txt` 파일을 직접 수정한 후, HAProxy에 변경사항을 알려야 합니다:
+
+### 방법 1: 파일 수정 후 reload
+
+```bash
+# allowed_ips.txt 편집 후
+docker exec db-mysql-proxy kill -HUP 1
+```
+
+### 방법 2: 컨테이너 재시작
+
+```bash
+docker restart db-mysql-proxy
+```
+
+## 연결 테스트
+
+### 허용된 IP에서 접속
+
+```bash
+mysql -h <서버IP> -P 3306 -u root -p
+```
+
+### 허용되지 않은 IP에서 접속 시
+
+연결이 즉시 거부됩니다 (연결 timeout 아님).
+
+## 로그 확인
+
+### HAProxy 로그
+
+```bash
+docker logs -f db-mysql-proxy
+```
+
+### MySQL 로그
+
+```bash
+docker logs -f db-mysql-proxy
+```
+
+## 보안 권장사항
+
+1. **최소 권한 원칙**: 필요한 IP만 허용
+2. **정기적 검토**: 허용 IP 목록을 주기적으로 확인
+3. **로그 모니터링**: 거부된 연결 시도를 모니터링
+4. **방화벽 병행**: OS 레벨 방화벽과 함께 사용 권장
+
+## 문제 해결
+
+### IP를 추가했는데 접속이 안 됨
+
+1. ACL 목록 확인:
+   ```bash
+   docker exec db-mysql-proxy sh -c "echo 'show acl /etc/haproxy/allowed_ips.txt' | socat stdio /var/run/haproxy.sock"
+   ```
+
+2. HAProxy 로그 확인:
+   ```bash
+   docker logs db-mysql-proxy
+   ```
+
+### socat 명령어가 안 됨
+
+HAProxy Alpine 이미지에는 socat이 포함되어 있습니다. 컨테이너가 정상 실행 중인지 확인하세요:
+
+```bash
+docker ps | grep haproxy
+```
+
+## 파일 구조
+
+```
+.
+├── docker-compose.yml      # Docker Compose 설정
+├── Dockerfile              # MySQL 이미지 빌드 설정
+├── haproxy.cfg             # HAProxy 설정 (Runtime API 활성화)
+├── allowed_ips.txt         # 허용 IP 목록 (실시간 수정 가능)
+└── README.md               # 이 문서
+```
+
+## 추가 정보
+
+- HAProxy 버전: 2.9-alpine
+- MySQL 버전: 8.0.38
+- Runtime API: 활성화됨 (`/var/run/haproxy.sock`)

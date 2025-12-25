@@ -10,11 +10,17 @@ services:
       - "3306:3306"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./allowed_ips.txt:/etc/haproxy/allowed_ips.txt:rw
     depends_on:
       - mysql
     restart: always
     networks:
       - mysql_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # MySQL 서버 (내부 네트워크만 접근 가능)
   mysql:
@@ -37,6 +43,11 @@ services:
     restart: always
     networks:
       - mysql_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   mysql_network:
