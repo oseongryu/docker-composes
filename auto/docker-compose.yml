@@ -1,32 +1,45 @@
 version: "2.2"
 services:
   cli:
-    container_name: automation-cli
+    container_name: cli
     build:
       context: ./cli/
       dockerfile: Dockerfile
-    image: oseongryu/automation-cli:1.0.0
+    image: oseongryu/cli:1.0.0
     ports:
       - "13000:3000"
       - "18091:8091"
     volumes:
-      - ~/git:/root/git
+      - ~/git:/git
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
-  desktop:
-    container_name: automation-desktop
+  gui:
+    container_name: gui
     build:
-      context: ./desktop/
+      context: ./gui/
       dockerfile: Dockerfile
-    image: oseongryu/automation-desktop:1.0.0
+    image: oseongryu/gui:1.0.0
     ports:
       - "13389:3389"
       - "13000:3000"
       - "18091:8091"
     volumes:
       - ~/git:/git
+    restart: always
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    privileged: true
+  gui-2404:
+    container_name: gui-2404
+    build:
+      context: ./gui-2404/
+      dockerfile: Dockerfile
+    image: oseongryu/gui-2404:1.0.0
+    ports:
+      - "13387:3389"
+      - "13000:3000"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t
