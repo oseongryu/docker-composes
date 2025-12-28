@@ -6,7 +6,7 @@ services:
     build:
       context: ./desktop-2404
       dockerfile: Dockerfile
-    image: oseongryu/ubuntu-desktop
+    image: oseongryu/ubuntu-desktop:24.04
     ports:
       - "13389:3389"
     restart: always
