@@ -11,7 +11,7 @@ services:
     image: db/haproxy:2.9-socat
     ports:
       - "3306:3306"
-      - "8404:8404"  # Stats 페이지
+      - "8404:8404" # Stats 페이지
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - ./allowed_ips.txt:/etc/haproxy/allowed_ips.txt:rw
