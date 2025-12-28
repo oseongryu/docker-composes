@@ -1,11 +1,11 @@
 version: "2.2"
 services:
   cli:
-    container_name: cli
+    container_name: cli-2004
     build:
-      context: ./cli/
+      context: ./cli-2004/
       dockerfile: Dockerfile
-    image: oseongryu/cli:1.0.0
+    image: oseongryu/cli-2004:1.0.0
     ports:
       - "13000:3000"
       - "18091:8091"
@@ -16,15 +16,14 @@ services:
     tty: true # docker run -t
     privileged: true
   gui:
-    container_name: gui
+    container_name: gui-2004
     build:
-      context: ./gui/
+      context: ./gui-2004/
       dockerfile: Dockerfile
-    image: oseongryu/gui:1.0.0
+    image: oseongryu/gui-2004:1.0.0
     ports:
       - "13389:3389"
       - "13000:3000"
-      - "18091:8091"
     volumes:
       - ~/git:/git
     restart: always
