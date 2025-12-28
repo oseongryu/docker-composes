@@ -4,13 +4,11 @@ services:
   ubuntu:
     container_name: ubuntu-desktop
     build:
-      context: ./default
+      context: ./desktop-2404
       dockerfile: Dockerfile
     image: oseongryu/ubuntu-desktop
     ports:
       - "13389:3389"
-      - "8001:8001"
-      - "8002:8002"
     restart: always
     stdin_open: true # docker run -i
     tty: true # docker run -t

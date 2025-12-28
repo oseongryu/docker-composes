@@ -30,16 +30,3 @@ services:
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
-  gui-2404:
-    container_name: gui-2404
-    build:
-      context: ./gui-2404/
-      dockerfile: Dockerfile
-    image: oseongryu/gui-2404:1.0.0
-    ports:
-      - "13387:3389"
-      - "13000:3000"
-    restart: always
-    stdin_open: true # docker run -i
-    tty: true # docker run -t
-    privileged: true
