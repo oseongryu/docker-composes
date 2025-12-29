@@ -1,3 +1,9 @@
+## windows
+
+```sh
+powershell -ExecutionPolicy Bypass -File .\change-rdp-port.ps1
+```
+
 ## db
 
 ### mysql
@@ -438,4 +444,7 @@ pm2 start ecosystem.config.js
 ```bash
 cd ubuntu/desktop-2404
 docker buildx build --platform linux/amd64,linux/arm64 -t oseongryu/ubuntu-desktop:24.04 --push .
+
+# delete buildx cache
+docker buildx prune
 ```
