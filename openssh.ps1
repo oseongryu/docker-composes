@@ -1,5 +1,9 @@
 // https://toycoding.tistory.com/entry/윈도우-OpenSSH-설치하기#google_vignette
 // 선택적 기능
+//  Invoke-Item C:\ProgramData\ssh\sshd_config
+// 포트변경
+// Restart-Service -Force -Name sshd
+
 // openSSH 설치상태 확인
 Get-WindowsCapability -Online |? Name -like 'OpenSSH*'
 
