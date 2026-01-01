@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # https://shanepark.tistory.com/231
 # 한글 언어 팩
 apt update

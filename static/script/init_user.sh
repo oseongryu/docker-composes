@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # sudo adduser ubuntu #password: password
 
 USERNAME=ubuntu

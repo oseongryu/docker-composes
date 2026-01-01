@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # timezone
 timedatectl set-timezone Asia/Seoul
 

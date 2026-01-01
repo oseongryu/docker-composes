@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # apt-get install -y pkg-config python-dev default-libmysqlclient-dev libssl-dev 
 # RUN sudo apt install python3.12-venv
 # RUN python3 -m venv /venv
