@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ls -al
 echo "init chrome"
 
