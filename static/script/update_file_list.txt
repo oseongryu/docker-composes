@@ -2,6 +2,7 @@ app_android_studio.sh
 app_brave_browser.sh
 app_chrome.sh
 app_chromium.sh
+app_claude.sh
 app_intellij.sh
 app_opera.sh
 app_vscode.sh
