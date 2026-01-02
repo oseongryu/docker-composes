@@ -18,13 +18,13 @@ $AllowedIPs = @(
 # ============================================
 # Steps to Execute
 # 1: Registry Modification
-# 2: Firewall Rule
 # 3: Restart Service
 # 4: Verification
-# 5: Modify Existing Firewall Rule
+# 11: Firewall Rule
+# 12: Modify Existing Firewall Rule
 # ============================================
-# $Steps = @(1,2,3,4)
-$Steps = @(5)
+# $Steps = @(1,3,4)
+$Steps = @(11)
 
 # ============================================
 # Step 5 Settings
@@ -66,33 +66,6 @@ if ($Steps -contains 1) {
     Write-Host "`n[1/4] Skipped - Registry Modification" -ForegroundColor Yellow
 }
 
-# 2. Firewall Rule
-if ($Steps -contains 2) {
-    Write-Host "`n[2/4] Adding Firewall Rule..." -ForegroundColor Cyan
-    try {
-        $existingRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
-        if ($existingRule) {
-            Remove-NetFirewallRule -DisplayName "app-13389"
-            Write-Host "Existing custom rule removed" -ForegroundColor Yellow
-        }
-
-        # Check if "Any" is in the allowed IPs
-        if ($AllowedIPs -contains "Any") {
-            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
-            Write-Host "OK Firewall rule added: TCP $NewPort (All IPs)" -ForegroundColor Green
-        } else {
-            $IPList = $AllowedIPs -join ','
-            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
-            Write-Host "OK Firewall rule added: TCP $NewPort (Allowed IPs: $IPList)" -ForegroundColor Green
-        }
-    } catch {
-        Write-Host "ERROR Firewall rule failed: $_" -ForegroundColor Red
-        exit 1
-    }
-} else {
-    Write-Host "`n[2/4] Skipped - Firewall Rule" -ForegroundColor Yellow
-}
-
 # 3. Restart Service
 if ($Steps -contains 3) {
     Write-Host "`n[3/4] Restarting Remote Desktop Services..." -ForegroundColor Cyan
@@ -128,8 +101,35 @@ if ($Steps -contains 4) {
     Write-Host "`n[4/4] Skipped - Verification" -ForegroundColor Yellow
 }
 
-# 5. Modify Existing Firewall Rule
-if ($Steps -contains 5) {
+# 11. Firewall Rule
+if ($Steps -contains 11) {
+    Write-Host "`n[2/4] Adding Firewall Rule..." -ForegroundColor Cyan
+    try {
+        $existingRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
+        if ($existingRule) {
+            Remove-NetFirewallRule -DisplayName "app-13389"
+            Write-Host "Existing custom rule removed" -ForegroundColor Yellow
+        }
+
+        # Check if "Any" is in the allowed IPs
+        if ($AllowedIPs -contains "Any") {
+            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
+            Write-Host "OK Firewall rule added: TCP $NewPort (All IPs)" -ForegroundColor Green
+        } else {
+            $IPList = $AllowedIPs -join ','
+            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
+            Write-Host "OK Firewall rule added: TCP $NewPort (Allowed IPs: $IPList)" -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "ERROR Firewall rule failed: $_" -ForegroundColor Red
+        exit 1
+    }
+} else {
+    Write-Host "`n[2/4] Skipped - Firewall Rule" -ForegroundColor Yellow
+}
+
+# 12. Modify Existing Firewall Rule
+if ($Steps -contains 12) {
     Write-Host "`n[5/5] Modifying Existing Firewall Rule..." -ForegroundColor Cyan
 
     if ($Step5Mode -eq "RemoveAll") {
