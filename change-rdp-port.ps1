@@ -8,6 +8,11 @@
 $NewPort = 13389
 
 # ============================================
+# Firewall Rule Name
+# ============================================
+$FirewallRuleName = "$FirewallRuleName"
+
+# ============================================
 # Allowed Remote IPs (Use "Any" for all IPs)
 # ============================================
 $AllowedIPs = @(
@@ -84,7 +89,7 @@ if ($Steps -contains 3) {
 if ($Steps -contains 4) {
     Write-Host "`n[4/4] Verifying Settings..." -ForegroundColor Cyan
     $NewPortValue = Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name PortNumber
-    $FirewallRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
+    $FirewallRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
 
     Write-Host "`n=== Change Complete ===" -ForegroundColor Green
     Write-Host "Registry Port: $($NewPortValue.PortNumber)" -ForegroundColor White
@@ -105,19 +110,19 @@ if ($Steps -contains 4) {
 if ($Steps -contains 11) {
     Write-Host "`n[2/4] Adding Firewall Rule..." -ForegroundColor Cyan
     try {
-        $existingRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
+        $existingRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
         if ($existingRule) {
-            Remove-NetFirewallRule -DisplayName "app-13389"
+            Remove-NetFirewallRule -DisplayName "$FirewallRuleName"
             Write-Host "Existing custom rule removed" -ForegroundColor Yellow
         }
 
         # Check if "Any" is in the allowed IPs
         if ($AllowedIPs -contains "Any") {
-            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
+            New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
             Write-Host "OK Firewall rule added: TCP $NewPort (All IPs)" -ForegroundColor Green
         } else {
             $IPList = $AllowedIPs -join ','
-            New-NetFirewallRule -DisplayName "app-13389" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
+            New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
             Write-Host "OK Firewall rule added: TCP $NewPort (Allowed IPs: $IPList)" -ForegroundColor Green
         }
     } catch {
@@ -135,9 +140,9 @@ if ($Steps -contains 12) {
     if ($Step5Mode -eq "RemoveAll") {
         # Remove all custom RDP rules
         try {
-            $existingRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
+            $existingRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
             if ($existingRule) {
-                Remove-NetFirewallRule -DisplayName "app-13389"
+                Remove-NetFirewallRule -DisplayName "$FirewallRuleName"
                 Write-Host "OK All custom firewall rules removed" -ForegroundColor Green
             } else {
                 Write-Host "No custom firewall rule found" -ForegroundColor Yellow
@@ -149,7 +154,7 @@ if ($Steps -contains 12) {
     elseif ($Step5Mode -eq "AddIP") {
         # Add IPs to existing rule
         try {
-            $existingRule = Get-NetFirewallRule -DisplayName "app-13389" -ErrorAction SilentlyContinue
+            $existingRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
             if ($existingRule) {
                 # Get current RemoteAddress
                 $currentAddressFilter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $existingRule
@@ -164,7 +169,7 @@ if ($Steps -contains 12) {
                 }
 
                 # Update the rule
-                Set-NetFirewallRule -DisplayName "app-13389" -RemoteAddress $mergedIPs
+                Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $mergedIPs
 
                 $IPList = $mergedIPs -join ', '
                 Write-Host "OK IPs added to firewall rule" -ForegroundColor Green
