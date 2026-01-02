@@ -15,6 +15,11 @@ services:
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
   gui:
     container_name: gui-2004
     build:
@@ -30,6 +35,11 @@ services:
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
   gui-2404:
     container_name: gui-2404
     build:
@@ -45,3 +55,8 @@ services:
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
