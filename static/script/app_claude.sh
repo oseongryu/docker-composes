@@ -9,9 +9,61 @@ ARCH_TYPE=$(uname -m)
 echo "Detected OS: $OS_TYPE"
 echo "Architecture: $ARCH_TYPE"
 
+# Installation directory
+INSTALL_DIR="/usr/local/bin"
+TEMP_DIR="/tmp/claude-install"
+
 # Function to check if command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+# Detect architecture
+get_arch() {
+    case "$ARCH_TYPE" in
+        x86_64|amd64)
+            echo "amd64"
+            ;;
+        aarch64|arm64)
+            echo "arm64"
+            ;;
+        *)
+            echo "unsupported"
+            ;;
+    esac
+}
+
+# Detect OS type
+get_os() {
+    case "$OS_TYPE" in
+        Darwin*)
+            echo "darwin"
+            ;;
+        Linux*)
+            echo "linux"
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            echo "windows"
+            ;;
+        *)
+            echo "unsupported"
+            ;;
+    esac
+}
+
+# Download function
+download_file() {
+    local url=$1
+    local output=$2
+
+    if command_exists curl; then
+        curl -L -o "$output" "$url"
+    elif command_exists wget; then
+        wget -O "$output" "$url"
+    else
+        echo "Error: Neither curl nor wget found. Please install one of them."
+        exit 1
+    fi
 }
 
 # Install for macOS
@@ -20,26 +72,73 @@ install_macos() {
 
     if command_exists brew; then
         echo "Homebrew detected. Installing via brew..."
-        brew tap anthropics/claude
+        brew tap anthropics/claude 2>/dev/null || true
         brew install claude
     else
-        echo "Homebrew not found. Installing via npm..."
-        install_via_npm
+        echo "Homebrew not found. Downloading binary..."
+        install_binary
     fi
+}
+
+# Install binary directly
+install_binary() {
+    local os=$(get_os)
+    local arch=$(get_arch)
+
+    if [ "$os" = "unsupported" ] || [ "$arch" = "unsupported" ]; then
+        echo "Error: Unsupported OS ($OS_TYPE) or architecture ($ARCH_TYPE)"
+        exit 1
+    fi
+
+    # Create temp directory
+    mkdir -p "$TEMP_DIR"
+    cd "$TEMP_DIR"
+
+    # Construct download URL
+    # Note: Update this URL with the actual Claude CLI release URL
+    local binary_name="claude"
+    if [ "$os" = "windows" ]; then
+        binary_name="claude.exe"
+    fi
+
+    local download_url="https://github.com/anthropics/anthropic-cli/releases/latest/download/claude-${os}-${arch}"
+    if [ "$os" = "windows" ]; then
+        download_url="${download_url}.exe"
+    fi
+
+    echo "Downloading from: $download_url"
+
+    # Download binary
+    if ! download_file "$download_url" "$binary_name"; then
+        echo "Error: Failed to download Claude CLI binary."
+        echo ""
+        echo "Alternative installation methods:"
+        echo "  - macOS: brew install anthropics/claude/claude"
+        echo "  - Any OS with Node.js: npm install -g @anthropic-ai/claude-cli"
+        echo "  - Manual: Visit https://github.com/anthropics/anthropic-cli/releases"
+        exit 1
+    fi
+
+    # Make binary executable
+    chmod +x "$binary_name"
+
+    # Install to system directory
+    echo "Installing to $INSTALL_DIR (may require sudo)..."
+    if [ -w "$INSTALL_DIR" ]; then
+        mv "$binary_name" "$INSTALL_DIR/claude"
+    else
+        sudo mv "$binary_name" "$INSTALL_DIR/claude"
+    fi
+
+    # Cleanup
+    cd - > /dev/null
+    rm -rf "$TEMP_DIR"
 }
 
 # Install for Linux
 install_linux() {
     echo "Installing Claude CLI for Linux..."
-
-    # Check if running on specific architecture
-    if [ "$ARCH_TYPE" = "aarch64" ] || [ "$ARCH_TYPE" = "arm64" ]; then
-        echo "ARM64 architecture detected"
-    else
-        echo "AMD64/x86_64 architecture detected"
-    fi
-
-    install_via_npm
+    install_binary
 }
 
 # Install for Windows (WSL or Git Bash)
@@ -47,56 +146,51 @@ install_windows() {
     echo "Installing Claude CLI for Windows..."
     echo "Note: Running on Windows Subsystem for Linux (WSL) or Git Bash"
 
-    install_via_npm
-}
-
-# Install via npm (cross-platform)
-install_via_npm() {
-    if command_exists npm; then
-        echo "npm detected. Installing Claude CLI globally..."
-        npm install -g @anthropic-ai/claude-cli
-    elif command_exists node; then
-        echo "Node.js detected but npm not found. Please install npm first."
-        exit 1
+    # For WSL, use Linux binary
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+        echo "WSL detected, installing Linux binary..."
+        install_binary
     else
-        echo "Error: Node.js and npm are required but not installed."
-        echo ""
-        echo "Please install Node.js first:"
-        echo "  - macOS: brew install node"
-        echo "  - Linux (Ubuntu/Debian): sudo apt install -y nodejs npm"
-        echo "  - Linux (RHEL/CentOS): sudo yum install -y nodejs npm"
-        echo "  - Windows: Download from https://nodejs.org/"
-        exit 1
+        install_binary
     fi
 }
 
 # Main installation logic
-case "$OS_TYPE" in
-    Darwin*)
-        install_macos
-        ;;
-    Linux*)
-        install_linux
-        ;;
-    CYGWIN*|MINGW*|MSYS*)
-        install_windows
-        ;;
-    *)
-        echo "Unsupported operating system: $OS_TYPE"
-        echo "Trying generic npm installation..."
-        install_via_npm
-        ;;
-esac
+main() {
+    case "$OS_TYPE" in
+        Darwin*)
+            install_macos
+            ;;
+        Linux*)
+            install_linux
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            install_windows
+            ;;
+        *)
+            echo "Unsupported operating system: $OS_TYPE"
+            echo "Trying binary installation..."
+            install_binary
+            ;;
+    esac
 
-# Verify installation
-echo ""
-echo "Verifying installation..."
-if command_exists claude; then
-    echo "✓ Claude CLI installed successfully!"
-    echo "Version: $(claude --version)"
+    # Verify installation
     echo ""
-    echo "To get started, run: claude auth login"
-else
-    echo "✗ Installation may have failed. Please check the error messages above."
-    exit 1
-fi
+    echo "Verifying installation..."
+    if command_exists claude; then
+        echo "✓ Claude CLI installed successfully!"
+        claude --version 2>/dev/null || echo "Version: Latest"
+        echo ""
+        echo "To get started, run: claude auth login"
+    else
+        echo "✗ Installation may have failed. Please check the error messages above."
+        echo ""
+        echo "Alternative installation:"
+        echo "  1. Visit: https://github.com/anthropics/anthropic-cli/releases"
+        echo "  2. Download the binary for your OS and architecture"
+        echo "  3. Move it to /usr/local/bin/claude and make it executable"
+        exit 1
+    fi
+}
+
+main
