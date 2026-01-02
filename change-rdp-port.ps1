@@ -7,18 +7,6 @@
 # ============================================
 $NewPort = 13389
 
-# ============================================
-# Firewall Rule Name
-# ============================================
-$FirewallRuleName = "app-13389"
-
-# ============================================
-# Allowed Remote IPs (Use "Any" for all IPs)
-# ============================================
-$AllowedIPs = @(
-    "192.168.1.100",
-    "10.0.0.50"
-)
 
 # ============================================
 # Steps to Execute
@@ -32,11 +20,29 @@ $AllowedIPs = @(
 $Steps = @(11)
 
 # ============================================
-# Step 5 Settings
+# Firewall Rule Name
+# ============================================
+$FirewallRuleName = "app-13389"
+
+# ============================================
+# Allowed Remote IPs
+# Mode: "Any" or "Specific"
+# ============================================
+$AllowedIPsMode = "Specific"  # "Any" or "Specific"
+$AllowedIPs = @(
+    "192.168.1.100",
+    "10.0.0.50"
+)
+
+# ============================================
+# Step 12 Settings
 # Mode: "AddIP" or "RemoveAll"
 # ============================================
-$Step5Mode = "AddIP"  # "AddIP" or "RemoveAll"
-$Step5IPs = @(
+$ModifyFireMode = "AddIP"  # "AddIP" or "RemoveAll"
+
+# IP Mode for AddIP: "Any" or "Specific"
+$ModifyFireIpsMode = "Specific"  # "Any" or "Specific"
+$ModifyFireIps = @(
     "192.168.1.100",
     "10.0.0.50"
 )
@@ -116,14 +122,18 @@ if ($Steps -contains 11) {
             Write-Host "Existing custom rule removed" -ForegroundColor Yellow
         }
 
-        # Check if "Any" is in the allowed IPs
-        if ($AllowedIPs -contains "Any") {
+        # Check AllowedIPsMode
+        if ($AllowedIPsMode -eq "Any") {
             New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
             Write-Host "OK Firewall rule added: TCP $NewPort (All IPs)" -ForegroundColor Green
-        } else {
+        } elseif ($AllowedIPsMode -eq "Specific") {
             $IPList = $AllowedIPs -join ','
             New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
             Write-Host "OK Firewall rule added: TCP $NewPort (Allowed IPs: $IPList)" -ForegroundColor Green
+        } else {
+            Write-Host "ERROR Invalid AllowedIPsMode: $AllowedIPsMode" -ForegroundColor Red
+            Write-Host "Use 'Any' or 'Specific'" -ForegroundColor Yellow
+            exit 1
         }
     } catch {
         Write-Host "ERROR Firewall rule failed: $_" -ForegroundColor Red
@@ -137,7 +147,7 @@ if ($Steps -contains 11) {
 if ($Steps -contains 12) {
     Write-Host "`n[5/5] Modifying Existing Firewall Rule..." -ForegroundColor Cyan
 
-    if ($Step5Mode -eq "RemoveAll") {
+    if ($ModifyFireMode -eq "RemoveAll") {
         # Remove all custom RDP rules
         try {
             $existingRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
@@ -151,29 +161,39 @@ if ($Steps -contains 12) {
             Write-Host "ERROR Failed to remove firewall rule: $_" -ForegroundColor Red
         }
     }
-    elseif ($Step5Mode -eq "AddIP") {
+    elseif ($ModifyFireMode -eq "AddIP") {
         # Add IPs to existing rule
         try {
             $existingRule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
             if ($existingRule) {
-                # Get current RemoteAddress
-                $currentAddressFilter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $existingRule
-                $currentIPs = $currentAddressFilter.RemoteAddress
+                # Check ModifyFireIpsMode
+                if ($ModifyFireIpsMode -eq "Any") {
+                    # Set to allow all IPs
+                    Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress Any
+                    Write-Host "OK Firewall rule updated to allow all IPs" -ForegroundColor Green
+                } elseif ($ModifyFireIpsMode -eq "Specific") {
+                    # Get current RemoteAddress
+                    $currentAddressFilter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $existingRule
+                    $currentIPs = $currentAddressFilter.RemoteAddress
 
-                # Merge with new IPs (remove duplicates)
-                if ($currentIPs -contains "Any") {
-                    Write-Host "Current rule allows all IPs. Converting to specific IPs..." -ForegroundColor Yellow
-                    $mergedIPs = $Step5IPs
+                    # Merge with new IPs (remove duplicates)
+                    if ($currentIPs -contains "Any") {
+                        Write-Host "Current rule allows all IPs. Converting to specific IPs..." -ForegroundColor Yellow
+                        $mergedIPs = $ModifyFireIps
+                    } else {
+                        $mergedIPs = ($currentIPs + $ModifyFireIps) | Select-Object -Unique
+                    }
+
+                    # Update the rule
+                    Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $mergedIPs
+
+                    $IPList = $mergedIPs -join ', '
+                    Write-Host "OK IPs added to firewall rule" -ForegroundColor Green
+                    Write-Host "Current allowed IPs: $IPList" -ForegroundColor White
                 } else {
-                    $mergedIPs = ($currentIPs + $Step5IPs) | Select-Object -Unique
+                    Write-Host "ERROR Invalid ModifyFireIpsMode: $ModifyFireIpsMode" -ForegroundColor Red
+                    Write-Host "Use 'Any' or 'Specific'" -ForegroundColor Yellow
                 }
-
-                # Update the rule
-                Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $mergedIPs
-
-                $IPList = $mergedIPs -join ', '
-                Write-Host "OK IPs added to firewall rule" -ForegroundColor Green
-                Write-Host "Current allowed IPs: $IPList" -ForegroundColor White
             } else {
                 Write-Host "ERROR No existing custom firewall rule found" -ForegroundColor Red
                 Write-Host "Please run Step 2 first to create the firewall rule" -ForegroundColor Yellow
@@ -183,7 +203,7 @@ if ($Steps -contains 12) {
         }
     }
     else {
-        Write-Host "ERROR Invalid Step5Mode: $Step5Mode" -ForegroundColor Red
+        Write-Host "ERROR Invalid ModifyFireMode: $ModifyFireMode" -ForegroundColor Red
         Write-Host "Use 'AddIP' or 'RemoveAll'" -ForegroundColor Yellow
     }
 } else {
