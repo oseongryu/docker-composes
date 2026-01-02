@@ -17,7 +17,7 @@ $NewPort = 13389
 # 12: Modify Existing Firewall Rule
 # ============================================
 # $Steps = @(1,3,4)
-$Steps = @(11)
+$Steps = @(12)
 
 # ============================================
 # Firewall Rule Name
@@ -47,6 +47,31 @@ $ModifyFireIps = @(
     "10.0.0.50"
 )
 # ============================================
+
+# Function to normalize IP format (convert CIDR to subnet mask)
+function Normalize-IPAddress {
+    param([string]$ip)
+
+    $ip = $ip.Trim()
+
+    # CIDR to Subnet Mask conversion table
+    $cidrTable = @{
+        '/8' = '/255.0.0.0'
+        '/16' = '/255.255.0.0'
+        '/24' = '/255.255.255.0'
+        '/32' = '/255.255.255.255'
+    }
+
+    # Check if it's CIDR format and convert to subnet mask
+    foreach ($cidr in $cidrTable.Keys) {
+        if ($ip -like "*$cidr") {
+            $ip = $ip -replace [regex]::Escape($cidr), $cidrTable[$cidr]
+            break
+        }
+    }
+
+    return $ip
+}
 
 # Check Administrator
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -176,20 +201,62 @@ if ($Steps -contains 12) {
                     $currentAddressFilter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $existingRule
                     $currentIPs = $currentAddressFilter.RemoteAddress
 
-                    # Merge with new IPs (remove duplicates)
                     if ($currentIPs -contains "Any") {
                         Write-Host "Current rule allows all IPs. Converting to specific IPs..." -ForegroundColor Yellow
                         $mergedIPs = $ModifyFireIps
+                        $newlyAdded = $ModifyFireIps
                     } else {
-                        $mergedIPs = ($currentIPs + $ModifyFireIps) | Select-Object -Unique
+                        # Check for duplicates and identify new IPs
+                        $newlyAdded = @()
+                        $alreadyExists = @()
+
+                        # Normalize current IPs (convert CIDR to subnet mask)
+                        $normalizedCurrentIPs = $currentIPs | ForEach-Object { Normalize-IPAddress $_ }
+
+                        foreach ($ip in $ModifyFireIps) {
+                            $normalizedIP = Normalize-IPAddress $ip
+
+                            # Check if normalized IP exists in normalized current IPs
+                            $isDuplicate = $false
+                            foreach ($existingIP in $normalizedCurrentIPs) {
+                                if ($existingIP -eq $normalizedIP) {
+                                    $isDuplicate = $true
+                                    break
+                                }
+                            }
+
+                            if ($isDuplicate) {
+                                $alreadyExists += $ip  # Show original format
+                            } else {
+                                $newlyAdded += $ip  # Show original format
+                            }
+                        }
+
+                        # Show duplicate info
+                        if ($alreadyExists.Count -gt 0) {
+                            $existsList = $alreadyExists -join ', '
+                            Write-Host "Skipped (already exists): $existsList" -ForegroundColor Yellow
+                        }
+
+                        # Merge only if there are new IPs
+                        if ($newlyAdded.Count -gt 0) {
+                            $mergedIPs = $currentIPs + $newlyAdded
+                        } else {
+                            Write-Host "No new IPs to add. All specified IPs already exist." -ForegroundColor Yellow
+                            $mergedIPs = $currentIPs
+                        }
                     }
 
                     # Update the rule
                     Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $mergedIPs
 
-                    $IPList = $mergedIPs -join ', '
-                    Write-Host "OK IPs added to firewall rule" -ForegroundColor Green
-                    Write-Host "Current allowed IPs: $IPList" -ForegroundColor White
+                    if ($newlyAdded.Count -gt 0) {
+                        $newIPList = $newlyAdded -join ', '
+                        Write-Host "OK New IPs added: $newIPList" -ForegroundColor Green
+                    }
+
+                    $allIPList = $mergedIPs -join ', '
+                    Write-Host "Current allowed IPs: $allIPList" -ForegroundColor White
                 } else {
                     Write-Host "ERROR Invalid ModifyFireIpsMode: $ModifyFireIpsMode" -ForegroundColor Red
                     Write-Host "Use 'Any' or 'Specific'" -ForegroundColor Yellow
