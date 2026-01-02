@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sh_result=$(uname -m)
 
 if [ ! -d "/app" ]; then

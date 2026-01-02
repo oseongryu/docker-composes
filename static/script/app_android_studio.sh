@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sudo touch /usr/share/applications/android-studio.desktop
 
 sudo echo "[Desktop Entry]" >> /usr/share/applications/android-studio.desktop

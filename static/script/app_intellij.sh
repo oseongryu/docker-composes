@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sh_result=$(uname -m)
 cd /app && sudo tar -zxvf ideaIU-*.tar.gz
 

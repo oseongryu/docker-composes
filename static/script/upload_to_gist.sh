@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# GitHub Personal Access Token (환경 변수 또는 직접 설정)
+# GitHub Personal Access Token (환경 변수에서 가져옴)
+# zshrc에 export GITHUB_TOKEN='your_token' 형태로 설정 필요
 # GitHub Settings > Developer settings > Personal access tokens에서 생성
 # gist 권한 필요
-GITHUB_TOKEN="${GITHUB_TOKEN:-YOUR_TOKEN_HERE}"
 
 # Gist ID (기존 gist를 업데이트하는 경우)
 GIST_ID="d50f81d8894af19821c9f2e5d9b6646b"
@@ -21,9 +21,10 @@ if [ ! -f "$FILE_LIST" ]; then
 fi
 
 # Check if token is set
-if [ "$GITHUB_TOKEN" = "YOUR_TOKEN_HERE" ]; then
-    echo "Error: Please set GITHUB_TOKEN environment variable or edit the script."
-    echo "You can set it by running: export GITHUB_TOKEN='your_token_here'"
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "Error: GITHUB_TOKEN environment variable is not set."
+    echo "Please add to your ~/.zshrc: export GITHUB_TOKEN='your_token_here'"
+    echo "Then run: source ~/.zshrc"
     exit 1
 fi
 
