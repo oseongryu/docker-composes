@@ -1,102 +1,37 @@
 #!/bin/bash
 
-echo "Installing Claude CLI..."
-
-# Detect OS
-OS_TYPE=$(uname -s)
-ARCH_TYPE=$(uname -m)
-
-echo "Detected OS: $OS_TYPE"
-echo "Architecture: $ARCH_TYPE"
+echo "Installing Claude Code..."
 
 # Function to check if command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Install for macOS
-install_macos() {
-    echo "Installing Claude CLI for macOS..."
+# Check if curl is available
+if ! command_exists curl; then
+    echo "Error: curl is not installed. Please install curl first."
+    echo "  Ubuntu/Debian: sudo apt-get install curl"
+    echo "  CentOS/RHEL: sudo yum install curl"
+    exit 1
+fi
 
-    if command_exists brew; then
-        echo "Homebrew detected. Installing via brew..."
-        brew tap anthropics/claude
-        brew install claude
-    else
-        echo "Homebrew not found. Installing via npm..."
-        install_via_npm
-    fi
-}
-
-# Install for Linux
-install_linux() {
-    echo "Installing Claude CLI for Linux..."
-
-    # Check if running on specific architecture
-    if [ "$ARCH_TYPE" = "aarch64" ] || [ "$ARCH_TYPE" = "arm64" ]; then
-        echo "ARM64 architecture detected"
-    else
-        echo "AMD64/x86_64 architecture detected"
-    fi
-
-    install_via_npm
-}
-
-# Install for Windows (WSL or Git Bash)
-install_windows() {
-    echo "Installing Claude CLI for Windows..."
-    echo "Note: Running on Windows Subsystem for Linux (WSL) or Git Bash"
-
-    install_via_npm
-}
-
-# Install via npm (cross-platform)
-install_via_npm() {
-    if command_exists npm; then
-        echo "npm detected. Installing Claude CLI globally..."
-        npm install -g @anthropic-ai/claude-cli
-    elif command_exists node; then
-        echo "Node.js detected but npm not found. Please install npm first."
-        exit 1
-    else
-        echo "Error: Node.js and npm are required but not installed."
-        echo ""
-        echo "Please install Node.js first:"
-        echo "  - macOS: brew install node"
-        echo "  - Linux (Ubuntu/Debian): sudo apt install -y nodejs npm"
-        echo "  - Linux (RHEL/CentOS): sudo yum install -y nodejs npm"
-        echo "  - Windows: Download from https://nodejs.org/"
-        exit 1
-    fi
-}
-
-# Main installation logic
-case "$OS_TYPE" in
-    Darwin*)
-        install_macos
-        ;;
-    Linux*)
-        install_linux
-        ;;
-    CYGWIN*|MINGW*|MSYS*)
-        install_windows
-        ;;
-    *)
-        echo "Unsupported operating system: $OS_TYPE"
-        echo "Trying generic npm installation..."
-        install_via_npm
-        ;;
-esac
+# Run official Claude Code installation script
+echo "Running official Claude Code installation script..."
+curl -fsSL https://claude.ai/install.sh | bash
 
 # Verify installation
 echo ""
 echo "Verifying installation..."
 if command_exists claude; then
-    echo "✓ Claude CLI installed successfully!"
-    echo "Version: $(claude --version)"
+    echo "✓ Claude Code installed successfully!"
+    claude --version 2>/dev/null || echo "Installation complete"
     echo ""
-    echo "To get started, run: claude auth login"
+    echo "To get started, run: claude"
 else
     echo "✗ Installation may have failed. Please check the error messages above."
+    echo ""
+    echo "Alternative installation methods:"
+    echo "  - npm: npm install -g @anthropic-ai/claude-code"
+    echo "  - Manual: curl -fsSL https://claude.ai/install.sh | bash"
     exit 1
 fi

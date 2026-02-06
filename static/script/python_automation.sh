@@ -16,16 +16,24 @@ apt -y install font-noto
 apt -y install fonts-noto-cjk
 apt -y install gnome-screenshot
 
-echo "init python"
-pip install selenium==4.9.0 # firefox
-pip install webdriver_manager
-pip install pyautogui
-pip install opencv-python
-pip install python-xlib
-pip install pyvirtualdisplay
-pip install fake_useragent
-pip install psutil
+apt -y install python3.12-venv
 
+# # set python3 as default python
+# update-alternatives --install /usr/bin/python python $(which python3) 1
+
+# pip 설치는 별도로 해야함
+# echo "init python"
+# pip install selenium==4.9.0 # firefox
+# pip install webdriver_manager
+# pip install pyautogui
+# pip install opencv-python
+# pip install python-xlib
+# pip install pyvirtualdisplay
+# pip install fake_useragent
+# pip install psutil
+
+
+# # fix pip 
 # apt remove python3-pip
 # wget https://bootstrap.pypa.io/get-pip.py
 # python3 get-pip.py

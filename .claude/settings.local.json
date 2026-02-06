@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:gist.githubusercontent.com)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(wsl --list:*)",
+      "Bash(docker context:*)",
+      "Bash(wsl ls:*)",
+      "Bash(systeminfo:*)",
+      "Bash(findstr:*)",
+      "Bash(wmic os get:*)"
     ],
     "deny": [],
     "ask": []
