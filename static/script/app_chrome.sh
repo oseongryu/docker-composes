@@ -29,7 +29,7 @@ else
     # XFCE4 데스크톱 환경에서 크롬 크래시 방지 플래그 적용
     DESKTOP_FILE="/usr/share/applications/google-chrome.desktop"
     if [ -f "$DESKTOP_FILE" ]; then
-        sed -i 's|Exec=/usr/bin/google-chrome-stable|Exec=/usr/bin/google-chrome-stable --disable-gpu --disable-dev-shm-usage --no-sandbox|g' "$DESKTOP_FILE"
+        sed -i 's|Exec=/usr/bin/google-chrome-stable|Exec=/usr/bin/google-chrome-stable --disable-gpu --disable-dev-shm-usage --no-sandbox|g' "/usr/share/applications/google-chrome.desktop"
         echo "Chrome desktop flags applied."
     fi
 fi
