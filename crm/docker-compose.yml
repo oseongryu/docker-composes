@@ -1,0 +1,17 @@
+version: "3.8"
+name: crm
+services:
+  crm:
+    build: .
+    image: oseongryu/crm:1.0.0
+    container_name: crm-app
+    volumes:
+      - ~/git/crm:/app/source
+      - ./script:/app/script
+    ports:
+      - "18080:8080"
+    environment:
+      - TZ=Asia/Seoul
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
