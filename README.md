@@ -1,3 +1,9 @@
+##
+
+```
+sed -i 's|Exec=/usr/bin/google-chrome-stable|Exec=/usr/bin/google-chrome-stable --disable-gpu --disable-dev-shm-usage --no-sandbox|g' "/usr/share/applications/google-chrome.desktop"
+```
+
 ## windows
 
 ```sh

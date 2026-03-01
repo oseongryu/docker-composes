@@ -57,6 +57,9 @@ RUN sh /script/update_scripts.sh
 RUN sh /script/init_korean.sh
 RUN sh /script/init_timezone.sh
 RUN sh /script/init_user.sh
+RUN sh /script/app_chrome.sh
+RUN sh /script/init_chrome.sh
+
 # RUN sh /script/python_automation.sh
 # RUN sh /script/python_shorts.sh
 
