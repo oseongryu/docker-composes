@@ -9,47 +9,6 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     exit
 }
 
-
-# // https://toycoding.tistory.com/entry/윈도우-OpenSSH-설치하기#google_vignette
-# // 선택적 기능
-# //  Invoke-Item C:\ProgramData\ssh\sshd_config
-# // 포트변경
-# // Restart-Service -Force -Name sshd
-
-# // openSSH 설치상태 확인
-# Get-WindowsCapability -Online |? Name -like 'OpenSSH*'
-
-# // 기능 설치하기
-# Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-
-# // openssh 서버상태확인 (STOPPED) 
-# Get-Service sshd  
-
-# // 서비스 시작
-# Start-Service sshd 
-
-# // 서버 시작 시마다 자동으로 실행되도록 설정
-# Set-Service -Name sshd -StartupType 'Automatic'
-
-# // 현재 서비스 확인. (RUNNING)
-# Get-Service sshd
-
-
-# $configPath = "C:\ProgramData\ssh\sshd_config"
-# $newPort = "2222"
-
-# # 1. 기존에 설정된 모든 Port 라인 제거 (주석 포함/미포함 모두)
-# $content = Get-Content $configPath | Where-Object { $_ -notmatch "^#?Port\s+\d+" }
-
-# # 2. 맨 윗줄에 새 포트 추가 + 나머지 내용 합치기
-# $newContent = "Port $newPort", $content
-
-# // 변경후 포트확인
-# Restart-Service sshd
-# netstat -an | findstr /i "listening" | findstr ":2222"
-
-
-
 # --- [설정 변수] ---
 $newPort = "2222"
 $sftpRoot = "C:\app"  # <--- 사용자가 접속했을 때 보게 될 폴더 경로
