@@ -1,37 +1,109 @@
-// https://toycoding.tistory.com/entry/윈도우-OpenSSH-설치하기#google_vignette
-// 선택적 기능
-//  Invoke-Item C:\ProgramData\ssh\sshd_config
-// 포트변경
-// Restart-Service -Force -Name sshd
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-// openSSH 설치상태 확인
-Get-WindowsCapability -Online |? Name -like 'OpenSSH*'
+# powershell -ExecutionPolicy Bypass -File .\openssh.ps1
+# 1. 한글 출력 인코딩 설정 (최상단에 추가)
+# 2. 관리자 권한 체크 로직
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "ERROR: Administrator privileges required!" -ForegroundColor Red
+    exit
+}
 
-// 기능 설치하기
-Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
 
-// openssh 서버상태확인 (STOPPED) 
-Get-Service sshd  
+# // https://toycoding.tistory.com/entry/윈도우-OpenSSH-설치하기#google_vignette
+# // 선택적 기능
+# //  Invoke-Item C:\ProgramData\ssh\sshd_config
+# // 포트변경
+# // Restart-Service -Force -Name sshd
 
-// 서비스 시작
-Start-Service sshd 
+# // openSSH 설치상태 확인
+# Get-WindowsCapability -Online |? Name -like 'OpenSSH*'
 
-// 서버 시작 시마다 자동으로 실행되도록 설정
+# // 기능 설치하기
+# Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+# // openssh 서버상태확인 (STOPPED) 
+# Get-Service sshd  
+
+# // 서비스 시작
+# Start-Service sshd 
+
+# // 서버 시작 시마다 자동으로 실행되도록 설정
+# Set-Service -Name sshd -StartupType 'Automatic'
+
+# // 현재 서비스 확인. (RUNNING)
+# Get-Service sshd
+
+
+# $configPath = "C:\ProgramData\ssh\sshd_config"
+# $newPort = "2222"
+
+# # 1. 기존에 설정된 모든 Port 라인 제거 (주석 포함/미포함 모두)
+# $content = Get-Content $configPath | Where-Object { $_ -notmatch "^#?Port\s+\d+" }
+
+# # 2. 맨 윗줄에 새 포트 추가 + 나머지 내용 합치기
+# $newContent = "Port $newPort", $content
+
+# // 변경후 포트확인
+# Restart-Service sshd
+# netstat -an | findstr /i "listening" | findstr ":2222"
+
+
+
+# --- [설정 변수] ---
+$newPort = "2222"
+$sftpRoot = "C:\app"  # <--- 사용자가 접속했을 때 보게 될 폴더 경로
+$configPath = "C:\ProgramData\ssh\sshd_config"
+
+# 1. OpenSSH 서버 설치 확인 및 설치 (최초 설정)
+$capability = Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'
+if ($capability.State -ne 'Installed') {
+    Write-Host "Installing OpenSSH Server..." -ForegroundColor Yellow
+    Add-WindowsCapability -Online -Name $capability.Name
+}
+
+# 2. 서비스 시작 및 자동 실행 설정 (설정 파일 자동 생성 유도)
+Start-Service sshd -ErrorAction SilentlyContinue
 Set-Service -Name sshd -StartupType 'Automatic'
 
-// 현재 서비스 확인. (RUNNING)
-Get-Service sshd
+# 3. SFTP 전용 폴더 생성 (없으면 생성)
+if (!(Test-Path $sftpRoot)) {
+    New-Item -ItemType Directory -Path $sftpRoot -Force | Out-Null
+    Write-Host "SFTP Root folder created: $sftpRoot" -ForegroundColor Green
+}
 
+# 4. 설정 파일(sshd_config) 수정
+if (Test-Path $configPath) {
+    # 기존 Port 및 SFTP 관련 설정 제거 (중복 방지)
+    $content = Get-Content $configPath | Where-Object { 
+        $_ -notmatch "^#?Port\s+\d+" -and 
+        $_ -notmatch "^Subsystem\s+sftp" -and
+        $_ -notmatch "^Match\s+All" -and
+        $_ -notmatch "^\s+ChrootDirectory" -and
+        $_ -notmatch "^\s+ForceCommand"
+    }
 
-$configPath = "C:\ProgramData\ssh\sshd_config"
-$newPort = "2222"
+    # 새 설정 데이터 구성
+    $newSettings = @(
+        "Port $newPort",
+        "Subsystem sftp internal-sftp", # internal-sftp 사용 권장 (Chroot 시 필수)
+        "",
+        "# [SFTP Root Directory Setup]",
+        "Match All",
+        "    ChrootDirectory $sftpRoot",
+        "    ForceCommand internal-sftp",
+        "    AllowTcpForwarding no",
+        "    X11Forwarding no"
+    )
 
-# 1. 기존에 설정된 모든 Port 라인 제거 (주석 포함/미포함 모두)
-$content = Get-Content $configPath | Where-Object { $_ -notmatch "^#?Port\s+\d+" }
+    # 설정 병합 및 저장
+    $newContent = $newSettings + $content
+    $newContent | Set-Content $configPath -Encoding UTF8
+    Write-Host "SSH Config updated: Port $newPort, SFTP Root $sftpRoot" -ForegroundColor Green
+}
 
-# 2. 맨 윗줄에 새 포트 추가 + 나머지 내용 합치기
-$newContent = "Port $newPort", $content
-
-// 변경후 포트확인
+# 5. 서비스 재시작 (설정 반영)
 Restart-Service sshd
-netstat -an | findstr /i "listening" | findstr ":2222"
+Write-Host "--- Setup Complete ---" -ForegroundColor Cyan
+Get-Service sshd
+netstat -an | findstr /i "listening" | findstr ":$newPort"
