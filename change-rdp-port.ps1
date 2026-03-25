@@ -62,44 +62,42 @@ if ($Steps -contains 11) {
     } catch { Write-Host "Error Firewall: $_" -ForegroundColor Red }
 }
 
-# 12. Modify Firewall Rule
+# 12. Modify Firewall Rule (포트 번호로 찾기)
 if ($Steps -contains 12) {
-    if ($ModifyFireMode -eq "RemoveAll") {
-        Remove-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
-        Write-Host "Firewall rule removed" -ForegroundColor Green
-    } elseif ($ModifyFireMode -eq "AddIP") {
-        try {
-            $rule = Get-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
-            if ($rule) {
-                if ($ModifyFireIpsMode -eq "Any") {
-                    Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress Any
-                    Write-Host "Rule updated: Allow All IPs" -ForegroundColor Green
-                } else {
-                    # 현재 등록된 IP들을 안전하게 배열로 가져옴
+    try {
+        # 현재 $NewPort(예: 3389)를 LocalPort로 사용 중인 모든 인바운드 규칙 검색
+        $rules = Get-NetFirewallRule | Get-NetFirewallServiceFilter | Where-Object { 
+            $_.LocalPort -eq $NewPort 
+        } | Get-NetFirewallRule -ErrorAction SilentlyContinue
+
+        if ($rules) {
+            foreach ($rule in $rules) {
+                Write-Host "Found rule: $($rule.DisplayName) (Port: $NewPort)" -ForegroundColor Cyan
+                
+                if ($ModifyFireMode -eq "AddIP") {
                     $filter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $rule
-                    $curIPs = @($filter.RemoteAddress) # @()를 써서 무조건 배열로 만듦
-                    
-                    if ($curIPs -contains "Any") {
-                        Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $ModifyFireIps
-                        Write-Host "Rule reset to Specific IPs" -ForegroundColor Green
+                    $curIPs = @($filter.RemoteAddress)
+
+                    # 중복 체크 및 IP 추가 로직 (동일)
+                    $normCur = $curIPs | ForEach-Object { Normalize-IPAddress $_ }
+                    $newIPsToAdd = $ModifyFireIps | Where-Object { 
+                        $target = Normalize-IPAddress $_
+                        $normCur -notcontains $target 
+                    }
+
+                    if ($newIPsToAdd) {
+                        [string[]]$finalIPList = $curIPs + $newIPsToAdd
+                        Set-NetFirewallRule -Name $rule.Name -RemoteAddress $finalIPList
+                        Write-Host "Added IPs to $($rule.DisplayName): $($newIPsToAdd -join ', ')" -ForegroundColor Green
                     } else {
-                        $normCur = $curIPs | ForEach-Object { Normalize-IPAddress $_ }
-                        $newIPsToAdd = $ModifyFireIps | Where-Object { 
-                            $target = Normalize-IPAddress $_
-                            $normCur -notcontains $target 
-                        }
-                        
-                        if ($newIPsToAdd) {
-                            # 핵심: 기존 IP와 새 IP를 합쳐서 [string[]] 배열로 명시적 변환
-                            [string[]]$finalIPList = $curIPs + $newIPsToAdd
-                            Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $finalIPList
-                            Write-Host "Added IPs: $($newIPsToAdd -join ', ')" -ForegroundColor Green
-                        } else { 
-                            Write-Host "No new IPs. (Already exists)" -ForegroundColor White 
-                        }
+                        Write-Host "No new IPs for $($rule.DisplayName)." -ForegroundColor White
                     }
                 }
-            } else { Write-Host "Rule not found" -ForegroundColor Red }
-        } catch { Write-Host "Error Modify: $_" -ForegroundColor Red }
+            }
+        } else {
+            Write-Host "No firewall rules found for port $NewPort." -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host "Error finding rule by port: $_" -ForegroundColor Red
     }
 }
