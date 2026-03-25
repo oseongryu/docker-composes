@@ -35,9 +35,13 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 # 1. Registry
 if ($Steps -contains 1) {
     try {
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name PortNumber -Value $NewPort
-        Write-Host "Registry port: $NewPort" -ForegroundColor Green
-    } catch { Write-Host "Error Registry: $_" -ForegroundColor Red }
+        $regPath = "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
+        # -PropertyType DWord를 추가하여 16진수/10진수 포트 값이 정확히 들어가게 함
+        Set-ItemProperty -Path $regPath -Name "PortNumber" -Value $NewPort -PropertyType DWord
+        Write-Host "Registry: Port changed to $NewPort (DWord)" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to update registry: $_" -ForegroundColor Red
+    }
 }
 
 # 2. Service
