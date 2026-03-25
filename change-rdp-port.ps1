@@ -6,6 +6,7 @@ $FirewallRuleName = "app-$NewPort"
 
 # Steps: 1=RegMod, 3=RestartSvc, 11=NewFirewall, 12=AddIpToFirewall
 # $Steps = @(1, 2)
+# 1 Registy, 2 Service, 11 New Firewall , 12 Modify Firewall
 $Steps = @(12)
 
 $AllowedIPsMode = "Specific" # Any/Specific
@@ -74,17 +75,28 @@ if ($Steps -contains 12) {
                     Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress Any
                     Write-Host "Rule updated: Allow All IPs" -ForegroundColor Green
                 } else {
-                    $curIPs = (Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $rule).RemoteAddress
+                    # 현재 등록된 IP들을 안전하게 배열로 가져옴
+                    $filter = Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $rule
+                    $curIPs = @($filter.RemoteAddress) # @()를 써서 무조건 배열로 만듦
+                    
                     if ($curIPs -contains "Any") {
                         Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $ModifyFireIps
                         Write-Host "Rule reset to Specific IPs" -ForegroundColor Green
                     } else {
-                        $normCur = $curIPs | ForEach { Normalize-IPAddress $_ }
-                        $newIPs = $ModifyFireIps | Where { $normCur -notcontains (Normalize-IPAddress $_) }
-                        if ($newIPs) {
-                            Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress ($curIPs + $newIPs)
-                            Write-Host "Added IPs: $($newIPs -join ', ')" -ForegroundColor Green
-                        } else { Write-Host "No new IPs." -ForegroundColor White }
+                        $normCur = $curIPs | ForEach-Object { Normalize-IPAddress $_ }
+                        $newIPsToAdd = $ModifyFireIps | Where-Object { 
+                            $target = Normalize-IPAddress $_
+                            $normCur -notcontains $target 
+                        }
+                        
+                        if ($newIPsToAdd) {
+                            # 핵심: 기존 IP와 새 IP를 합쳐서 [string[]] 배열로 명시적 변환
+                            [string[]]$finalIPList = $curIPs + $newIPsToAdd
+                            Set-NetFirewallRule -DisplayName "$FirewallRuleName" -RemoteAddress $finalIPList
+                            Write-Host "Added IPs: $($newIPsToAdd -join ', ')" -ForegroundColor Green
+                        } else { 
+                            Write-Host "No new IPs. (Already exists)" -ForegroundColor White 
+                        }
                     }
                 }
             } else { Write-Host "Rule not found" -ForegroundColor Red }

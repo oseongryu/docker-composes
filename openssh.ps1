@@ -21,3 +21,17 @@ Set-Service -Name sshd -StartupType 'Automatic'
 
 // 현재 서비스 확인. (RUNNING)
 Get-Service sshd
+
+
+$configPath = "C:\ProgramData\ssh\sshd_config"
+$newPort = "2222"
+
+# 1. 기존에 설정된 모든 Port 라인 제거 (주석 포함/미포함 모두)
+$content = Get-Content $configPath | Where-Object { $_ -notmatch "^#?Port\s+\d+" }
+
+# 2. 맨 윗줄에 새 포트 추가 + 나머지 내용 합치기
+$newContent = "Port $newPort", $content
+
+// 변경후 포트확인
+Restart-Service sshd
+netstat -an | findstr /i "listening" | findstr ":2222"
