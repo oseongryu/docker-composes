@@ -48,18 +48,31 @@ if ($Steps -contains 2) {
     } catch { Write-Host "Error Service: $_" -ForegroundColor Red }
 }
 
-# 11. New Firewall Rule
+# 11. New/Check Firewall Rule (포트 기준)
 if ($Steps -contains 11) {
     try {
-        Remove-NetFirewallRule -DisplayName "$FirewallRuleName" -ErrorAction SilentlyContinue
-        if ($AllowedIPsMode -eq "Any") {
-            New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
-            Write-Host "Firewall created: TCP $NewPort (All IPs)" -ForegroundColor Green
+        # 현재 $NewPort를 사용하는 인바운드 TCP 규칙이 있는지 조회
+        $existingRule = Get-NetFirewallRule | Get-NetFirewallServiceFilter | Where-Object { 
+            $_.LocalPort -eq $NewPort 
+        } | Get-NetFirewallRule -ErrorAction SilentlyContinue
+
+        if ($existingRule) {
+            # 이미 해당 포트의 규칙이 있다면 새로 만들지 않고 메시지만 출력
+            # (원한다면 여기서 기존 규칙의 IP를 초기화하는 로직을 넣을 수도 있습니다)
+            Write-Host "Firewall rule for port $NewPort already exists: $($existingRule.DisplayName)" -ForegroundColor Cyan
         } else {
-            New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
-            Write-Host "Firewall created: TCP $NewPort (Specific IPs)" -ForegroundColor Green
+            # 규칙이 없는 경우에만 새로 생성
+            if ($AllowedIPsMode -eq "Any") {
+                New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -Enabled True
+                Write-Host "New Firewall created: TCP $NewPort (All IPs)" -ForegroundColor Green
+            } else {
+                New-NetFirewallRule -DisplayName "$FirewallRuleName" -Direction Inbound -Protocol TCP -LocalPort $NewPort -RemoteAddress $AllowedIPs -Action Allow -Profile Any -Enabled True
+                Write-Host "New Firewall created: TCP $NewPort (Specific IPs)" -ForegroundColor Green
+            }
         }
-    } catch { Write-Host "Error Firewall: $_" -ForegroundColor Red }
+    } catch {
+        Write-Host "Error Firewall (Step 11): $_" -ForegroundColor Red
+    }
 }
 
 # 12. Modify Firewall Rule (포트 번호로 찾기)
