@@ -11,13 +11,15 @@ $Steps = @(12)
 
 $AllowedIPsMode = "Specific" # Any/Specific
 $AllowedIPs = @(
-    "118.235.0.0/16"
+    "118.235.0.0/16",
+    "192.168.0.0/24"
 )
 
 $ModifyFireMode = "AddIP" # AddIP/RemoveAll
 $ModifyFireIpsMode = "Specific" # Any/Specific
 $ModifyFireIps = @(
-    "118.235.0.0/16"
+    "118.235.0.0/16",
+    "192.168.0.0/24"
 )
 
 function Normalize-IPAddress([string]$ip) {
