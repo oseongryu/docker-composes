@@ -1,0 +1,20 @@
+#!/bin/sh
+# fluxbox autostart — startfluxbox 가 source 한다.
+# 마지막에 'exec fluxbox' 로 fluxbox 본체를 띄우는 게 컨벤션.
+export DISPLAY=:99
+
+# X 가 완전히 올라올 때까지 잠깐
+sleep 1
+
+# 바탕화면 색
+xsetroot -solid '#1e2030' &
+
+# 안내 xterm — TTF 강제로 misc-fixed 누락에도 대응
+xterm \
+    -geometry 100x28+30+30 \
+    -fa "DejaVu Sans Mono" -fs 11 \
+    -bg '#1e2030' -fg '#cad3f5' \
+    -title "claude-auth helper" \
+    -e sh -c "/app/welcome.sh; exec bash" &
+
+exec fluxbox

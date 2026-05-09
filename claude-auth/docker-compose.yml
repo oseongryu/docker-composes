@@ -1,0 +1,18 @@
+services:
+  claude-auth:
+    build: .
+    image: claude-auth:latest
+    container_name: claude-auth
+    volumes:
+      # 영속: chrome 프로필 (anthropic 세션 쿠키) + ~/.claude/.credentials.json
+      - ./data:/data
+      # wm 의 register 스크립트 재사용 (호스트 위치 다르면 .env 의 SCRIPTS_DIR 로 override)
+      - ${SCRIPTS_DIR:-../../git-worktree-web/scripts}:/scripts:ro
+    environment:
+      - API_URL=${API_URL:-}
+      - LABEL=${LABEL:-primary}
+      - MAKE_DEFAULT=${MAKE_DEFAULT:-false}
+      - PROFILE_DIR=/data/chrome-profile
+      - HEADLESS=${HEADLESS:-true}
+    # one-shot 컨테이너 — `docker compose run --rm claude-auth` 로 사용
+    restart: "no"

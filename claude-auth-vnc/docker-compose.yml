@@ -1,0 +1,20 @@
+services:
+  claude-auth-vnc:
+    build: .
+    image: claude-auth-vnc:latest
+    container_name: claude-auth-vnc
+    # noVNC 는 인증 없이 노출되므로 외부에 열지 말고 localhost 만 바인딩
+    ports:
+      - "127.0.0.1:6080:6080"
+      - "127.0.0.1:5900:5900"
+    volumes:
+      # chrome 프로필 + claude HOME 영속
+      - ./data:/data
+      # wm 의 register 스크립트 재사용 (호스트 위치 다르면 .env 의 SCRIPTS_DIR 로 override)
+      - ${SCRIPTS_DIR:-../../git-worktree-web/scripts}:/scripts:ro
+    environment:
+      - API_URL=${API_URL:-}
+      - DISPLAY=:99
+      - LANG=ko_KR.UTF-8
+    shm_size: "1g"  # chromium 메모리 부족 방지
+    restart: unless-stopped
