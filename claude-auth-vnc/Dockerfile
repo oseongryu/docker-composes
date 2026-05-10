@@ -18,8 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xterm \
         # process supervisor
         supervisor \
-        # X 유틸 (xsetroot 등) + dbus, fonts (xterm 의 misc-fixed 포함), locale
-        x11-xserver-utils dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi fonts-dejavu fonts-noto-cjk locales \
+        # X 유틸 (xsetroot 등) + autocutsel (PRIMARY↔CLIPBOARD sync) + dbus, fonts, locale
+        x11-xserver-utils autocutsel dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi fonts-dejavu fonts-noto-cjk locales \
     && sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen \
