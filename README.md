@@ -454,3 +454,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t oseongryu/ubuntu-deskt
 # delete buildx cache
 docker buildx prune
 ```
+
+```bash
+wget -O google-chrome-stable_current_amd64.deb "https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.198-1_amd64.deb"
+```
