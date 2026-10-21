@@ -23,11 +23,19 @@ services:
     build:
       context: ./oracle/
       dockerfile: Dockerfile
-    image: db/oracle-xe-11g:latest
+    image: db/oracle-free:23.26.3
     environment:
-      - ORACLE_ALLOW_REMOTE=true
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD:-1234}
+    volumes:
+      - oradata:/opt/oracle/oradata
     ports:
       - "1521:1521"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
     stdin_open: true # docker run -i
     tty: true # docker run -t
   mysql:
@@ -73,3 +81,6 @@ services:
     stdin_open: true # docker run -i
     tty: true # docker run -t
     privileged: true
+
+volumes:
+  oradata:

@@ -1,4 +1,5 @@
-FROM oracleinanutshell/oracle-xe-11g
+FROM gvenzl/oracle-free:23.26.3
 
-# ENV ORACLE_ALLOW_REMOTE true
-ADD init/*.sql /docker-entrypoint-initdb.d/
+ENV TZ=Asia/Seoul
+
+ADD init/*.sql /container-entrypoint-initdb.d/
