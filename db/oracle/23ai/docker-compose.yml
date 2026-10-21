@@ -1,0 +1,30 @@
+name: oracle-23ai
+
+services:
+  oracle:
+    container_name: db-oracle-23ai
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: db/oracle-free:23.26.3
+    environment:
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD:-1234}
+    volumes:
+      - oradata:/opt/oracle/oradata
+    ports:
+      - "1521:1521"
+    restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  oradata:
