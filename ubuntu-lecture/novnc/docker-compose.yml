@@ -1,0 +1,18 @@
+services:
+  lecture-novnc:
+    build: .
+    image: oseongryu/lecture-novnc:latest
+    container_name: lecture-novnc
+    # noVNC·녹음 콘솔 모두 인증이 없으므로 기본은 localhost 바인딩 (원격은 ssh -L 로 터널)
+    ports:
+      - "${BIND:-127.0.0.1}:6080:6080"
+      - "${BIND:-127.0.0.1}:8090:8090"
+    volumes:
+      - ./data:/home/lecture
+      - ${COURSE_DIR:-../../../../references/study}:/courses:ro
+    environment:
+      - RESOLUTION=${RESOLUTION:-1600x900x24}
+      - WHISPER_MODEL=${WHISPER_MODEL:-medium}
+      - COURSE_XLSX=/courses/디지털 원격훈련 HRD 아카이브 과정 리스트.xlsx
+    shm_size: "2g"
+    restart: unless-stopped

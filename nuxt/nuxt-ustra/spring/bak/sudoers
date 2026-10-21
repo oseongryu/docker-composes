@@ -98,7 +98,7 @@ Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin
 ##
 ## Allow root to run any commands anywhere 
 root	ALL=(ALL) 	ALL
-hy	ALL=NOPASSWD: ALL
+app	ALL=NOPASSWD: ALL
 ## Allows members of the 'sys' group to run networking, software, 
 ## service management apps and more.
 # %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS

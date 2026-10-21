@@ -29,7 +29,7 @@ fi
 echo "WAS will run on ${TOBE_PORT}..." 
 
 # copy jar file
-cp  -f /home/hy/deploy/hy-*.jar /app/wasapp/partner/partner-$TOBE_PORT.jar
+cp  -f /home/app/deploy/app-*.jar /app/wasapp/partner/partner-$TOBE_PORT.jar
  
 # start to-be was
 echo "Start application" 

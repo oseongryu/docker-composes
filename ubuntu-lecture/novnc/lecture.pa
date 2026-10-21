@@ -1,0 +1,5 @@
+load-module module-native-protocol-unix socket=/tmp/pulse/native auth-anonymous=1
+load-module module-null-sink sink_name=lecture sink_properties=device.description=lecture
+set-default-sink lecture
+set-default-source lecture.monitor
+load-module module-always-sink

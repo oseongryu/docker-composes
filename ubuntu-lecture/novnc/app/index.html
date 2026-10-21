@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강의 노트</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1b1b1b; --muted:#6b6b6b; --line:#ddd; --card:#fff; --accent:#c0392b; --ok:#2e7d32; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --fg:#eaeaea; --muted:#9a9a9a; --line:#333; --card:#1f1f1f; --accent:#ff6b5b; --ok:#7bc67e; }
+  }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; }
+  main { max-width:760px; margin:0 auto; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px; }
+  h1 { font-size:20px; margin:0 0 16px; }
+  h2 { font-size:15px; margin:0 0 12px; color:var(--muted); font-weight:600; }
+  button { font:inherit; padding:8px 14px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--fg); cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  input { font:inherit; padding:7px 10px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  #no { width:90px; } #title { flex:1; min-width:160px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .rec { color:var(--accent); font-weight:600; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  td { border-top:1px solid var(--line); padding:8px 4px; vertical-align:top; }
+  td a { color:inherit; margin-right:8px; }
+  .s-완료 { color:var(--ok); } .s-실패, .s-녹음중 { color:var(--accent); }
+  #err { color:var(--accent); min-height:1em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>강의 노트</h1>
+
+  <section>
+    <h2>소리</h2>
+    <div class="row">
+      <button class="primary" id="listen">듣기 시작</button>
+      <button id="reconnect">다시 연결</button>
+      <span class="muted" id="audioState">정지</span>
+    </div>
+    <p class="muted">noVNC 화면과 1~2초 차이가 납니다. 차이가 커지면 다시 연결을 누르세요.</p>
+    <audio id="audio" preload="none"></audio>
+  </section>
+
+  <section>
+    <h2>녹음</h2>
+    <div class="row">
+      <input id="no" placeholder="연번" inputmode="numeric">
+      <input id="title" placeholder="제목 (연번으로 못 찾을 때만)">
+      <button class="primary" id="toggle">녹음 시작</button>
+    </div>
+    <p id="recState" class="muted">대기</p>
+    <p id="err"></p>
+  </section>
+
+  <section>
+    <h2>노트</h2>
+    <table><tbody id="notes"></tbody></table>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+let wantAudio = false, recording = null;
+
+function connect() {
+  audio.src = '/stream.mp3?t=' + Date.now();
+  audio.play().catch(() => {});
+}
+$('listen').onclick = () => {
+  wantAudio = !wantAudio;
+  if (wantAudio) connect(); else { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+  $('listen').textContent = wantAudio ? '듣기 정지' : '듣기 시작';
+};
+$('reconnect').onclick = () => { if (wantAudio) connect(); };
+audio.onplaying = () => $('audioState').textContent = '재생 중';
+audio.onerror = audio.onended = () => {
+  $('audioState').textContent = wantAudio ? '재연결 중' : '정지';
+  if (wantAudio) setTimeout(connect, 1500);
+};
+
+async function api(path, body) {
+  const res = await fetch(path, body === undefined ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || res.status);
+  return data;
+}
+
+$('toggle').onclick = async () => {
+  $('err').textContent = '';
+  try {
+    render(recording ? await api('/api/stop', {}) : await api('/api/start', { no:$('no').value, title:$('title').value }));
+  } catch (e) { $('err').textContent = e.message; }
+};
+
+function mmss(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function render(st) {
+  recording = st.recording;
+  $('toggle').textContent = recording ? '녹음 종료' : '녹음 시작';
+  $('recState').innerHTML = recording ? `<span class="rec">녹음 중 ${mmss(recording.seconds)}</span> · ${esc(recording.dir)}` : '대기';
+  $('notes').innerHTML = st.notes.map(n => `
+    <tr>
+      <td>${esc(n.no)}</td>
+      <td>${esc(n.title)}<div class="muted">${esc(n.dir)}</div></td>
+      <td class="s-${esc(n.state)}">${esc(n.state)}</td>
+      <td>${n.files.filter(f => f !== 'meta.json').map(f => `<a href="/notes/${esc(n.dir)}/${f}" target="_blank">${f.split('.')[0]}</a>`).join('')}
+        ${['실패', '미처리'].includes(n.state) ? `<button data-dir="${esc(n.dir)}">다시 처리</button>` : ''}</td>
+    </tr>`).join('');
+}
+$('notes').onclick = async e => {
+  if (e.target.dataset.dir) render(await api('/api/retry', { dir:e.target.dataset.dir }));
+};
+
+async function poll() { try { render(await api('/api/status')); } catch {} }
+poll(); setInterval(poll, 2000);
+</script>
+</body>
+</html>

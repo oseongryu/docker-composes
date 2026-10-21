@@ -215,7 +215,7 @@ scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/.ssh
 chmod 600 ~/.ssh/id_rsa
 
 # 파일 다운로드
-scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/git/python-selenium/app/fredit/screenshot/05_search/*/* ~/log
+scp -P 22 ~/.ssh/id_rsa instance-1:/home/oseongryu/git/python-selenium/app/<프로젝트>/screenshot/*/* ~/log
 
 sudo apt -y update && sudo  apt -y upgrade
 
@@ -408,9 +408,8 @@ docker exec -it centos-vue bash
 # git
 yum install -y wget git
 cd /app/webapp
-git clone git@10.50.5.20:hy-fredit/hy-fredit-web.git
-git checkout release
-git checkout feature/2025_uiux_2차
+git clone <저장소 주소>
+git checkout <브랜치>
 
 # nvm 설치
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
