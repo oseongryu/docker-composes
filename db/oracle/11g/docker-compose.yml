@@ -1,0 +1,16 @@
+name: oracle-11g
+
+services:
+  oracle:
+    container_name: db-oracle-11g
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: db/oracle-xe-11g:latest
+    platform: linux/amd64
+    environment:
+      - ORACLE_ALLOW_REMOTE=true
+    ports:
+      - "1522:1521"
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
