@@ -1,2 +1,9 @@
 *.sh linguist-detectable=false
 *.js linguist-detectable=false
+
+*.sh text eol=lf
+*.conf text eol=lf
+*.pa text eol=lf
+*.py text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
