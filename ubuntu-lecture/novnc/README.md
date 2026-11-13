@@ -16,6 +16,8 @@
   - 녹음: 16kHz 모노 opus → `notes/<시각>_<연번>/audio.ogg`
 - 녹음을 끝내면 순서대로 처리한다: faster-whisper 전사 (`transcript.txt`, `[mm:ss]` 시각 포함) → `claude -p` 요약 (`summary.md`)
 - 연번을 넣으면 과정 엑셀(`COURSE_XLSX`)에서 콘텐츠명·주요훈련내용·추천사유를 찾아 요약 프롬프트에 넣는다
+- 브라우저는 supervisor 가 관리한다. 창을 모두 닫아도 몇 초 뒤 다시 뜬다
+- `certs/*.crt` 는 빌드 때 시스템 신뢰 저장소에, 기동 때 브라우저 NSS 저장소에 등록된다 (회사망 SSL 검사 대응)
 
 ## 열기
 
@@ -92,6 +94,70 @@ docker exec -it -u lecture -e HOME=/home/lecture lecture-novnc claude
 2. noVNC 화면의 브라우저에서 강의 사이트에 로그인하고 본인인증을 한다
 3. 콘솔에 연번을 넣고 `녹음 시작` → 강의 재생
 4. 차시가 끝나면 `녹음 종료` → 목록에서 `처리중` → `완료` 후 summary·transcript 링크
+
+## 브라우저 다시 열기
+
+- 창을 모두 닫으면 supervisor 가 몇 초 안에 다시 띄운다. 프로필이 `data/` 에 있어 로그인 쿠키는 유지된다
+- 새 창: noVNC 화면 바탕(빈 곳)을 우클릭 → 맨 위 `Browser`
+- 그래도 안 뜨면 (연속 실패로 supervisor 가 포기한 상태)
+
+```bash
+docker exec lecture-novnc supervisorctl status browser
+docker exec lecture-novnc supervisorctl restart browser
+docker exec lecture-novnc tail -n 50 /var/log/browser.err.log
+```
+
+## 회사망 인증서 (SSL 검사)
+
+회사 보안장비(소만사 등)가 HTTPS 를 중간에서 검사하면 모든 사이트 인증서가 회사 루트 CA 로 다시 서명된다. 호스트 OS 에는 그 루트가 배포돼 있지만 컨테이너에는 없어서 컨테이너 안에서만 실패한다.
+
+### 증상
+
+- 브라우저 주소창 `주의 요함`, `/var/log/browser.err.log` 에 `net_error -202` (ERR_CERT_AUTHORITY_INVALID)
+- curl `self-signed certificate in certificate chain`, python `CERTIFICATE_VERIFY_FAILED`, node `unable to get local issuer certificate`
+
+### 확인
+
+발급자(`i:`)가 공인 CA 가 아니라 회사 장비 이름이면 이 경우다.
+
+```bash
+docker exec lecture-novnc sh -c "echo | openssl s_client -connect <사이트>:443 -servername <사이트> -showcerts 2>/dev/null | grep -E 's:|i:'"
+#  0 s:CN=*.example.co.kr
+#    i:C=KR, O=Somansa, CN=Somansa Root CA
+```
+
+### 등록
+
+1. 호스트에서 루트 CA 를 PEM(Base-64) 으로 꺼낸다
+   - Windows: `certlm.msc` → 신뢰할 수 있는 루트 인증 기관 → 해당 인증서 → 내보내기 → Base-64 X.509
+   - macOS: 키체인 접근 → 시스템 → 해당 인증서 → 내보내기 (.pem)
+2. `certs/<이름>.crt` 로 저장한다. `certs/` 는 커밋되지 않는다 (회사 인증서를 공개 저장소에 올리지 않는다)
+3. `docker compose up -d --build`
+
+같은 이름의 루트가 여러 개면 위 `-showcerts` 출력의 지문과 맞는 것 하나만 넣는다. 이름·serial 이 같은 인증서 둘은 NSS 에 함께 들어가지 않는다 (`SEC_ERROR_REUSED_ISSUER_AND_SERIAL`).
+
+```bash
+openssl x509 -in certs/<이름>.crt -noout -fingerprint -sha1
+```
+
+### 등록되는 곳
+
+| 대상 | 방식 |
+|---|---|
+| curl · apt · openssl | 빌드 때 `update-ca-certificates` |
+| python (requests · httpx · whisper 모델 내려받기) | `REQUESTS_CA_BUNDLE`, `SSL_CERT_FILE` → 시스템 번들 |
+| node · claude CLI | `NODE_EXTRA_CA_CERTS` → 시스템 번들 |
+| Chrome / Chromium | 기동 때 `certutil` 로 `data/.pki/nssdb` 에 등록. 로그 `인증서등록 <이름>` |
+
+브라우저 등록 결과 확인:
+
+```bash
+docker exec -u lecture lecture-novnc certutil -d sql:/home/lecture/.pki/nssdb -L
+```
+
+### 하지 말 것
+
+`curl -k`, `--ignore-certificate-errors`, `NODE_TLS_REJECT_UNAUTHORIZED=0`, `verify=False` 로 검증을 끄지 않는다. 당장은 되지만 진짜 중간자 공격까지 통과시키고, 끈 설정은 잊고 남는다.
 
 ## 지킬 것
 

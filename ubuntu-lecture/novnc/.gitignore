@@ -1,3 +1,5 @@
 data/
 .env
 courses/
+certs/*
+!certs/.gitkeep

@@ -7,6 +7,16 @@ chmod 700 /tmp/runtime-lecture
 
 rm -f /home/lecture/.config/browser/Singleton*
 
+nssdb=/home/lecture/.pki/nssdb
+for crt in /usr/local/share/ca-certificates/extra/*.crt; do
+    [ -f "$crt" ] || continue
+    runuser -u lecture -- mkdir -p "$nssdb"
+    [ -f "$nssdb/cert9.db" ] || runuser -u lecture -- certutil -d "sql:$nssdb" -N --empty-password
+    runuser -u lecture -- certutil -d "sql:$nssdb" -A -t "C,," -n "$(basename "$crt" .crt)" -i "$crt" \
+        && echo "인증서등록 $(basename "$crt")" \
+        || echo "인증서실패 $(basename "$crt")"
+done
+
 cat <<EOF
 ================================================================
   lecture-novnc

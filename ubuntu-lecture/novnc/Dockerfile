@@ -9,7 +9,7 @@ ENV XDG_RUNTIME_DIR=/tmp/runtime-lecture
 ENV RESOLUTION=1600x900x24
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        curl ca-certificates gnupg \
+        curl ca-certificates gnupg libnss3-tools \
         xvfb fluxbox x11vnc novnc websockify xterm supervisor \
         x11-xserver-utils autocutsel dbus-x11 hsetroot \
         pulseaudio pulseaudio-utils ffmpeg \
@@ -17,6 +17,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen \
     && rm -rf /var/lib/apt/lists/*
+
+COPY certs/ /usr/local/share/ca-certificates/extra/
+RUN update-ca-certificates
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         curl -fsSL -o /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
@@ -41,8 +47,10 @@ RUN useradd -m -u 1000 -s /bin/bash lecture
 COPY lecture.pa /etc/pulse/lecture.pa
 COPY supervisord.conf /etc/supervisor/conf.d/lecture.conf
 COPY entrypoint.sh /entrypoint.sh
+COPY browser.sh /usr/local/bin/lecture-browser
 COPY app /app
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser \
+    && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu
 
 ENV LANG=ko_KR.UTF-8
 ENV LC_ALL=ko_KR.UTF-8
