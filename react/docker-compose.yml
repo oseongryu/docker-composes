@@ -1,5 +1,5 @@
 version: "3.8"
-name: rn-community
+name: rn-native
 
 # 워크트리별 Metro 번들러 환경
 # 사용법:
@@ -9,18 +9,18 @@ name: rn-community
 #   중지:      docker compose stop rn1
 #
 # 포트:
-#   rn1 → http://localhost:18080  (worktrees/rn-community1)
-#   rn2 → http://localhost:18081  (worktrees/rn-community2)
-#   rn3 → http://localhost:18082  (worktrees/rn-community3)
-#   rn4 → http://localhost:18083  (worktrees/rn-community4)
+#   rn1 → http://localhost:18080  (worktrees/rn-native1)
+#   rn2 → http://localhost:18081  (worktrees/rn-native2)
+#   rn3 → http://localhost:18082  (worktrees/rn-native3)
+#   rn4 → http://localhost:18083  (worktrees/rn-native4)
 
 services:
   rn1:
-    container_name: rn-community1
+    container_name: rn-native1
     build: .
-    image: oseongryu/rn-community-metro:1.0.0
+    image: oseongryu/rn-native-metro:1.0.0
     volumes:
-      - ~/git/rn-community.worktrees/rn-community1:/app
+      - ~/git/rn-native.worktrees/rn-native1:/app
       - rn1_modules:/app/node_modules
     ports:
       - "18080:8000"
@@ -32,11 +32,11 @@ services:
     tty: true
 
   rn2:
-    container_name: rn-community2
+    container_name: rn-native2
     build: .
-    image: oseongryu/rn-community-metro:1.0.0
+    image: oseongryu/rn-native-metro:1.0.0
     volumes:
-      - ~/git/rn-community.worktrees/rn-community2:/app
+      - ~/git/rn-native.worktrees/rn-native2:/app
       - rn2_modules:/app/node_modules
     ports:
       - "18081:8000"
@@ -48,11 +48,11 @@ services:
     tty: true
 
   rn3:
-    container_name: rn-community3
+    container_name: rn-native3
     build: .
-    image: oseongryu/rn-community-metro:1.0.0
+    image: oseongryu/rn-native-metro:1.0.0
     volumes:
-      - ~/git/rn-community.worktrees/rn-community3:/app
+      - ~/git/rn-native.worktrees/rn-native3:/app
       - rn3_modules:/app/node_modules
     ports:
       - "18082:8000"
@@ -64,11 +64,11 @@ services:
     tty: true
 
   rn4:
-    container_name: rn-community4
+    container_name: rn-native4
     build: .
-    image: oseongryu/rn-community-metro:1.0.0
+    image: oseongryu/rn-native-metro:1.0.0
     volumes:
-      - ~/git/rn-community.worktrees/rn-community4:/app
+      - ~/git/rn-native.worktrees/rn-native4:/app
       - rn4_modules:/app/node_modules
     ports:
       - "18083:8000"
