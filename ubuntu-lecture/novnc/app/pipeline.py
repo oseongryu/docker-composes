@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,36 @@ def _stamp(sec):
     return f'{h:d}:{m:02d}:{s:02d}' if h else f'{m:02d}:{s:02d}'
 
 
+CUE = re.compile(r'((?:\d+:)?\d{1,2}:\d{2})[.,]\d{3}\s*-->')
+TAG = re.compile(r'<[^>]+>')
+
+
+def merge_subs(note):
+    """subs/ 의 자막 파일을 받은 순서대로 이어 subtitle.txt 를 만든다. 같은 (시각, 문장)은 한 번만 쓴다."""
+    d = note / 'subs'
+    if not d.is_dir():
+        return 0
+    seen, lines = set(), []
+    for f in sorted(d.iterdir()):
+        text = f.read_text(encoding='utf-8', errors='replace').replace('\r', '')
+        for block in re.split(r'\n\s*\n', text):
+            rows = block.strip().split('\n')
+            i = next((k for k, r in enumerate(rows) if '-->' in r), None)
+            m = CUE.match(rows[i].strip()) if i is not None else None
+            if not m:
+                continue
+            body = ' '.join(TAG.sub('', r).strip() for r in rows[i + 1:]).strip()
+            if not body or (m[1], body) in seen:
+                continue
+            seen.add((m[1], body))
+            sec = sum(int(p) * 60 ** k for k, p in enumerate(reversed(m[1].split(':'))))
+            lines.append(f'[{_stamp(sec)}] {body}')
+    if lines:
+        (note / 'subtitle.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+        print('자막병합', flush=True)
+    return len(lines)
+
+
 def transcribe(note):
     global _model
     if _model is None:
@@ -52,7 +83,8 @@ def transcribe(note):
 
 
 PROMPT = """너는 사내 원격훈련 강의의 개인 복습 노트를 만든다.
-stdin 은 강의 음성을 자동 전사한 텍스트라 인식 오류가 섞여 있다. 문맥으로 바로잡되 강의에 없는 내용은 지어내지 마라.
+stdin 의 `## 음성 전사` 는 강의 음성을 자동 전사한 텍스트라 인식 오류가 섞여 있다. 문맥으로 바로잡되 강의에 없는 내용은 지어내지 마라.
+`## 자막` 절이 있으면 강의 사이트가 제공한 자막이라 정확하다. 자막을 주 근거로 삼고 음성 전사는 자막이 없는 구간을 보충하는 데만 쓴다. 근거 시각은 근거로 쓴 절의 시각을 그대로 적는다.
 도구를 쓰지 말고 마크다운 본문만 출력한다.
 
 과정: {title}
@@ -80,10 +112,13 @@ def summarize(note):
         desc=(meta.get('desc') or '').strip() or '없음',
         reason=meta.get('reason') or '',
     )
+    text = '## 음성 전사\n' + (note / 'transcript.txt').read_text(encoding='utf-8')
+    if (note / 'subtitle.txt').exists():
+        text = '## 자막\n' + (note / 'subtitle.txt').read_text(encoding='utf-8') + '\n' + text
     print('요약', flush=True)
     out = subprocess.run(
         ['claude', '-p', prompt, '--output-format', 'text'],
-        input=(note / 'transcript.txt').read_text(encoding='utf-8'),
+        input=text,
         capture_output=True, text=True, timeout=1800, cwd=note,
     )
     if out.returncode != 0 or not out.stdout.strip():
@@ -97,6 +132,8 @@ def process(note):
     err = note / 'error.log'
     err.unlink(missing_ok=True)
     try:
+        if not (note / 'subtitle.txt').exists():
+            merge_subs(note)
         if not (note / 'transcript.txt').exists():
             transcribe(note)
         if not (note / 'summary.md').exists():

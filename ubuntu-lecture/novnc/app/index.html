@@ -51,6 +51,7 @@
       <button class="primary" id="toggle">녹음 시작</button>
     </div>
     <p id="recState" class="muted">대기</p>
+    <p id="subState" class="muted"></p>
     <p id="err"></p>
   </section>
 
@@ -101,6 +102,7 @@ function render(st) {
   recording = st.recording;
   $('toggle').textContent = recording ? '녹음 종료' : '녹음 시작';
   $('recState').innerHTML = recording ? `<span class="rec">녹음 중 ${mmss(recording.seconds)}</span> · ${esc(recording.dir)}` : '대기';
+  $('subState').textContent = !st.subs ? '자막 수집 끊김 (브라우저 확인)' : recording ? `자막 ${recording.subs}개 수집 · 플레이어 자막을 켜야 모입니다` : '자막 수집 대기';
   $('notes').innerHTML = st.notes.map(n => `
     <tr>
       <td>${esc(n.no)}</td>

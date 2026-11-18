@@ -1,3 +1,4 @@
+import asyncio
 import json
 import queue
 import re
@@ -9,17 +10,19 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pipeline
+import subs
 
 NOTES = Path.home() / 'notes'
 APP = Path(__file__).parent
 SOURCE = 'lecture.monitor'
-FILES = {'summary.md', 'transcript.txt', 'meta.json', 'error.log', 'audio.ogg'}
+FILES = {'summary.md', 'transcript.txt', 'subtitle.txt', 'meta.json', 'error.log', 'audio.ogg'}
 NAME = re.compile(r'^[\w\-]+$')
 
 lock = threading.Lock()
 recording = None
 working = None
 jobs = queue.Queue()
+capture = subs.Capture(lambda: recording and recording['note'])
 
 
 def worker():
@@ -91,8 +94,9 @@ def status():
         notes.append({'dir': d.name, 'no': meta.get('no'), 'title': meta.get('title'), 'state': state, 'files': files})
     rec = None
     if recording:
-        rec = {'dir': recording['note'].name, 'seconds': int(time.time() - recording['since'])}
-    return {'recording': rec, 'notes': notes}
+        rec = {'dir': recording['note'].name, 'seconds': int(time.time() - recording['since']),
+               'subs': subs.count(recording['note'])}
+    return {'recording': rec, 'notes': notes, 'subs': capture.connected}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -161,5 +165,6 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     NOTES.mkdir(parents=True, exist_ok=True)
     threading.Thread(target=worker, daemon=True).start()
+    threading.Thread(target=lambda: asyncio.run(capture.run()), daemon=True).start()
     print('시작', flush=True)
     ThreadingHTTPServer(('0.0.0.0', 8090), Handler).serve_forever()
