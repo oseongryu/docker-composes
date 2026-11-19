@@ -19,12 +19,14 @@ APP = Path(__file__).parent
 SOURCE = 'lecture.monitor'
 FILES = {'summary.md', 'transcript.txt', 'subtitle.txt', 'meta.json', 'error.log', 'audio.ogg'}
 NAME = re.compile(r'^[\w\-]+$')
+RANGE = re.compile(r'^bytes=(\d*)-(\d*)$')
 PAGES = {
     '/': ('index.html', 'text/html; charset=utf-8'),
     '/screen': ('screen.html', 'text/html; charset=utf-8'),
     '/player.js': ('player.js', 'text/javascript; charset=utf-8'),
     '/vnc.js': ('vnc.js', 'text/javascript; charset=utf-8'),
     '/float.js': ('float.js', 'text/javascript; charset=utf-8'),
+    '/notes.js': ('notes.js', 'text/javascript; charset=utf-8'),
 }
 AUDIO_MODE = 'low' if os.environ.get('AUDIO_MODE') == 'low' else 'basic'
 VNC_PORT = int(os.environ.get('VNC_PORT') or 6080)
@@ -62,7 +64,7 @@ def start(no, title):
         (note / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding='utf-8')
         proc = subprocess.Popen(
             ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-f', 'pulse', '-i', SOURCE,
-             '-ac', '1', '-ar', '16000', '-c:a', 'libopus', '-b:a', '32k', str(note / 'audio.ogg')],
+             '-ac', '1', '-ar', '16000', '-c:a', 'libopus', '-b:a', '32k', '-flush_packets', '1', str(note / 'audio.ogg')],
             stdin=subprocess.PIPE,
         )
         recording = {'note': note, 'proc': proc, 'since': time.time()}
@@ -138,12 +140,46 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith('/stream.mp3'):
             return self.stream()
         parts = self.path.split('/')
-        if len(parts) == 4 and parts[1] == 'notes' and NAME.match(parts[2]) and parts[3] in FILES:
-            f = NOTES / parts[2] / parts[3]
+        name = parts[3].split('?')[0] if len(parts) == 4 else ''
+        if len(parts) == 4 and parts[1] == 'notes' and NAME.match(parts[2]) and name in FILES:
+            f = NOTES / parts[2] / name
             if f.is_file():
-                ctype = 'audio/ogg' if f.suffix == '.ogg' else 'text/plain; charset=utf-8'
-                return self.send(200, f.read_bytes(), ctype)
+                return self.send_file(f, 'audio/ogg' if f.suffix == '.ogg' else 'text/plain; charset=utf-8')
         self.send(404, {'error': '없음'})
+
+    def send_file(self, f, ctype):
+        """Range 지원(없으면 브라우저가 ogg 위치 이동을 못 한다). 녹음 중인 파일은 요청 시점 크기까지 준다."""
+        size = f.stat().st_size
+        m = RANGE.match(self.headers.get('Range') or '')
+        if m and not (m[1] or m[2]):
+            m = None
+        start, end = 0, size - 1
+        if m:
+            start, end = (int(m[1]), min(int(m[2] or size - 1), size - 1)) if m[1] else (max(size - int(m[2]), 0), size - 1)
+            if start > end:
+                self.send_response(416)
+                self.send_header('Content-Range', f'bytes */{size}')
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+        self.send_response(206 if m else 200)
+        self.cors()
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(end - start + 1))
+        self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Cache-Control', 'no-cache')
+        if m:
+            self.send_header('Content-Range', f'bytes {start}-{end}/{size}')
+        self.end_headers()
+        left = end - start + 1
+        try:
+            with f.open('rb') as fh:
+                fh.seek(start)
+                while left > 0 and (chunk := fh.read(min(65536, left))):
+                    self.wfile.write(chunk)
+                    left -= len(chunk)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def do_POST(self):
         length = int(self.headers.get('Content-Length') or 0)

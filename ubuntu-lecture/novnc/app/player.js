@@ -1,6 +1,6 @@
 function LecturePlayer(onState, base = '') {
   const supportsLow = !!(window.MediaSource && MediaSource.isTypeSupported('audio/mpeg'));
-  let audio = null, ctl = null, timer = null, want = false, mode = 'basic';
+  let audio = null, ctl = null, timer = null, want = false, mode = 'basic', muted = false;
 
   function retry(el) {
     if (!want || el !== audio) return;
@@ -23,6 +23,7 @@ function LecturePlayer(onState, base = '') {
   function connect() {
     close();
     const el = audio = new Audio();
+    el.muted = muted;
     el.onplaying = () => { if (el === audio) onState('재생 중'); };
     el.onerror = el.onended = () => retry(el);
     const url = base + '/stream.mp3?t=' + Date.now();
@@ -77,5 +78,9 @@ function LecturePlayer(onState, base = '') {
       onState('정지');
     },
     reconnect() { if (want) connect(); },
+    mute(v) {
+      muted = v;
+      if (audio) audio.muted = v;
+    },
   };
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>강의 화면</title>
 <style>
-  :root { --bg:#fafafa; --fg:#1b1b1b; --muted:#6b6b6b; --line:#ddd; --accent:#c0392b; }
+  :root { color-scheme:light dark; --bg:#fafafa; --fg:#1b1b1b; --muted:#6b6b6b; --line:#ddd; --accent:#c0392b; }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#161616; --fg:#eaeaea; --muted:#9a9a9a; --line:#333; --accent:#ff6b5b; }
   }
@@ -17,7 +17,33 @@
   .muted { color:var(--muted); font-size:13px; }
   .grow { flex:1; }
   a { color:inherit; }
-  iframe { flex:1; width:100%; min-height:0; border:0; background:#000; }
+  #main { flex:1; display:flex; min-height:0; }
+  iframe { flex:1; min-width:0; border:0; background:#000; }
+  #notes { display:none; flex-direction:column; gap:8px; width:min(440px, 50vw); padding:8px 12px; border-left:1px solid var(--line); min-height:0; }
+  .notes #notes { display:flex; }
+  .notes #notesBtn, .notes #miniNotes { border-color:var(--accent); color:var(--accent); }
+  #notes .row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  #notes input { font:inherit; padding:4px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); min-width:0; }
+  #notes_no { width:64px; } #notes_title { flex:1; }
+  #notes_pick { width:100%; }
+  #notes audio { width:100%; }
+  #notes .rec { color:var(--accent); font-weight:600; }
+  #notes .err { color:var(--accent); }
+  #notes_err:empty { display:none; }
+  #notes_tabs { display:flex; gap:4px; align-items:center; border-bottom:1px solid var(--line); padding-bottom:6px; }
+  #notes_tabs button.on { background:var(--fg); border-color:var(--fg); color:var(--bg); }
+  #notes_view { position:relative; flex:1; overflow:auto; min-height:0; }
+  #notes_view .line { padding:3px 4px; border-radius:4px; }
+  #notes_view .seek { cursor:pointer; }
+  #notes_view .seek:hover { background:var(--line); }
+  #notes_view .line.now { background:color-mix(in srgb, var(--accent) 22%, transparent); }
+  #notes_view .t { color:var(--muted); font-variant-numeric:tabular-nums; margin-right:8px; }
+  #notes_view pre { white-space:pre-wrap; font-size:12px; }
+  #notes_view table { border-collapse:collapse; margin:6px 0; }
+  #notes_view th, #notes_view td { border:1px solid var(--line); padding:3px 6px; text-align:left; vertical-align:top; }
+  #notes_view h3, #notes_view h4 { margin:12px 0 4px; }
+  #notes_view ul { padding-left:20px; margin:4px 0; }
+  #notes_view details { margin:2px 0 4px; color:var(--muted); }
   #mini { position:fixed; top:0; left:50%; transform:translateX(-50%); display:flex; width:max-content; gap:4px; padding:3px 6px; background:var(--bg);
     border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; box-shadow:0 2px 6px rgba(0,0,0,.3); opacity:.85; font-size:12px; }
   #mini:hover { opacity:1; }
@@ -34,6 +60,7 @@
   <button id="reconnect">다시 연결</button>
   <span class="muted" id="audioState">정지</span>
   <span class="grow"></span>
+  <button id="notesBtn" title="녹음·다시 듣기·전사·요약">노트</button>
   <a href="/" target="_blank">노트 콘솔</a>
   <button id="settings" title="noVNC 설정 (왼쪽 가장자리 손잡이와 같음)">설정</button>
   <button id="fold" title="막대를 접어 화면을 넓게">접기</button>
@@ -41,14 +68,45 @@
 <div id="mini">
   <span id="grip" title="끌어서 옮기기 (두 번 누르면 가운데로)"><svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="3" r="1.3"/><circle cx="6" cy="3" r="1.3"/><circle cx="2" cy="7" r="1.3"/><circle cx="6" cy="7" r="1.3"/><circle cx="2" cy="11" r="1.3"/><circle cx="6" cy="11" r="1.3"/></svg></span>
   <button class="primary" id="miniListen">소리 켜기</button>
+  <button id="miniNotes" title="녹음·다시 듣기·전사·요약">노트</button>
   <button id="unfold" title="소리 막대 펼치기">펼치기</button>
 </div>
-<iframe id="screen" title="noVNC" allow="clipboard-read; clipboard-write"></iframe>
+<div id="main">
+  <iframe id="screen" title="noVNC" allow="clipboard-read; clipboard-write"></iframe>
+  <aside id="notes">
+    <div class="row">
+      <input id="notes_no" placeholder="연번" inputmode="numeric">
+      <input id="notes_title" placeholder="제목 (연번으로 못 찾을 때만)">
+      <button class="primary" id="notes_rec">녹음 시작</button>
+    </div>
+    <div class="row"><span class="muted grow" id="notes_recState">녹음 대기</span><button id="notes_close">닫기</button></div>
+    <div class="err" id="notes_err"></div>
+    <select id="notes_pick"><option value="">녹음 없음</option></select>
+    <audio id="notes_audio" controls preload="metadata"></audio>
+    <div class="row">
+      <button id="notes_back">-10초</button>
+      <button id="notes_fwd">+10초</button>
+      <select id="notes_rate"><option value="1">1배</option><option value="1.25">1.25배</option><option value="1.5">1.5배</option><option value="2">2배</option></select>
+      <button id="notes_reload" hidden title="녹음 중인 파일을 지금까지 녹음된 데까지 다시 읽음">녹음된 데까지 불러오기</button>
+    </div>
+    <div class="muted">다시 듣는 동안 실시간 소리는 꺼집니다.</div>
+    <div class="row" id="notes_tabs">
+      <button data-tab="transcript" class="on">전사</button>
+      <button data-tab="subtitle">자막</button>
+      <button data-tab="summary">요약</button>
+      <span class="grow"></span>
+      <label class="muted"><input type="checkbox" id="notes_follow" checked> 재생 위치 따라가기</label>
+    </div>
+    <div id="notes_view"></div>
+  </aside>
+</div>
 <script src="/player.js"></script>
 <script src="/float.js"></script>
+<script src="/notes.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const KEY = 'lecture_bar_collapsed';
+const NOTES_KEY = 'lecture_notes_open';
 const player = LecturePlayer(s => $('audioState').textContent = s);
 const back = () => $('screen').focus();
 const float = LectureFloat($('mini'), $('grip'), 'lecture_mini_pos', back);
@@ -58,10 +116,17 @@ const fold = v => {
   float.apply();
   back();
 };
+const notes = LectureNotes($('notes'), player);
+const panel = v => {
+  document.documentElement.classList.toggle('notes', v);
+  try { localStorage.setItem(NOTES_KEY, v ? '1' : '0'); } catch {}
+  notes.open(v);
+};
 let want = false;
 
 try { document.documentElement.classList.toggle('collapsed', localStorage.getItem(KEY) === '1'); } catch {}
 float.apply();
+try { panel(localStorage.getItem(NOTES_KEY) === '1'); } catch { panel(false); }
 if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
 $('listen').onclick = $('miniListen').onclick = () => {
   want = !want;
@@ -74,6 +139,8 @@ $('reconnect').onclick = () => { player.reconnect(); back(); };
 $('settings').onclick = () => $('screen').contentWindow.postMessage('lecture_settings', new URL($('screen').src).origin);
 $('fold').onclick = () => fold(true);
 $('unfold').onclick = () => fold(false);
+$('notesBtn').onclick = $('miniNotes').onclick = () => panel(!document.documentElement.classList.contains('notes'));
+$('notes_close').onclick = () => panel(false);
 
 fetch('/api/status').then(r => r.json()).then(st => {
   $('screen').src = `${location.protocol}//${location.hostname}:${st.vnc_port}/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
