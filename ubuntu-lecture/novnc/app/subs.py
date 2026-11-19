@@ -29,6 +29,8 @@ class Capture:
                 browser.on('disconnected', lambda *_: gone.set())
                 for ctx in browser.contexts:
                     ctx.on('response', self.on_response)
+                    # 리스너가 없으면 Playwright 가 alert·confirm 을 즉시 닫는다
+                    ctx.on('dialog', lambda _: None)
                 self.connected = True
                 print('자막연결', flush=True)
                 await gone.wait()

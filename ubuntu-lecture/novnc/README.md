@@ -99,6 +99,7 @@ docker exec -it -u lecture -e HOME=/home/lecture lecture-novnc claude
 ## 자막 수집
 
 - `app/subs.py` 가 컨테이너 안 `127.0.0.1:9222` (Chrome 원격 디버깅, 외부에 열지 않음)로 붙어 응답만 듣는다. 요청을 따로 보내거나 페이지를 조작하지 않는다
+- Playwright 는 `dialog` 리스너가 없으면 사이트의 alert·confirm 을 보이기 전에 닫아 버린다 (confirm 은 `취소` 로 처리돼 다음 차시로 넘어가지 않는다). 빈 리스너를 달아 창을 그대로 두고 사람이 누른다. 이 리스너를 지우지 않는다
 - URL 이 `.vtt`·`.srt` 로 끝나거나 `Content-Type: text/vtt` 인 응답만, 녹음 중일 때만 저장한다
 - 같은 (시각, 문장) 은 한 번만 남긴다. 한 녹음에서 여러 영상을 보면 받은 순서대로 이어진다
 - `subtitle.txt` 의 시각은 영상 기준이고 `transcript.txt` 는 녹음 기준이라 서로 다르다
