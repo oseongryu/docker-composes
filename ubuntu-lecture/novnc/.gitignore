@@ -1,5 +1,6 @@
-data/
+data*/
 .env
+.env.*
 courses/
 certs/*
 !certs/.gitkeep

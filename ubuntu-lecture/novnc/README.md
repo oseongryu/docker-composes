@@ -82,6 +82,30 @@ cd ~/git/docker-composes/ubuntu-lecture/novnc && docker compose up -d --build
 | `WHISPER_MODEL` | `medium` | `small` 은 빠르고 `large-v3` 는 정확하다. CPU 전사라 큰 모델일수록 오래 걸린다 |
 | `RESOLUTION` | `1600x900x24` | 가상 화면 해상도 |
 | `AUDIO_MODE` | `basic` | 콘솔·`/screen`·noVNC 소리 막대의 처음 재생 방식. `basic` 기본, `low` 저지연. 페이지에서 바꾸면 그 탭에서만 바뀐다 |
+| `NAME` | `lecture-novnc` | 컨테이너 이름 |
+| `DATA_DIR` | `./data` | `/home/lecture` (녹음·노트·브라우저 프로필·claude 로그인) |
+| `VNC_PORT` | `6080` | 화면 포트. 브라우저가 여는 포트와 같아야 한다 (`/screen` 이 이 포트로 화면을 연다) |
+| `CONSOLE_PORT` | `8090` | 콘솔 포트. 브라우저가 여는 포트와 같아야 한다 (noVNC 소리 막대가 이 포트에서 `vnc.js` 를 불러온다) |
+
+### 하나 더 띄우기
+
+이름·데이터 폴더·포트를 바꾼 env 파일로 프로젝트 이름을 달리해 띄운다. 이미지는 같이 쓴다. `.env.*`·`data*/` 는 커밋되지 않는다.
+
+```bash
+cat > .env.2 <<'END'
+COURSE_DIR=./courses
+NAME=lecture-novnc-2
+DATA_DIR=./data2
+VNC_PORT=6081
+CONSOLE_PORT=8091
+END
+docker compose -p lecture-novnc-2 --env-file .env.2 up -d
+```
+
+- 주소: `http://localhost:6081/vnc.html`, `http://localhost:8091/`, `http://localhost:8091/screen`
+- 브라우저 프로필이 따로라 강의 사이트 로그인·claude 로그인을 따로 한다. `docker exec` 의 컨테이너 이름도 `lecture-novnc-2`
+- 내리기: `docker compose -p lecture-novnc-2 --env-file .env.2 down`
+- 포트는 그대로 두고 `BIND=127.0.0.2` 처럼 루프백 주소만 바꾸는 방법은 Docker Desktop(Windows)에서 안 된다. `127.0.0.2:8090` 요청이 첫 번째 컨테이너로 간다
 
 ## 한글 입력
 
@@ -135,7 +159,7 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
 - 버튼(설정 제외)을 누른 뒤 noVNC 화면으로 포커스를 되돌려 키 입력이 끊기지 않는다
 - 6080 페이지가 8090 스트림·상태를 읽으므로 노트 서버는 요청한 페이지의 호스트 이름이 같을 때만 `Access-Control-Allow-Origin` 을 준다. 다른 사이트는 읽을 수 없다
 - `/screen` 안의 noVNC(iframe)에는 막대를 붙이지 않는다. 바깥 막대와 겹치기 때문이다. iframe 은 다른 출처(6080)라 바깥 `설정` 은 `postMessage('lecture_settings')` 로 보내고, iframe 안 `vnc.js` 가 8090 출처에서 온 것만 받아 설정 버튼을 누른다
-- 8090 을 다른 로컬 포트로 터널링하면 막대가 뜨지 않는다 (같은 호스트의 8090 에서 불러온다)
+- 콘솔을 `CONSOLE_PORT` 와 다른 로컬 포트로 터널링하면 막대가 뜨지 않는다 (같은 호스트의 `CONSOLE_PORT` 에서 불러온다). 이 값은 기동 때 `entrypoint.sh` 가 `vnc.html` 에 넣는다
 
 ## 자막 수집
 

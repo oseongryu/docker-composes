@@ -27,6 +27,7 @@ PAGES = {
     '/float.js': ('float.js', 'text/javascript; charset=utf-8'),
 }
 AUDIO_MODE = 'low' if os.environ.get('AUDIO_MODE') == 'low' else 'basic'
+VNC_PORT = int(os.environ.get('VNC_PORT') or 6080)
 
 lock = threading.Lock()
 recording = None
@@ -106,7 +107,7 @@ def status():
     if recording:
         rec = {'dir': recording['note'].name, 'seconds': int(time.time() - recording['since']),
                'subs': subs.count(recording['note'])}
-    return {'recording': rec, 'notes': notes, 'subs': capture.connected, 'audio_mode': AUDIO_MODE}
+    return {'recording': rec, 'notes': notes, 'subs': capture.connected, 'audio_mode': AUDIO_MODE, 'vnc_port': VNC_PORT}
 
 
 class Handler(BaseHTTPRequestHandler):

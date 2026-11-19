@@ -62,7 +62,6 @@ let want = false;
 
 try { document.documentElement.classList.toggle('collapsed', localStorage.getItem(KEY) === '1'); } catch {}
 float.apply();
-$('screen').src = `${location.protocol}//${location.hostname}:6080/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
 if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
 $('listen').onclick = $('miniListen').onclick = () => {
   want = !want;
@@ -77,6 +76,7 @@ $('fold').onclick = () => fold(true);
 $('unfold').onclick = () => fold(false);
 
 fetch('/api/status').then(r => r.json()).then(st => {
+  $('screen').src = `${location.protocol}//${location.hostname}:${st.vnc_port}/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
   if (!want && st.audio_mode === 'low' && player.supportsLow) $('mode').value = 'low';
 }).catch(() => {});
 </script>

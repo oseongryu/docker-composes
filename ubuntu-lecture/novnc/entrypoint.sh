@@ -17,11 +17,13 @@ for crt in /usr/local/share/ca-certificates/extra/*.crt; do
         || echo "인증서실패 $(basename "$crt")"
 done
 
+sed -i "s|:[0-9]*/vnc.js\"|:${CONSOLE_PORT:-8090}/vnc.js\"|" /usr/share/novnc/vnc.html
+
 cat <<EOF
 ================================================================
   lecture-novnc
-  화면:  http://localhost:6080/vnc.html
-  소리·녹음:  http://localhost:8090/
+  화면:  http://localhost:${VNC_PORT:-6080}/vnc.html
+  소리·녹음:  http://localhost:${CONSOLE_PORT:-8090}/
 ================================================================
 EOF
 
