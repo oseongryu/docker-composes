@@ -71,7 +71,7 @@ function connect() {
 }
 $('listen').onclick = () => {
   wantAudio = !wantAudio;
-  if (wantAudio) connect(); else { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+  if (wantAudio) connect(); else { audio.pause(); audio.removeAttribute('src'); audio.load(); $('audioState').textContent = '정지'; }
   $('listen').textContent = wantAudio ? '듣기 정지' : '듣기 시작';
 };
 $('reconnect').onclick = () => { if (wantAudio) connect(); };
