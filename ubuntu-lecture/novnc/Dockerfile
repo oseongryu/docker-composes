@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb fluxbox x11vnc novnc websockify xterm supervisor \
         x11-xserver-utils autocutsel dbus-x11 hsetroot \
         pulseaudio pulseaudio-utils ffmpeg \
-        fonts-noto-cjk fonts-dejavu locales tzdata \
+        fonts-noto-cjk fonts-noto-color-emoji fonts-dejavu locales tzdata \
     && sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen \
     && rm -rf /var/lib/apt/lists/*

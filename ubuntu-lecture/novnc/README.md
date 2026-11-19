@@ -120,7 +120,8 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
 - `app/subs.py` 가 컨테이너 안 `127.0.0.1:9222` (Chrome 원격 디버깅, 외부에 열지 않음)로 붙어 응답만 듣는다. 요청을 따로 보내거나 페이지를 조작하지 않는다
 - CDP 로 보내는 명령은 `Target.setAutoAttach` (탭·iframe·worker 에 붙기), `Network.enable`, `Runtime.runIfWaitingForDebugger`, `Network.getResponseBody` (자막 본문) 넷뿐이다. Page·Emulation 도메인은 켜지 않는다
 - `Runtime.runIfWaitingForDebugger` 는 빼면 안 된다. 자동으로 붙어 있으면 Chrome 이 `window.open`·`target=` 링크로 열린 팝업을 이 명령이 올 때까지 멈춰 둔다
-  - 팝업은 빈 탭(`제목 없음`)으로 남고, 같은 사이트의 원래 탭도 함께 멈춘다 (화면이 어두워지고 "디버거가 다른 탭에서 일시중지되었습니다" 표시)
+  - 팝업은 빈 탭(`제목 없음`)으로 남고, 같은 사이트의 원래 탭도 함께 멈춘다 (화면이 어두워지고 위쪽 노란 상자에 "디버거가 다른 탭에서 일시중지되었습니다" 표시)
+  - 이 노란 상자의 한글은 `□` 로 깨져 보인다. 멈춘 렌더러가 글꼴을 새로 불러오지 못해서이고 글꼴 설정과는 무관하다 (멈추지 않은 상태의 같은 오버레이는 한글 정상)
   - 붙을 때마다 `Network.enable` 다음에 바로 보내므로 팝업 첫 요청부터 자막을 받는다
 - Playwright 등 자동화 라이브러리로 바꾸지 않는다. Playwright `connect_over_cdp` 는 붙는 순간 강의 브라우저 동작을 바꾼다
   - alert·confirm 을 사람에게 보이기 전에 닫는다 (confirm 은 `취소` → 다음 차시로 넘어가지 않음)
