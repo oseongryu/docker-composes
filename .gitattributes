@@ -7,3 +7,5 @@
 *.py text eol=lf
 Dockerfile text eol=lf
 *.Dockerfile text eol=lf
+
+fcitx5/* text eol=lf
