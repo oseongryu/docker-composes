@@ -18,9 +18,11 @@
   .grow { flex:1; }
   a { color:inherit; }
   iframe { flex:1; width:100%; min-height:0; border:0; background:#000; }
-  #mini { position:fixed; top:0; left:50%; transform:translateX(-50%); display:flex; gap:4px; padding:3px 6px; background:var(--bg);
+  #mini { position:fixed; top:0; left:50%; transform:translateX(-50%); display:flex; width:max-content; gap:4px; padding:3px 6px; background:var(--bg);
     border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; box-shadow:0 2px 6px rgba(0,0,0,.3); opacity:.85; font-size:12px; }
   #mini:hover { opacity:1; }
+  #mini.moved { transform:none; border-top:1px solid var(--line); border-radius:8px; }
+  #grip { display:flex; align-items:center; padding:0 2px; color:var(--muted); cursor:move; touch-action:none; user-select:none; }
   #mini button { padding:1px 8px; }
   .collapsed header, :root:not(.collapsed) #mini { display:none; }
 </style>
@@ -37,24 +39,29 @@
   <button id="fold" title="막대를 접어 화면을 넓게">접기</button>
 </header>
 <div id="mini">
+  <span id="grip" title="끌어서 옮기기 (두 번 누르면 가운데로)"><svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="3" r="1.3"/><circle cx="6" cy="3" r="1.3"/><circle cx="2" cy="7" r="1.3"/><circle cx="6" cy="7" r="1.3"/><circle cx="2" cy="11" r="1.3"/><circle cx="6" cy="11" r="1.3"/></svg></span>
   <button class="primary" id="miniListen">소리 켜기</button>
   <button id="unfold" title="소리 막대 펼치기">펼치기</button>
 </div>
 <iframe id="screen" title="noVNC" allow="clipboard-read; clipboard-write"></iframe>
 <script src="/player.js"></script>
+<script src="/float.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const KEY = 'lecture_bar_collapsed';
 const player = LecturePlayer(s => $('audioState').textContent = s);
 const back = () => $('screen').focus();
+const float = LectureFloat($('mini'), $('grip'), 'lecture_mini_pos', back);
 const fold = v => {
   document.documentElement.classList.toggle('collapsed', v);
   try { localStorage.setItem(KEY, v ? '1' : '0'); } catch {}
+  float.apply();
   back();
 };
 let want = false;
 
 try { document.documentElement.classList.toggle('collapsed', localStorage.getItem(KEY) === '1'); } catch {}
+float.apply();
 $('screen').src = `${location.protocol}//${location.hostname}:6080/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
 if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
 $('listen').onclick = $('miniListen').onclick = () => {

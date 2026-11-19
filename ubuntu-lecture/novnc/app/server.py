@@ -24,6 +24,7 @@ PAGES = {
     '/screen': ('screen.html', 'text/html; charset=utf-8'),
     '/player.js': ('player.js', 'text/javascript; charset=utf-8'),
     '/vnc.js': ('vnc.js', 'text/javascript; charset=utf-8'),
+    '/float.js': ('float.js', 'text/javascript; charset=utf-8'),
 }
 AUDIO_MODE = 'low' if os.environ.get('AUDIO_MODE') == 'low' else 'basic'
 

@@ -6,6 +6,7 @@
     return;
   }
   const KEY = 'lecture_bar_collapsed';
+  const GRIP = '<svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="3" r="1.3"/><circle cx="6" cy="3" r="1.3"/><circle cx="2" cy="7" r="1.3"/><circle cx="6" cy="7" r="1.3"/><circle cx="2" cy="11" r="1.3"/><circle cx="6" cy="11" r="1.3"/></svg>';
   const css = `
     body { display:flex; flex-direction:column; }
     #noVNC_container { flex:1; min-height:0; height:auto; }
@@ -15,9 +16,11 @@
       #lecture_bar, #lecture_mini { --bg:#161616; --fg:#eaeaea; --muted:#9a9a9a; --line:#333; --accent:#ff6b5b; }
     }
     #lecture_bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:6px 12px; border-bottom:1px solid var(--line); }
-    #lecture_mini { position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:15; display:flex; gap:4px; padding:3px 6px;
+    #lecture_mini { position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:15; display:flex; width:max-content; gap:4px; padding:3px 6px;
       border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; box-shadow:0 2px 6px rgba(0,0,0,.3); opacity:.85; font-size:12px; }
     #lecture_mini:hover { opacity:1; }
+    #lecture_mini.moved { transform:none; border-top:1px solid var(--line); border-radius:8px; }
+    #lecture_grip { display:flex; align-items:center; padding:0 2px; color:var(--muted); cursor:move; touch-action:none; user-select:none; }
     .lecture_collapsed #lecture_bar, :root:not(.lecture_collapsed) #lecture_mini { display:none; }
     #lecture_bar button, #lecture_bar select, #lecture_mini button { font:inherit; margin:0; padding:4px 10px; border-radius:6px; border:1px solid var(--line);
       background:var(--bg); color:var(--fg); cursor:pointer; box-shadow:none; min-width:0; }
@@ -56,6 +59,7 @@
     const mini = document.createElement('div');
     mini.id = 'lecture_mini';
     mini.innerHTML = `
+      <span id="lecture_grip" title="끌어서 옮기기 (두 번 누르면 가운데로)">${GRIP}</span>
       <button class="primary" id="lecture_mini_listen">소리 켜기</button>
       <button id="lecture_unfold" title="소리 막대 펼치기">펼치기</button>`;
     container.before(bar);
@@ -64,9 +68,11 @@
     const $ = id => document.getElementById('lecture_' + id);
     const player = LecturePlayer(s => $('state').textContent = s, base);
     const back = () => document.querySelector('#noVNC_container canvas')?.focus({ preventScroll: true });
+    const float = LectureFloat(mini, $('grip'), 'lecture_mini_pos', back);
     const fold = v => {
       document.documentElement.classList.toggle('lecture_collapsed', v);
       remember(v);
+      float.apply();
       back();
     };
     let want = false;
@@ -84,13 +90,14 @@
     $('fold').onclick = () => fold(true);
     $('unfold').onclick = () => fold(false);
     document.documentElement.classList.toggle('lecture_collapsed', collapsed());
+    float.apply();
     fetch(base + '/api/status').then(r => r.json()).then(st => {
       if (!want && st.audio_mode === 'low' && player.supportsLow) $('mode').value = 'low';
     }).catch(() => {});
   }
 
-  const s = document.createElement('script');
-  s.src = base + '/player.js';
-  s.onload = () => document.readyState === 'loading' ? addEventListener('DOMContentLoaded', init) : init();
-  document.head.append(s);
+  const load = src => new Promise((ok, no) => document.head.append(Object.assign(document.createElement('script'), { src: base + src, onload: ok, onerror: no })));
+  Promise.all([load('/player.js'), load('/float.js')])
+    .then(() => document.readyState === 'loading' ? addEventListener('DOMContentLoaded', init) : init())
+    .catch(() => {});
 })();
