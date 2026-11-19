@@ -23,7 +23,9 @@
   .rec { color:var(--accent); font-weight:600; }
   table { width:100%; border-collapse:collapse; font-size:14px; }
   td { border-top:1px solid var(--line); padding:8px 4px; vertical-align:top; }
-  td a { color:inherit; margin-right:8px; }
+  a { color:inherit; }
+  td a { margin-right:8px; }
+  select { font:inherit; padding:7px 10px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); }
   .s-완료 { color:var(--ok); } .s-실패, .s-녹음중 { color:var(--accent); }
   #err { color:var(--accent); min-height:1em; }
 </style>
@@ -36,11 +38,11 @@
     <h2>소리</h2>
     <div class="row">
       <button class="primary" id="listen">듣기 시작</button>
+      <select id="mode"><option value="basic">기본</option><option value="low">저지연</option></select>
       <button id="reconnect">다시 연결</button>
       <span class="muted" id="audioState">정지</span>
     </div>
-    <p class="muted">noVNC 화면과 1~2초 차이가 납니다. 차이가 커지면 다시 연결을 누르세요.</p>
-    <audio id="audio" preload="none"></audio>
+    <p class="muted">화면보다 기본은 약 3초, 저지연은 1초 안쪽으로 늦게 들립니다. 기본에서 차이가 커지면 다시 연결을 누르세요. 화면과 소리를 한 탭에서 보려면 <a href="/screen" target="_blank">화면+소리</a>.</p>
   </section>
 
   <section>
@@ -60,26 +62,23 @@
     <table><tbody id="notes"></tbody></table>
   </section>
 </main>
+<script src="/player.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-const audio = $('audio');
-let wantAudio = false, recording = null;
+const player = LecturePlayer(s => $('audioState').textContent = s);
+let wantAudio = false, recording = null, modeSet = false;
 
-function connect() {
-  audio.src = '/stream.mp3?t=' + Date.now();
-  audio.play().catch(() => {});
-}
+if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
 $('listen').onclick = () => {
   wantAudio = !wantAudio;
-  if (wantAudio) connect(); else { audio.pause(); audio.removeAttribute('src'); audio.load(); $('audioState').textContent = '정지'; }
+  if (wantAudio) player.start($('mode').value); else player.stop();
   $('listen').textContent = wantAudio ? '듣기 정지' : '듣기 시작';
 };
-$('reconnect').onclick = () => { if (wantAudio) connect(); };
-audio.onplaying = () => $('audioState').textContent = '재생 중';
-audio.onerror = audio.onended = () => {
-  $('audioState').textContent = wantAudio ? '재연결 중' : '정지';
-  if (wantAudio) setTimeout(connect, 1500);
+$('mode').onchange = () => {
+  modeSet = true;
+  if (wantAudio) player.start($('mode').value);
 };
+$('reconnect').onclick = () => player.reconnect();
 
 async function api(path, body) {
   const res = await fetch(path, body === undefined ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
@@ -99,6 +98,10 @@ function mmss(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + St
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 function render(st) {
+  if (!modeSet) {
+    modeSet = true;
+    if (st.audio_mode === 'low' && player.supportsLow) $('mode').value = 'low';
+  }
   recording = st.recording;
   $('toggle').textContent = recording ? '녹음 종료' : '녹음 시작';
   $('recState').innerHTML = recording ? `<span class="rec">녹음 중 ${mmss(recording.seconds)}</span> · ${esc(recording.dir)}` : '대기';

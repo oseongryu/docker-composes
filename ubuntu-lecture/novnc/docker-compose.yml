@@ -13,6 +13,7 @@ services:
     environment:
       - RESOLUTION=${RESOLUTION:-1600x900x24}
       - WHISPER_MODEL=${WHISPER_MODEL:-medium}
+      - AUDIO_MODE=${AUDIO_MODE:-basic}
       - COURSE_XLSX=/courses/디지털 원격훈련 HRD 아카이브 과정 리스트.xlsx
     shm_size: "2g"
     restart: unless-stopped

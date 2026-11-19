@@ -6,13 +6,14 @@
 |---|---|
 | `http://localhost:6080/vnc.html` | 화면 (noVNC, 소리 없음) |
 | `http://localhost:8090/` | 소리 듣기 · 녹음 시작/종료 · 노트 목록 |
+| `http://localhost:8090/screen` | 화면 + 소리 한 탭 (위 noVNC 화면을 그대로 담고 위쪽에 소리 막대) |
 
 ## 구성
 
 - Xvfb + fluxbox + x11vnc + noVNC, 브라우저 (amd64 는 Google Chrome, arm64 는 Chromium)
 - PulseAudio 가상 출력 `lecture` 가 기본 출력이다. 브라우저 소리가 여기로 나간다
 - 8090 콘솔이 `lecture.monitor` 를 두 갈래로 읽는다
-  - 듣기: 접속한 탭마다 ffmpeg 가 mp3 로 실시간 송출 (탭을 닫아도 녹음과 무관)
+  - 듣기: 접속한 탭마다 ffmpeg 가 mp3 로 실시간 송출 (탭을 닫아도 녹음과 무관). 재생 방식은 `기본`·`저지연` 두 가지 ([소리 재생 방식](#소리-재생-방식))
   - 녹음: 16kHz 모노 opus → `notes/<시각>_<연번>/audio.ogg`
 - 녹음을 끝내면 순서대로 처리한다: faster-whisper 전사 (`transcript.txt`, `[mm:ss]` 시각 포함) → `claude -p` 요약 (`summary.md`)
 - 녹음 중에는 브라우저가 받는 자막 파일(`.vtt`·`.srt`)도 `notes/<시각>_<연번>/subs/` 에 모은다. 처리 때 `subtitle.txt` 로 합쳐 요약의 주 근거로 쓰고, 음성 전사는 자막이 빈 구간만 보충한다
@@ -60,6 +61,8 @@ ssh -L 6080:localhost:6080 -L 8090:localhost:8090 <사용자>@<서버주소>
 | 화면 | `http://localhost:6080/vnc.html` | 연결(Connect) → 안의 브라우저로 강의 사이트 로그인 |
 | 소리·녹음 | `http://localhost:8090/` | 듣기 시작 → 연번 입력 → 녹음 시작 |
 
+화면과 소리를 한 탭으로 보려면 화면 탭 대신 `http://localhost:8090/screen` 을 열고 `소리 켜기`. 녹음은 그대로 콘솔 탭에서 한다.
+
 ### 맥에서 바로 써 볼 때
 
 ```bash
@@ -78,6 +81,7 @@ cd ~/git/docker-composes/ubuntu-lecture/novnc && docker compose up -d --build
 | `COURSE_DIR` | `../../../../references/study` | 과정 리스트 엑셀이 있는 폴더 |
 | `WHISPER_MODEL` | `medium` | `small` 은 빠르고 `large-v3` 는 정확하다. CPU 전사라 큰 모델일수록 오래 걸린다 |
 | `RESOLUTION` | `1600x900x24` | 가상 화면 해상도 |
+| `AUDIO_MODE` | `basic` | 콘솔·`/screen` 의 처음 재생 방식. `basic` 기본, `low` 저지연. 페이지에서 바꾸면 그 탭에서만 바뀐다 |
 
 ## 처음 한 번: claude 로그인
 
@@ -95,6 +99,21 @@ docker exec -it -u lecture -e HOME=/home/lecture lecture-novnc claude
 2. noVNC 화면의 브라우저에서 강의 사이트에 로그인하고 본인인증을 한다
 3. 콘솔에 연번을 넣고 `녹음 시작` → 강의 재생. 플레이어에 자막(CC)이 있으면 켠다. 켜야 자막 파일을 받아 오고, 콘솔에 `자막 N개 수집` 으로 보인다
 4. 차시가 끝나면 `녹음 종료` → 목록에서 `처리중` → `완료` 후 summary·transcript 링크
+
+## 소리 재생 방식
+
+noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같은 `/stream.mp3` 를 두 방식 중 하나로 재생한다 (`app/player.js`).
+
+| 방식 | 재생 | 화면 대비 지연 (로컬 측정) | 끊긴 뒤 |
+|---|---|---|---|
+| `기본` | `<audio src=/stream.mp3>` (이전부터 쓰던 방식) | 약 2.7초 | 끊긴 만큼 계속 늦어짐 → `다시 연결` |
+| `저지연` | fetch 로 받은 조각을 MediaSource 에 바로 추가 | 약 0.5~0.7초 | 1초 넘게 밀리면 최신 위치로 이동 |
+
+- `기본` 이 늦은 이유는 Chrome 이 mp3 스트림을 약 2초 분량씩 묶어 읽기 때문이다
+- `저지연` 은 30초 지난 버퍼를 지워 오래 틀어도 메모리가 늘지 않는다
+- MediaSource 의 `audio/mpeg` 를 지원하지 않는 브라우저는 `저지연` 이 비활성화된다
+- ssh 터널 원격 접속에서는 네트워크 지연만큼 더 늦다 (측정 안 함)
+- 녹음·전사는 컨테이너 안에서 직접 받으므로 재생 방식과 무관
 
 ## 자막 수집
 

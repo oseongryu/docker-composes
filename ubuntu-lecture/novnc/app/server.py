@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import queue
 import re
 import subprocess
@@ -17,6 +18,12 @@ APP = Path(__file__).parent
 SOURCE = 'lecture.monitor'
 FILES = {'summary.md', 'transcript.txt', 'subtitle.txt', 'meta.json', 'error.log', 'audio.ogg'}
 NAME = re.compile(r'^[\w\-]+$')
+PAGES = {
+    '/': ('index.html', 'text/html; charset=utf-8'),
+    '/screen': ('screen.html', 'text/html; charset=utf-8'),
+    '/player.js': ('player.js', 'text/javascript; charset=utf-8'),
+}
+AUDIO_MODE = 'low' if os.environ.get('AUDIO_MODE') == 'low' else 'basic'
 
 lock = threading.Lock()
 recording = None
@@ -96,7 +103,7 @@ def status():
     if recording:
         rec = {'dir': recording['note'].name, 'seconds': int(time.time() - recording['since']),
                'subs': subs.count(recording['note'])}
-    return {'recording': rec, 'notes': notes, 'subs': capture.connected}
+    return {'recording': rec, 'notes': notes, 'subs': capture.connected, 'audio_mode': AUDIO_MODE}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -112,8 +119,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
-        if self.path == '/':
-            return self.send(200, (APP / 'index.html').read_bytes(), 'text/html; charset=utf-8')
+        page = PAGES.get(self.path.split('?')[0])
+        if page:
+            return self.send(200, (APP / page[0]).read_bytes(), page[1])
         if self.path == '/api/status':
             return self.send(200, status())
         if self.path.startswith('/stream.mp3'):

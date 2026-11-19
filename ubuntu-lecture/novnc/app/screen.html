@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강의 화면</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1b1b1b; --muted:#6b6b6b; --line:#ddd; --accent:#c0392b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --fg:#eaeaea; --muted:#9a9a9a; --line:#333; --accent:#ff6b5b; }
+  }
+  html, body { height:100%; margin:0; }
+  body { display:flex; flex-direction:column; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui, sans-serif; }
+  header { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:6px 12px; border-bottom:1px solid var(--line); }
+  button, select { font:inherit; padding:4px 10px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--fg); cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .muted { color:var(--muted); font-size:13px; }
+  .grow { flex:1; }
+  a { color:inherit; }
+  iframe { flex:1; width:100%; min-height:0; border:0; background:#000; }
+</style>
+</head>
+<body>
+<header>
+  <button class="primary" id="listen">소리 켜기</button>
+  <select id="mode"><option value="basic">기본</option><option value="low">저지연</option></select>
+  <button id="reconnect">다시 연결</button>
+  <span class="muted" id="audioState">정지</span>
+  <span class="grow"></span>
+  <a href="/" target="_blank">노트 콘솔</a>
+</header>
+<iframe id="screen" title="noVNC" allow="clipboard-read; clipboard-write"></iframe>
+<script src="/player.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const player = LecturePlayer(s => $('audioState').textContent = s);
+let want = false;
+
+$('screen').src = `${location.protocol}//${location.hostname}:6080/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
+if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
+$('listen').onclick = () => {
+  want = !want;
+  if (want) player.start($('mode').value); else player.stop();
+  $('listen').textContent = want ? '소리 끄기' : '소리 켜기';
+};
+$('mode').onchange = () => { if (want) player.start($('mode').value); };
+$('reconnect').onclick = () => player.reconnect();
+
+fetch('/api/status').then(r => r.json()).then(st => {
+  if (!want && st.audio_mode === 'low' && player.supportsLow) $('mode').value = 'low';
+}).catch(() => {});
+</script>
+</body>
+</html>
