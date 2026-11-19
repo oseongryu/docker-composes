@@ -58,14 +58,28 @@ class Session:
                 t.cancel()
 
     async def send(self, method, params=None, sid=None):
+        return await (await self.post(method, params, sid))
+
+    async def post(self, method, params=None, sid=None):
         i = next(self.ids)
         msg = {'id': i, 'method': method, 'params': params or {}}
         if sid:
             msg['sessionId'] = sid
         fut = asyncio.get_running_loop().create_future()
+        fut.add_done_callback(lambda f: f.cancelled() or f.exception())
         self.calls[i] = fut
         await self.ws.send(json.dumps(msg))
-        return await fut
+        return fut
+
+    async def attach(self, sid):
+        """자동 연결된 팝업은 Chrome 이 멈춰 두므로 Runtime.runIfWaitingForDebugger 를 응답과 상관없이 마지막에 꼭 보낸다."""
+        futs = []
+        try:
+            futs.append(await self.post('Network.enable', sid=sid))
+            futs.append(await self.post('Target.setAutoAttach', ATTACH, sid))
+        finally:
+            futs.append(await self.post('Runtime.runIfWaitingForDebugger', sid=sid))
+        await asyncio.gather(*futs, return_exceptions=True)
 
     async def read(self):
         try:
@@ -95,9 +109,7 @@ class Session:
 
     def on_event(self, method, p, sid):
         if method == 'Target.attachedToTarget':
-            s = p['sessionId']
-            self.spawn(self.send('Network.enable', sid=s))
-            self.spawn(self.send('Target.setAutoAttach', ATTACH, sid=s))
+            self.spawn(self.attach(p['sessionId']))
         elif method == 'Network.responseReceived':
             res = p['response']
             ext = subtitle_ext(res.get('url', ''), res.get('mimeType', ''))
