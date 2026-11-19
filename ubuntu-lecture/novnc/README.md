@@ -10,7 +10,7 @@
 
 ## 구성
 
-- Xvfb + fluxbox + x11vnc + noVNC, 브라우저 (amd64 는 Google Chrome, arm64 는 Chromium)
+- Xvfb + fluxbox + x11vnc + noVNC, 브라우저 (amd64 는 Google Chrome, arm64 는 Chromium), fcitx5 한글 입력기 ([한글 입력](#한글-입력))
 - PulseAudio 가상 출력 `lecture` 가 기본 출력이다. 브라우저 소리가 여기로 나간다
 - 8090 콘솔이 `lecture.monitor` 를 두 갈래로 읽는다
   - 듣기: 접속한 탭마다 ffmpeg 가 mp3 로 실시간 송출 (탭을 닫아도 녹음과 무관). 재생 방식은 `기본`·`저지연` 두 가지 ([소리 재생 방식](#소리-재생-방식))
@@ -82,6 +82,17 @@ cd ~/git/docker-composes/ubuntu-lecture/novnc && docker compose up -d --build
 | `WHISPER_MODEL` | `medium` | `small` 은 빠르고 `large-v3` 는 정확하다. CPU 전사라 큰 모델일수록 오래 걸린다 |
 | `RESOLUTION` | `1600x900x24` | 가상 화면 해상도 |
 | `AUDIO_MODE` | `basic` | 콘솔·`/screen` 의 처음 재생 방식. `basic` 기본, `low` 저지연. 페이지에서 바꾸면 그 탭에서만 바뀐다 |
+
+## 한글 입력
+
+noVNC 는 누른 키만 넘기므로 접속한 PC 의 한글 입력기는 쓰이지 않는다. 컨테이너 안 fcitx5 (`fcitx5-hangul`, 두벌식)로 조합한다.
+
+- 한/영 전환: `한/영` 키, `Shift+Space`, 오른쪽 `Alt` 중 아무거나. 한/영 키가 안 먹는 PC 에서는 `Shift+Space`
+- 한/영 상태는 모든 창·탭이 같이 쓴다. 강의 팝업으로 넘어가도 다시 바꿀 필요 없다
+- 접속한 PC 쪽 입력기는 영문 상태로 둔다
+- noVNC 클립보드로 한글을 붙여 넣으면 `?` 로 바뀐다 (x11vnc 가 Latin-1 클립보드만 지원). 한글은 직접 친다
+- 설정은 `fcitx5/` (이미지의 `/etc/xdg/fcitx5`). 사용자 설정은 컨테이너를 다시 띄우면 지워지는 `/tmp/runtime-lecture/config` 에 두어 항상 이미지 설정으로 시작한다
+- 브라우저는 fcitx5 와 세션 D-Bus(`/tmp/runtime-lecture/bus`)로 붙는다. `--password-store=basic` 은 빼지 않는다. 세션 D-Bus 가 생기면 Chrome 이 키링을 찾아 쿠키 암호화 방식을 바꿀 수 있고, 그러면 기존 로그인 쿠키(`v10`)를 못 읽는다
 
 ## 처음 한 번: claude 로그인
 

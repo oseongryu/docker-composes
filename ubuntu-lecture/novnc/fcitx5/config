@@ -1,0 +1,7 @@
+[Hotkey/TriggerKeys]
+0=Hangul
+1=Shift+space
+2=Alt_R
+
+[Behavior]
+ShareInputState=All

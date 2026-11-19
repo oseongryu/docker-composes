@@ -14,8 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         x11-xserver-utils autocutsel dbus-x11 hsetroot \
         pulseaudio pulseaudio-utils ffmpeg \
         fonts-noto-cjk fonts-noto-color-emoji fonts-dejavu locales tzdata \
+        fcitx5 fcitx5-hangul fcitx5-frontend-gtk3 \
     && sed -i 's/^# *\(ko_KR.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen \
+    && dbus-uuidgen --ensure=/etc/machine-id \
     && rm -rf /var/lib/apt/lists/*
 
 COPY certs/ /usr/local/share/ca-certificates/extra/
@@ -48,6 +50,7 @@ COPY lecture.pa /etc/pulse/lecture.pa
 COPY supervisord.conf /etc/supervisor/conf.d/lecture.conf
 COPY entrypoint.sh /entrypoint.sh
 COPY browser.sh /usr/local/bin/lecture-browser
+COPY fcitx5/ /etc/xdg/fcitx5/
 COPY app /app
 RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser \
     && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu
