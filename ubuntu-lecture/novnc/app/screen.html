@@ -18,6 +18,11 @@
   .grow { flex:1; }
   a { color:inherit; }
   iframe { flex:1; width:100%; min-height:0; border:0; background:#000; }
+  #mini { position:fixed; top:0; left:50%; transform:translateX(-50%); display:flex; gap:4px; padding:3px 6px; background:var(--bg);
+    border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; box-shadow:0 2px 6px rgba(0,0,0,.3); opacity:.85; font-size:12px; }
+  #mini:hover { opacity:1; }
+  #mini button { padding:1px 8px; }
+  .collapsed header, :root:not(.collapsed) #mini { display:none; }
 </style>
 </head>
 <body>
@@ -28,23 +33,41 @@
   <span class="muted" id="audioState">정지</span>
   <span class="grow"></span>
   <a href="/" target="_blank">노트 콘솔</a>
+  <button id="settings" title="noVNC 설정 (왼쪽 가장자리 손잡이와 같음)">설정</button>
+  <button id="fold" title="막대를 접어 화면을 넓게">접기</button>
 </header>
+<div id="mini">
+  <button class="primary" id="miniListen">소리 켜기</button>
+  <button id="unfold" title="소리 막대 펼치기">펼치기</button>
+</div>
 <iframe id="screen" title="noVNC" allow="clipboard-read; clipboard-write"></iframe>
 <script src="/player.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+const KEY = 'lecture_bar_collapsed';
 const player = LecturePlayer(s => $('audioState').textContent = s);
+const back = () => $('screen').focus();
+const fold = v => {
+  document.documentElement.classList.toggle('collapsed', v);
+  try { localStorage.setItem(KEY, v ? '1' : '0'); } catch {}
+  back();
+};
 let want = false;
 
+try { document.documentElement.classList.toggle('collapsed', localStorage.getItem(KEY) === '1'); } catch {}
 $('screen').src = `${location.protocol}//${location.hostname}:6080/vnc.html?autoconnect=true&resize=scale&reconnect=true`;
 if (!player.supportsLow) $('mode').querySelector('[value=low]').disabled = true;
-$('listen').onclick = () => {
+$('listen').onclick = $('miniListen').onclick = () => {
   want = !want;
   if (want) player.start($('mode').value); else player.stop();
-  $('listen').textContent = want ? '소리 끄기' : '소리 켜기';
+  $('listen').textContent = $('miniListen').textContent = want ? '소리 끄기' : '소리 켜기';
+  back();
 };
-$('mode').onchange = () => { if (want) player.start($('mode').value); };
-$('reconnect').onclick = () => player.reconnect();
+$('mode').onchange = () => { if (want) player.start($('mode').value); back(); };
+$('reconnect').onclick = () => { player.reconnect(); back(); };
+$('settings').onclick = () => $('screen').contentWindow.postMessage('lecture_settings', new URL($('screen').src).origin);
+$('fold').onclick = () => fold(true);
+$('unfold').onclick = () => fold(false);
 
 fetch('/api/status').then(r => r.json()).then(st => {
   if (!want && st.audio_mode === 'low' && player.supportsLow) $('mode').value = 'low';

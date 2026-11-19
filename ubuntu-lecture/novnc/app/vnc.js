@@ -1,6 +1,10 @@
 (() => {
-  if (window.top !== window) return;
   const base = new URL(document.currentScript.src).origin;
+  const settings = () => document.getElementById('noVNC_settings_button')?.click();
+  if (window.top !== window) {
+    addEventListener('message', e => { if (e.origin === base && e.data === 'lecture_settings') settings(); });
+    return;
+  }
   const KEY = 'lecture_bar_collapsed';
   const css = `
     body { display:flex; flex-direction:column; }
@@ -47,6 +51,7 @@
       <span class="muted" id="lecture_state">정지</span>
       <span class="grow"></span>
       <a href="${base}/" target="_blank">노트 콘솔</a>
+      <button id="lecture_settings" title="noVNC 설정 (왼쪽 가장자리 손잡이와 같음)">설정</button>
       <button id="lecture_fold" title="막대를 접어 화면을 넓게">접기</button>`;
     const mini = document.createElement('div');
     mini.id = 'lecture_mini';
@@ -75,6 +80,7 @@
     $('listen').onclick = $('mini_listen').onclick = toggle;
     $('mode').onchange = () => { if (want) player.start($('mode').value); back(); };
     $('reconnect').onclick = () => { player.reconnect(); back(); };
+    $('settings').onclick = settings;
     $('fold').onclick = () => fold(true);
     $('unfold').onclick = () => fold(false);
     document.documentElement.classList.toggle('lecture_collapsed', collapsed());
