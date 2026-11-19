@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pipeline
 import subs
@@ -22,6 +23,7 @@ PAGES = {
     '/': ('index.html', 'text/html; charset=utf-8'),
     '/screen': ('screen.html', 'text/html; charset=utf-8'),
     '/player.js': ('player.js', 'text/javascript; charset=utf-8'),
+    '/vnc.js': ('vnc.js', 'text/javascript; charset=utf-8'),
 }
 AUDIO_MODE = 'low' if os.environ.get('AUDIO_MODE') == 'low' else 'basic'
 
@@ -110,9 +112,16 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass
 
+    def cors(self):
+        """noVNC(같은 호스트 다른 포트) 페이지의 소리 버튼이 스트림·상태를 읽게 한다."""
+        origin = self.headers.get('Origin')
+        if origin and urlparse(origin).hostname == urlparse('//' + (self.headers.get('Host') or '')).hostname:
+            self.send_header('Access-Control-Allow-Origin', origin)
+
     def send(self, code, body, ctype='application/json; charset=utf-8'):
         data = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
         self.send_response(code)
+        self.cors()
         self.send_header('Content-Type', ctype)
         self.send_header('Content-Length', str(len(data)))
         self.end_headers()
@@ -152,6 +161,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def stream(self):
         self.send_response(200)
+        self.cors()
         self.send_header('Content-Type', 'audio/mpeg')
         self.send_header('Cache-Control', 'no-cache, no-store')
         self.end_headers()

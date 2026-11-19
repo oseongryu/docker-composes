@@ -53,7 +53,8 @@ COPY browser.sh /usr/local/bin/lecture-browser
 COPY fcitx5/ /etc/xdg/fcitx5/
 COPY app /app
 RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser \
-    && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu
+    && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu \
+    && sed -i 's|</head>|<script>document.head.append(Object.assign(document.createElement("script"), {src: location.protocol + "//" + location.hostname + ":8090/vnc.js"}))</script>\n</head>|' /usr/share/novnc/vnc.html
 
 ENV LANG=ko_KR.UTF-8
 ENV LC_ALL=ko_KR.UTF-8

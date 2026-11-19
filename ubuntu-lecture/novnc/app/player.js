@@ -1,4 +1,4 @@
-function LecturePlayer(onState) {
+function LecturePlayer(onState, base = '') {
   const supportsLow = !!(window.MediaSource && MediaSource.isTypeSupported('audio/mpeg'));
   let audio = null, ctl = null, timer = null, want = false, mode = 'basic';
 
@@ -25,7 +25,7 @@ function LecturePlayer(onState) {
     const el = audio = new Audio();
     el.onplaying = () => { if (el === audio) onState('재생 중'); };
     el.onerror = el.onended = () => retry(el);
-    const url = '/stream.mp3?t=' + Date.now();
+    const url = base + '/stream.mp3?t=' + Date.now();
     if (mode === 'low') low(el, url); else el.src = url;
     el.play().catch(() => {});
   }
