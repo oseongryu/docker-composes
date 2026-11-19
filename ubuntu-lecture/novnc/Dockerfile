@@ -40,7 +40,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && npm install -g @anthropic-ai/claude-code
 
 RUN python -m venv /opt/venv \
-    && /opt/venv/bin/pip install --no-cache-dir faster-whisper==1.2.1 av==17.0.0 openpyxl==3.1.5 requests==2.32.3 playwright==1.49.1
+    && /opt/venv/bin/pip install --no-cache-dir faster-whisper==1.2.1 av==17.0.0 openpyxl==3.1.5 requests==2.32.3 websockets==14.1
 
 RUN useradd -m -u 1000 -s /bin/bash lecture
 
