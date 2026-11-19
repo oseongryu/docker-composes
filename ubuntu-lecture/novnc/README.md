@@ -105,7 +105,7 @@ docker compose -p lecture-novnc-2 --env-file .env.2 up -d
 - 주소: `http://localhost:6081/vnc.html`, `http://localhost:8091/`, `http://localhost:8091/screen`
 - 브라우저 프로필이 따로라 강의 사이트 로그인·claude 로그인을 따로 한다. `docker exec` 의 컨테이너 이름도 `lecture-novnc-2`
 - 내리기: `docker compose -p lecture-novnc-2 --env-file .env.2 down`
-- 포트는 그대로 두고 `BIND=127.0.0.2` 처럼 루프백 주소만 바꾸는 방법은 Docker Desktop(Windows)에서 안 된다. `127.0.0.2:8090` 요청이 첫 번째 컨테이너로 간다
+- 포트는 그대로 두고 `BIND=127.0.0.2` 처럼 루프백 주소만 바꾸는 방법은 Rancher Desktop(Windows)에서 안 된다. `127.0.0.2:8090` 요청이 첫 번째 컨테이너로 간다
 
 ## 한글 입력
 
