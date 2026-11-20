@@ -4,7 +4,7 @@
 #       lecture-resolution default    설정 지우고 RESOLUTION 기본값으로
 #       lecture-resolution get        Xvfb 기동용 WxHxD (supervisor xvfb)
 #       lecture-resolution watch      원하는 크기와 실제 크기가 다르면 X 화면을 다시 띄움 (supervisor resolution, root)
-# 적용은 watch 만 한다. 파일은 서버(data/resolution)·컨테이너 어디서 고쳐도 3초 안에 반영된다.
+# 적용은 watch 만 한다. watch 는 3초마다 파일만 읽고(셸 내장 read) 값이 바뀌었을 때만 실제 크기를 확인한다.
 set -e
 
 FILE=/home/lecture/resolution
@@ -63,16 +63,26 @@ apply() {
 }
 
 watch() {
+    seen=__start__
+    pending=
     note=
     while sleep 3; do
+        v=
+        [ -f "$FILE" ] && { read -r v < "$FILE" || true; }
+        if [ "$v" != "$seen" ]; then
+            seen=$v
+            pending=1
+        fi
+        [ -n "$pending" ] || continue
         cur=$(actual)
         [ -n "$cur" ] || continue
         if ! want=$(wanted); then
-            [ "$note" = "bad" ] || echo "형식오류 $(raw | head -c 40)"
-            note=bad
+            echo "형식오류 $(raw | head -c 40)"
+            pending=
             continue
         fi
         if [ "$want" = "$cur" ]; then
+            pending=
             note=
             continue
         fi
@@ -81,15 +91,14 @@ watch() {
             note="wait$want"
             continue
         fi
-        [ "$note" = "fail$want" ] && continue
         echo "크기변경 $cur $want"
         if apply; then
             echo "적용 $(actual)"
-            note=
         else
             echo "적용실패 $want"
-            note="fail$want"
         fi
+        pending=
+        note=
     done
 }
 
