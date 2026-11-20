@@ -11,7 +11,7 @@ services:
       - ${DATA_DIR:-./data}:/home/lecture
       - ${COURSE_DIR:-../../../../references/study}:/courses:ro
     environment:
-      - RESOLUTION=${RESOLUTION:-1600x900x24}
+      - RESOLUTION=${RESOLUTION:-1920x1080x24}
       - WHISPER_MODEL=${WHISPER_MODEL:-medium}
       - AUDIO_MODE=${AUDIO_MODE:-basic}
       - VNC_PORT=${VNC_PORT:-6080}

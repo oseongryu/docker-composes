@@ -6,7 +6,7 @@ ENV DISPLAY=:99
 ENV PYTHONUNBUFFERED=1
 ENV PULSE_SERVER=unix:/tmp/pulse/native
 ENV XDG_RUNTIME_DIR=/tmp/runtime-lecture
-ENV RESOLUTION=1600x900x24
+ENV RESOLUTION=1920x1080x24
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl ca-certificates gnupg libnss3-tools \
@@ -56,9 +56,10 @@ COPY lecture.pa /etc/pulse/lecture.pa
 COPY supervisord.conf /etc/supervisor/conf.d/lecture.conf
 COPY entrypoint.sh /entrypoint.sh
 COPY browser.sh /usr/local/bin/lecture-browser
+COPY resolution.sh /usr/local/bin/lecture-resolution
 COPY fcitx5/ /etc/xdg/fcitx5/
 COPY app /app
-RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser \
+RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser /usr/local/bin/lecture-resolution \
     && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu \
     && sed -i 's|</head>|<script>document.head.append(Object.assign(document.createElement("script"), {src: location.protocol + "//" + location.hostname + ":8090/vnc.js"}))</script>\n</head>|' /usr/share/novnc/vnc.html
 

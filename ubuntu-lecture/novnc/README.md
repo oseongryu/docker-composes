@@ -81,7 +81,7 @@ cd ~/git/docker-composes/ubuntu-lecture/novnc && docker compose up -d --build
 | `BIND` | `127.0.0.1` | 포트 바인딩 주소. noVNC·콘솔 모두 인증이 없으므로 그대로 두고 터널로 접속 |
 | `COURSE_DIR` | `../../../../references/study` | 과정 리스트 엑셀이 있는 폴더 |
 | `WHISPER_MODEL` | `medium` | `small` 은 빠르고 `large-v3` 는 정확하다. CPU 전사라 큰 모델일수록 오래 걸린다 |
-| `RESOLUTION` | `1600x900x24` | 가상 화면 해상도 |
+| `RESOLUTION` | `1920x1080x24` | 가상 화면 기본 해상도. 실행 중 변경은 [화면 크기 바꾸기](#화면-크기-바꾸기-실행-중) 가 우선한다 |
 | `AUDIO_MODE` | `basic` | 콘솔·`/screen`·noVNC 소리 막대의 처음 재생 방식. `basic` 기본, `low` 저지연. 페이지에서 바꾸면 그 탭에서만 바뀐다 |
 | `NAME` | `lecture-novnc` | 컨테이너 이름 |
 | `DATA_DIR` | `./data` | `/home/lecture` (녹음·노트·브라우저 프로필·claude 로그인) |
@@ -210,7 +210,7 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
   docker exec -u lecture -e HOME=/home/lecture -w /home/lecture/scripts lecture-novnc /opt/venv/bin/python image_click.py
   ```
 
-  - `DISPLAY=:99` 는 이미 잡혀 있다. 화면 크기는 `RESOLUTION` (기본 1600x900)
+  - `DISPLAY=:99` 는 이미 잡혀 있다. 화면 크기는 기본 1920x1080, 실행 중 변경은 [화면 크기 바꾸기](#화면-크기-바꾸기-실행-중)
   - 두 번째 인스턴스는 `lecture-novnc-2`, 파일은 `data2/scripts/`
 - 주의
   - `gnome-screenshot` 은 실제로 실행되지 않지만 빼면 안 된다. pyscreeze 1.0.1 은 리눅스에서 이 명령이 있어야 Pillow `ImageGrab` 으로 캡처하고, 없으면 `screenshot()`·`locateOnScreen()` 이 예외를 낸다
@@ -220,6 +220,25 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
   - pynput·selenium·playwright 는 없다. 필요하면 `/opt/venv/bin/pip install ...` (떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다: [자막 수집](#자막-수집))
   - 마우스 커서는 noVNC 로 보는 사람과 하나다. 스크립트가 도는 동안 noVNC 에서 마우스를 움직이면 섞인다. `FAILSAFE` 는 커서를 화면 모서리(0,0 등)로 보내면 멈춘다
   - 찾을 그림은 같은 해상도·브라우저 배율에서 잘라야 한다. noVNC 화면을 PC 에서 캡처하면 크기가 달라질 수 있으니 `pyautogui.screenshot('x.png')` 로 컨테이너 안에서 찍어 자른다
+
+## 화면 크기 바꾸기 (실행 중)
+
+이미지 재빌드·컨테이너 재생성 없이 담당자가 바꾼다.
+
+```bash
+docker exec lecture-novnc lecture-resolution             # 현재 크기·설정
+docker exec lecture-novnc lecture-resolution 1920x1080   # 바꾸기
+docker exec lecture-novnc lecture-resolution default     # 설정 지우고 RESOLUTION 기본값으로
+```
+
+- 값은 `data/resolution` (2번은 `data2/resolution`)에 저장돼 컨테이너를 다시 띄워도 유지된다. 이 파일이 `RESOLUTION` 보다 우선한다
+- 범위: 가로 640~3840, 세로 480~2160. 색 깊이는 24 고정
+- 바꾸면 X 화면 쪽만 다시 띄운다: Xvfb → x11vnc·fluxbox·autocutsel·fcitx5·브라우저 (약 8초). 콘솔(8090)·소리·녹음 서버는 그대로
+  - 브라우저가 다시 뜬다. 로그인은 프로필에 남아 유지되지만 열려 있던 페이지·재생 위치는 새로 열어야 한다
+  - 녹음 중이면 바꾸지 않고 끝낸다
+  - noVNC·`/screen` 은 자동으로 다시 붙고 새 크기로 보인다
+- Xvfb 는 실행 중 크기 변경(`xrandr`)을 못 한다. 기동 때 크기가 최댓값으로 고정되고 모드가 하나뿐이라 줄이기·늘리기 모두 `BadValue` 로 실패한다. 그래서 다시 띄우는 방식이다
+- pyautogui 스크립트는 바꾼 뒤 새로 실행해야 새 크기를 본다. 찾을 그림도 크기가 바뀌면 다시 잘라야 할 수 있다 (브라우저 글자 크기는 그대로라 대개 그대로 맞는다)
 
 ## 브라우저 다시 열기
 
