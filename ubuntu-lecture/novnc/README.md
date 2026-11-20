@@ -223,20 +223,31 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
 
 ## 화면 크기 바꾸기 (실행 중)
 
-이미지 재빌드·컨테이너 재생성 없이 담당자가 바꾼다.
+이미지 재빌드·컨테이너 재생성 없이, docker 명령 없이도 바꾼다. 크기는 `data/resolution` (2번은 `data2/resolution`) 파일 한 줄이다.
 
-```bash
-docker exec lecture-novnc lecture-resolution             # 현재 크기·설정
-docker exec lecture-novnc lecture-resolution 1920x1080   # 바꾸기
-docker exec lecture-novnc lecture-resolution default     # 설정 지우고 RESOLUTION 기본값으로
-```
+- 서버에서: 파일만 고친다. 3초 안에 감지해 적용한다
 
-- 값은 `data/resolution` (2번은 `data2/resolution`)에 저장돼 컨테이너를 다시 띄워도 유지된다. 이 파일이 `RESOLUTION` 보다 우선한다
-- 범위: 가로 640~3840, 세로 480~2160. 색 깊이는 24 고정
-- 바꾸면 X 화면 쪽만 다시 띄운다: Xvfb → x11vnc·fluxbox·autocutsel·fcitx5·브라우저 (약 8초). 콘솔(8090)·소리·녹음 서버는 그대로
+  ```bash
+  echo 1920x1080 > data/resolution
+  ```
+
+- 컨테이너 안(noVNC 데스크톱 터미널 등, lecture 사용자)에서: 적용될 때까지 기다렸다가 결과를 보여 준다
+
+  ```bash
+  lecture-resolution             # 현재 크기·설정
+  lecture-resolution 1920x1080   # 바꾸기
+  lecture-resolution default     # 파일 지우고 RESOLUTION 기본값으로
+  ```
+
+  밖에서는 `docker exec lecture-novnc lecture-resolution 1920x1080` 도 같다
+- 파일이 `RESOLUTION` 보다 우선하고, 컨테이너를 다시 띄워도 유지된다. 파일이 없으면 `RESOLUTION` (기본 1920x1080)
+- 범위: 가로 640~3840, 세로 480~2160. 색 깊이는 24 고정. 형식이 틀리면 바꾸지 않고 `/var/log/resolution.log` 에 `형식오류` 만 남긴다
+- 적용은 supervisor 의 `resolution` 프로그램(root)이 한다. 3초마다 파일(없으면 `RESOLUTION`)과 실제 화면 크기를 비교해 다르면 X 화면 쪽만 다시 띄운다: Xvfb → x11vnc·fluxbox·autocutsel·fcitx5·브라우저 (약 8초). 콘솔(8090)·소리·녹음 서버는 그대로
   - 브라우저가 다시 뜬다. 로그인은 프로필에 남아 유지되지만 열려 있던 페이지·재생 위치는 새로 열어야 한다
-  - 녹음 중이면 바꾸지 않고 끝낸다
+  - 녹음 중이면 `녹음중대기` 로 기다렸다가 녹음이 끝나면 적용한다
   - noVNC·`/screen` 은 자동으로 다시 붙고 새 크기로 보인다
+  - 기록: `docker exec lecture-novnc cat /var/log/resolution.log` (`크기변경`·`적용`·`녹음중대기`·`형식오류`·`적용실패`)
+- 컨테이너 안 lecture 사용자는 supervisor 를 직접 다룰 수 없다(소켓이 root 전용). 그래서 파일만 쓰고 적용은 root 감시 프로그램에 맡긴다
 - Xvfb 는 실행 중 크기 변경(`xrandr`)을 못 한다. 기동 때 크기가 최댓값으로 고정되고 모드가 하나뿐이라 줄이기·늘리기 모두 `BadValue` 로 실패한다. 그래서 다시 띄우는 방식이다
 - pyautogui 스크립트는 바꾼 뒤 새로 실행해야 새 크기를 본다. 찾을 그림도 크기가 바뀌면 다시 잘라야 할 수 있다 (브라우저 글자 크기는 그대로라 대개 그대로 맞는다)
 
