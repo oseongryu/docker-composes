@@ -4,6 +4,7 @@ set -e
 mkdir -p /tmp/pulse /tmp/runtime-lecture /home/lecture/notes
 chown lecture:lecture /tmp/pulse /tmp/runtime-lecture /home/lecture /home/lecture/notes
 chmod 700 /tmp/runtime-lecture
+[ -f /home/lecture/.Xauthority ] || runuser -u lecture -- touch /home/lecture/.Xauthority
 
 rm -f /home/lecture/.config/browser/Singleton*
 

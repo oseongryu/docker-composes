@@ -44,6 +44,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir faster-whisper==1.2.1 av==17.0.0 openpyxl==3.1.5 requests==2.32.3 websockets==14.1
 
+RUN apt-get update && apt-get install -y --no-install-recommends xdotool scrot x11-utils gnome-screenshot xclip \
+    && rm -rf /var/lib/apt/lists/* \
+    && /opt/venv/bin/pip install --no-cache-dir pyautogui==0.9.54 pyscreeze==1.0.1 pillow==10.0.1 opencv-python-headless==4.13.0.92 pyperclip==1.11.0 \
+    && touch /root/.Xauthority
+COPY sitecustomize.py /opt/venv/lib/python3.12/site-packages/sitecustomize.py
+
 RUN useradd -m -u 1000 -s /bin/bash lecture
 
 COPY lecture.pa /etc/pulse/lecture.pa

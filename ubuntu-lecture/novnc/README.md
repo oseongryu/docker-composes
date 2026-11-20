@@ -17,7 +17,7 @@
   - 녹음: 16kHz 모노 opus → `notes/<시각>_<연번>/audio.ogg`. 약 1초마다 파일에 써서 녹음 중에도 다시 들을 수 있다
 - 녹음을 끝내면 순서대로 처리한다: faster-whisper 전사 (`transcript.txt`, `[mm:ss]` 시각 포함) → `claude -p` 요약 (`summary.md`)
 - 녹음 중에는 브라우저가 받는 자막 파일(`.vtt`·`.srt`)도 `notes/<시각>_<연번>/subs/` 에 모은다. 처리 때 `subtitle.txt` 로 합쳐 요약의 주 근거로 쓰고, 음성 전사는 자막이 빈 구간만 보충한다
-- 불필요한 팝업은 `data/popups/` 에 등록한 닫기 버튼 그림을 Python 이 화면에서 찾아 눌러 닫는다 ([팝업 닫기](#팝업-닫기-화면-캡처))
+- 컨테이너 안에서 pyautogui 스크립트(화면 캡처·이미지 찾기·클릭)를 돌릴 수 있다 ([자동화](#자동화-pyautogui))
 - 연번을 넣으면 과정 엑셀(`COURSE_XLSX`)에서 콘텐츠명·주요훈련내용·추천사유를 찾아 요약 프롬프트에 넣는다
 - 브라우저는 supervisor 가 관리한다. 창을 모두 닫아도 몇 초 뒤 다시 뜬다
 - `certs/*.crt` 는 빌드 때 시스템 신뢰 저장소에, 기동 때 브라우저 NSS 저장소에 등록된다 (회사망 SSL 검사 대응)
@@ -197,29 +197,29 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
 - SMI(SAMI) 자막, 영상에 박힌 자막, 화면에 그리기만 하는 자막은 받지 못한다. 그때는 지금처럼 음성 전사만 쓴다
 - 콘솔에 `자막 수집 끊김` 이 보이면 브라우저가 꺼진 상태다. 다시 뜨면 5초 안에 자동으로 붙는다
 
-## 팝업 닫기 (화면 캡처)
+## 자동화 (pyautogui)
 
-- `app/clicker.py` 가 3초마다 화면(Xvfb)을 캡처해 `data/popups/*.png` 그림이 보이면 그 가운데를 한 번 누른다 (`data2/popups/`, 인스턴스마다 따로)
-  - 그림이 하나도 없으면 아무것도 하지 않는다. 기본으로 들어 있는 그림은 없다
-  - 파일 이름이 `_` 로 시작하면 무시한다 (임시로 빼 둘 때)
-  - 추가·삭제·교체는 바로 반영된다 (재시작 불필요)
-- 그림 등록
-  1. 팝업이 떠 있는 상태에서 화면을 저장한다
-     ```bash
-     docker exec -u lecture -e HOME=/home/lecture lecture-novnc /opt/venv/bin/python /app/clicker.py shot
-     ```
-  2. `data/popups/_화면.png` 에서 닫기 버튼만 잘라 `data/popups/팝업닫기.png` 처럼 저장한다. 글자와 배경이 들어가게 너무 작지 않게 자르고, 마우스 커서는 저장 때 빠진다
-  3. 인식 확인 (누르지 않고 점수만 본다). 팝업이 보일 때 `0.92` 이상이면 누른다
-     ```bash
-     docker exec -u lecture -e HOME=/home/lecture lecture-novnc /opt/venv/bin/python /app/clicker.py check
-     ```
-- 누르면 마우스를 원래 자리로 돌려놓는다. 처리 내용은 `data/popups.log` 에 `클릭 <파일> x,y 점수` 로 남는다
-- 눌러도 팝업이 안 닫히면 같은 그림을 60초 안에 3번 누른 뒤 10분 멈춘다 (`중단` 기록)
-- 한계
-  - 크기·배율이 같을 때만 찾는다. 브라우저 확대·축소(돋보기)를 바꾸거나 해상도(`RESOLUTION`)가 다르면 그 상태에서 다시 잘라야 한다
-  - 팝업 모양이 날마다 달라지거나 닫기 버튼이 글자뿐이면 그림이 자주 어긋난다
-  - 브라우저 안내창(alert·confirm, `○○ 내용: … [확인]`)은 자동으로 닫지 않는다. 확인 버튼 그림도 등록하지 않는다. 이 사이트는 `다음으로 넘어가시겠습니까?` 같은 진도 확인도 안내창으로 묻는다
-- 보낸 입력은 마우스 이동과 왼쪽 버튼 한 번뿐이다. 키보드 입력·커서 연출·추가 클릭은 없다
+- 컨테이너 안 Python 으로 화면을 캡처하고 이미지를 찾아 클릭하는 스크립트(pyautogui)를 그대로 돌릴 수 있게 준비해 두었다. 스크립트는 이 저장소에 넣지 않는다
+- 들어 있는 것
+  - `/opt/venv`: pyautogui 0.9.54, pyscreeze 1.0.1, pillow 10.0.1, opencv-python-headless 4.13.0.92 (`locateOnScreen(..., confidence=)` 가능), pyperclip 1.11.0, tkinter
+  - 시스템: xdotool, scrot, x11-utils(`xwininfo`·`xprop`), gnome-screenshot, xclip
+  - 구성은 `~/git/shorts-back` 의 `docker/Dockerfile.desktop` (desktop 자동화 이미지)과 맞췄다
+- 실행: 스크립트와 그림을 `data/` 아래(예: `data/scripts/`)에 두고
+
+  ```bash
+  docker exec -u lecture -e HOME=/home/lecture -w /home/lecture/scripts lecture-novnc /opt/venv/bin/python image_click.py
+  ```
+
+  - `DISPLAY=:99` 는 이미 잡혀 있다. 화면 크기는 `RESOLUTION` (기본 1600x900)
+  - 두 번째 인스턴스는 `lecture-novnc-2`, 파일은 `data2/scripts/`
+- 주의
+  - `gnome-screenshot` 은 실제로 실행되지 않지만 빼면 안 된다. pyscreeze 1.0.1 은 리눅스에서 이 명령이 있어야 Pillow `ImageGrab` 으로 캡처하고, 없으면 `screenshot()`·`locateOnScreen()` 이 예외를 낸다
+  - python-xlib 는 `~/.Xauthority` 가 없으면 `import pyautogui` 에서 죽는다. `entrypoint.sh` 가 빈 파일을 만든다 (root 는 이미지에 있음). `Xlib.xauth: warning, no xauthority details available` 경고는 무시해도 된다 (Xvfb `-ac`)
+  - 한글은 `typewrite` 로 안 들어간다. `pyperclip.copy(값)` 뒤 `pyautogui.hotkey('ctrl', 'v')` 로 붙여 넣는다
+  - Docker Desktop(Windows)에서는 커널이 WSL2 라 pyperclip 이 `/proc/version` 의 `microsoft` 를 보고 `clip.exe` 를 찾다가 죽는다. venv 의 `sitecustomize.py` 가 시작할 때 `pyperclip.set_clipboard('xclip')` 로 고정한다 (스크립트 수정 불필요)
+  - pynput·selenium·playwright 는 없다. 필요하면 `/opt/venv/bin/pip install ...` (떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다: [자막 수집](#자막-수집))
+  - 마우스 커서는 noVNC 로 보는 사람과 하나다. 스크립트가 도는 동안 noVNC 에서 마우스를 움직이면 섞인다. `FAILSAFE` 는 커서를 화면 모서리(0,0 등)로 보내면 멈춘다
+  - 찾을 그림은 같은 해상도·브라우저 배율에서 잘라야 한다. noVNC 화면을 PC 에서 캡처하면 크기가 달라질 수 있으니 `pyautogui.screenshot('x.png')` 로 컨테이너 안에서 찍어 자른다
 
 ## 브라우저 다시 열기
 
@@ -287,9 +287,6 @@ docker exec -u lecture lecture-novnc certutil -d sql:/home/lecture/.pki/nssdb -L
 
 ## 지킬 것
 
-- 화면 조작은 사람이 한다. 자동 클릭·자동 재생·진도 조작 기능은 넣지 않는다 (원격훈련 대리수강)
-  - 예외는 `popups/` 에 등록한 불필요한 팝업의 닫기 버튼 클릭뿐이다 ([팝업 닫기](#팝업-닫기-화면-캡처))
-  - `다음 수업보기`·`퀴즈 풀러가기`·`다음에`·`다음 ▶`·`퀴즈 생성하기` 같은 진도·퀴즈 버튼과 안내창 확인 버튼은 `popups/` 에 등록하지 않는다
 - 영상 파일은 받지 않는다. 재생 중인 소리와 브라우저가 이미 받은 자막만 저장한다
 - `data/` (녹음·전사·요약·브라우저 프로필·claude 로그인)는 본인 학습용이다. 커밋·공유하지 않는다
 - 강의 사이트가 가상 환경이나 원격 접속을 막으면 이 데스크톱으로 수강하지 않는다
