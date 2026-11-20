@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import pipeline
+import popups
 import subs
 
 NOTES = Path.home() / 'notes'
@@ -36,6 +37,7 @@ recording = None
 working = None
 jobs = queue.Queue()
 capture = subs.Capture(lambda: recording and recording['note'])
+closer = popups.Closer()
 
 
 def worker():
@@ -222,5 +224,6 @@ if __name__ == '__main__':
     NOTES.mkdir(parents=True, exist_ok=True)
     threading.Thread(target=worker, daemon=True).start()
     threading.Thread(target=lambda: asyncio.run(capture.run()), daemon=True).start()
+    threading.Thread(target=lambda: asyncio.run(closer.run()), daemon=True).start()
     print('시작', flush=True)
     ThreadingHTTPServer(('0.0.0.0', 8090), Handler).serve_forever()

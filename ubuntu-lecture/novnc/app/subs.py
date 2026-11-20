@@ -16,10 +16,15 @@ class Capture:
     target() 이 노트 폴더를 돌려줄 때만 저장하고 None 이면 버린다.
     """
 
+    label = '자막'
+
     def __init__(self, target):
         self.target = target
         self.connected = False
         self.seen = set()
+
+    def session(self, ws):
+        return Session(ws, self)
 
     async def run(self):
         import websockets
@@ -28,17 +33,19 @@ class Capture:
                 url = await asyncio.to_thread(ws_url)
                 async with websockets.connect(url, max_size=None, ping_interval=None) as ws:
                     self.connected = True
-                    print('자막연결', flush=True)
-                    await Session(ws, self).run()
+                    print(self.label + '연결', flush=True)
+                    await self.session(ws).run()
             except Exception:
                 pass
             if self.connected:
                 self.connected = False
-                print('자막끊김', flush=True)
+                print(self.label + '끊김', flush=True)
             await asyncio.sleep(5)
 
 
 class Session:
+    DOMAINS = ('Network.enable',)
+
     def __init__(self, ws, capture):
         self.ws = ws
         self.capture = capture
@@ -75,7 +82,8 @@ class Session:
         """자동 연결된 팝업은 Chrome 이 멈춰 두므로 Runtime.runIfWaitingForDebugger 를 응답과 상관없이 마지막에 꼭 보낸다."""
         futs = []
         try:
-            futs.append(await self.post('Network.enable', sid=sid))
+            for method in self.DOMAINS:
+                futs.append(await self.post(method, sid=sid))
             futs.append(await self.post('Target.setAutoAttach', ATTACH, sid))
         finally:
             futs.append(await self.post('Runtime.runIfWaitingForDebugger', sid=sid))
