@@ -57,10 +57,14 @@ COPY supervisord.conf /etc/supervisor/conf.d/lecture.conf
 COPY entrypoint.sh /entrypoint.sh
 COPY browser.sh /usr/local/bin/lecture-browser
 COPY resolution.sh /usr/local/bin/lecture-resolution
+COPY shell.sh /etc/profile.d/lecture.sh
 COPY fcitx5/ /etc/xdg/fcitx5/
 COPY app /app
 RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser /usr/local/bin/lecture-resolution \
-    && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu \
+    && chmod 644 /etc/profile.d/lecture.sh \
+    && echo '. /etc/profile.d/lecture.sh' >> /etc/bash.bashrc \
+    && printf '%s\n' '*faceName: DejaVu Sans Mono' '*faceNameDoublesize: Noto Sans Mono CJK KR' '*faceSize: 11' '*inputMethod: fcitx' >> /etc/X11/app-defaults/XTerm \
+    && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [exec] (Terminal) {x-terminal-emulator}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu \
     && sed -i 's|</head>|<script>document.head.append(Object.assign(document.createElement("script"), {src: location.protocol + "//" + location.hostname + ":8090/vnc.js"}))</script>\n</head>|' /usr/share/novnc/vnc.html
 
 ENV LANG=ko_KR.UTF-8

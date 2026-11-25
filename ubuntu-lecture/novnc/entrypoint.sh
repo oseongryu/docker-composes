@@ -7,6 +7,7 @@ chmod 700 /tmp/runtime-lecture
 [ -f /home/lecture/.Xauthority ] || runuser -u lecture -- touch /home/lecture/.Xauthority
 
 rm -f /home/lecture/.config/browser/Singleton*
+rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
 
 nssdb=/home/lecture/.pki/nssdb
 for crt in /usr/local/share/ca-certificates/extra/*.crt; do

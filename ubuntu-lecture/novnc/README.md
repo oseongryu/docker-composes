@@ -204,20 +204,26 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
   - `/opt/venv`: pyautogui 0.9.54, pyscreeze 1.0.1, pillow 10.0.1, opencv-python-headless 4.13.0.92 (`locateOnScreen(..., confidence=)` 가능), pyperclip 1.11.0, tkinter
   - 시스템: xdotool, scrot, x11-utils(`xwininfo`·`xprop`), gnome-screenshot, xclip
   - 구성은 `~/git/shorts-back` 의 `docker/Dockerfile.desktop` (desktop 자동화 이미지)과 맞췄다
-- 실행: 스크립트와 그림을 `data/` 아래(예: `data/scripts/`)에 두고
+- 실행: 스크립트와 그림을 `data/` 아래(예: `data/scripts/`)에 두고, 각 인스턴스의 noVNC 화면 안 터미널에서 돌린다
 
   ```bash
-  docker exec -u lecture -e HOME=/home/lecture -w /home/lecture/scripts lecture-novnc /opt/venv/bin/python image_click.py
+  cd scripts
+  python image_click.py
   ```
 
+  - 터미널 열기: `Alt+F1`, 또는 바탕화면 우클릭 → `Terminal` (브라우저가 화면을 덮고 있으면 최소화한 뒤). 사용자 `lecture`, 홈(`/home/lecture` = `data/`)에서 시작
+  - 터미널의 `python`·`pip` 는 `/opt/venv` 다 (`/etc/profile.d/lecture.sh`, `/etc/bash.bashrc` 에서 불러옴). 이 설정이 없는 셸에서는 `/opt/venv/bin/python` 으로 부른다
+  - 터미널 글꼴은 영문 DejaVu Sans Mono, 한글 Noto Sans Mono CJK KR. 한글 입력은 브라우저와 같이 한/영 키 (fcitx5)
+  - 터미널 창도 같은 화면에 있다. 클릭할 곳을 가리지 않게 옆으로 치우거나 줄인다. 스크립트가 브라우저를 클릭하면 브라우저가 앞으로 온다
   - `DISPLAY=:99` 는 이미 잡혀 있다. 화면 크기는 기본 1920x1080, 실행 중 변경은 [화면 크기 바꾸기](#화면-크기-바꾸기-실행-중)
-  - 두 번째 인스턴스는 `lecture-novnc-2`, 파일은 `data2/scripts/`
+  - 두 번째 인스턴스는 noVNC `6081` 화면 안 터미널, 파일은 `data2/scripts/`
+  - 서버에서 바로 돌릴 때: `docker exec -u lecture -e HOME=/home/lecture -w /home/lecture/scripts lecture-novnc /opt/venv/bin/python image_click.py`
 - 주의
   - `gnome-screenshot` 은 실제로 실행되지 않지만 빼면 안 된다. pyscreeze 1.0.1 은 리눅스에서 이 명령이 있어야 Pillow `ImageGrab` 으로 캡처하고, 없으면 `screenshot()`·`locateOnScreen()` 이 예외를 낸다
   - python-xlib 는 `~/.Xauthority` 가 없으면 `import pyautogui` 에서 죽는다. `entrypoint.sh` 가 빈 파일을 만든다 (root 는 이미지에 있음). `Xlib.xauth: warning, no xauthority details available` 경고는 무시해도 된다 (Xvfb `-ac`)
   - 한글은 `typewrite` 로 안 들어간다. `pyperclip.copy(값)` 뒤 `pyautogui.hotkey('ctrl', 'v')` 로 붙여 넣는다
   - Docker Desktop(Windows)에서는 커널이 WSL2 라 pyperclip 이 `/proc/version` 의 `microsoft` 를 보고 `clip.exe` 를 찾다가 죽는다. venv 의 `sitecustomize.py` 가 시작할 때 `pyperclip.set_clipboard('xclip')` 로 고정한다 (스크립트 수정 불필요)
-  - pynput·selenium·playwright 는 없다. 필요하면 `/opt/venv/bin/pip install ...` (떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다: [자막 수집](#자막-수집))
+  - pynput·selenium·playwright 는 없다. 필요하면 `docker exec lecture-novnc /opt/venv/bin/pip install ...` (`/opt/venv` 는 root 소유라 화면 안 터미널(lecture)에서는 설치가 안 된다. 컨테이너를 다시 만들면 사라지니 계속 쓸 것은 Dockerfile 에 넣는다) (떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다: [자막 수집](#자막-수집))
   - 마우스 커서는 noVNC 로 보는 사람과 하나다. 스크립트가 도는 동안 noVNC 에서 마우스를 움직이면 섞인다. `FAILSAFE` 는 커서를 화면 모서리(0,0 등)로 보내면 멈춘다
   - 찾을 그림은 같은 해상도·브라우저 배율에서 잘라야 한다. noVNC 화면을 PC 에서 캡처하면 크기가 달라질 수 있으니 `pyautogui.screenshot('x.png')` 로 컨테이너 안에서 찍어 자른다
 
