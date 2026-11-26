@@ -62,6 +62,7 @@ COPY fcitx5/ /etc/xdg/fcitx5/
 COPY app /app
 RUN chmod +x /entrypoint.sh /usr/local/bin/lecture-browser /usr/local/bin/lecture-resolution \
     && chmod 644 /etc/profile.d/lecture.sh \
+    && find /opt/venv -type d -exec chown lecture:lecture {} + \
     && echo '. /etc/profile.d/lecture.sh' >> /etc/bash.bashrc \
     && printf '%s\n' '*faceName: DejaVu Sans Mono' '*faceNameDoublesize: Noto Sans Mono CJK KR' '*faceSize: 11' '*inputMethod: fcitx' >> /etc/X11/app-defaults/XTerm \
     && sed -i 's|^\[begin\] (Fluxbox)$|&\n   [exec] (Browser) {/usr/local/bin/lecture-browser}\n   [exec] (Terminal) {x-terminal-emulator}\n   [separator]|' /etc/X11/fluxbox/fluxbox-menu \

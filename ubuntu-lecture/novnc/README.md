@@ -223,7 +223,12 @@ noVNC 는 화면만 전달하고 소리는 전달하지 않는다. 소리는 같
   - python-xlib 는 `~/.Xauthority` 가 없으면 `import pyautogui` 에서 죽는다. `entrypoint.sh` 가 빈 파일을 만든다 (root 는 이미지에 있음). `Xlib.xauth: warning, no xauthority details available` 경고는 무시해도 된다 (Xvfb `-ac`)
   - 한글은 `typewrite` 로 안 들어간다. `pyperclip.copy(값)` 뒤 `pyautogui.hotkey('ctrl', 'v')` 로 붙여 넣는다
   - Docker Desktop(Windows)에서는 커널이 WSL2 라 pyperclip 이 `/proc/version` 의 `microsoft` 를 보고 `clip.exe` 를 찾다가 죽는다. venv 의 `sitecustomize.py` 가 시작할 때 `pyperclip.set_clipboard('xclip')` 로 고정한다 (스크립트 수정 불필요)
-  - pynput·selenium·playwright 는 없다. 필요하면 `docker exec lecture-novnc /opt/venv/bin/pip install ...` (`/opt/venv` 는 root 소유라 화면 안 터미널(lecture)에서는 설치가 안 된다. 컨테이너를 다시 만들면 사라지니 계속 쓸 것은 Dockerfile 에 넣는다) (떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다: [자막 수집](#자막-수집))
+  - pynput·selenium·playwright 는 없다. 필요하면 화면 안 터미널에서 `pip install ...`
+    - `/opt/venv` 의 폴더만 lecture 소유다 (파일까지 바꾸면 이미지 층에 venv 635MB 가 한 번 더 쌓인다). 폴더 쓰기 권한만으로 새 설치·버전 변경·삭제가 된다
+    - 서버에서 설치할 때도 `docker exec -u lecture -e HOME=/home/lecture lecture-novnc /opt/venv/bin/pip install ...` 로 한다. root 로 설치하면 새 폴더가 root 소유라 화면 안에서 다시 고치지 못한다
+    - 노트 서버(`notes`)도 같은 venv 를 쓴다. faster-whisper·av·requests·websockets·openpyxl 버전을 바꾸면 전사·노트가 깨질 수 있다
+    - 컨테이너를 다시 만들면 설치한 것이 사라진다. 계속 쓸 것은 Dockerfile 에 넣는다
+    - 떠 있는 브라우저에 Playwright `connect_over_cdp` 로 붙으면 안내창 처리·포커스 흉내가 켜진다 ([자막 수집](#자막-수집))
   - 마우스 커서는 noVNC 로 보는 사람과 하나다. 스크립트가 도는 동안 noVNC 에서 마우스를 움직이면 섞인다. `FAILSAFE` 는 커서를 화면 모서리(0,0 등)로 보내면 멈춘다
   - 찾을 그림은 같은 해상도·브라우저 배율에서 잘라야 한다. noVNC 화면을 PC 에서 캡처하면 크기가 달라질 수 있으니 `pyautogui.screenshot('x.png')` 로 컨테이너 안에서 찍어 자른다
 
